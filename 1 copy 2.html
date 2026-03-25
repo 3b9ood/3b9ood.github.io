@@ -1,0 +1,2265 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>سين جيم الغلابة</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    /* للهواتف فقط */
+@media (max-width: 768px) {
+    #gameContainer {
+        gap: 100px;
+    }
+    
+    .game-row {
+        row-gap: 100px;
+    }
+}
+/* للهواتف في الوضع الأفقي (قلب الهاتف) */
+@media (orientation: landscape) and (max-height: 500px) {
+    #gameContainer {
+        column-gap: 150px !important;
+        padding: 0 50px !important;
+    }
+    .game-row {
+        margin-left: 30px !important;
+    }
+}
+body{
+    font-family:Arial;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364,#1f4037);
+    color:white;
+    text-align:center;
+    margin:0;
+}
+
+h1,h2{padding:15px}
+button{padding:10px 15px;margin:5px;border-radius:12px;border:none;cursor:pointer;font-weight:bold;transition:.2s}
+button:hover{transform:scale(1.05)}
+
+#playerNames{display:flex;flex-direction:column;align-items:center;margin-top:50px}
+#playerNames input{padding:12px;margin:10px;font-size:16px;width:220px;border-radius:10px;border:none}
+
+#scoreboard{
+    display:flex;
+    justify-content:space-around;
+    margin:20px;
+    display:none;
+}
+.player{
+    font-size:20px;
+    padding:15px 25px;
+    border-radius:15px;
+    background:linear-gradient(145deg,#1e1e1e,#333);
+    box-shadow:0 0 15px rgba(0,0,0,.6);
+}
+
+#gameTurn{
+    font-size:22px;
+    color:#00ffd5;
+    text-shadow:0 0 10px #00ffd5;
+}
+
+.container{display:flex;flex-wrap:wrap;justify-content:center;gap:25px;margin-top:20px}
+
+/* اختيار الفئات */
+.card{
+    width:150px;          
+    height:180px;
+    background:linear-gradient(160deg,#1c1c1c,#2b2b2b);
+    border-radius:20px;
+    padding:10px;
+    cursor:pointer;
+    transition:.3s;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    box-shadow:0 5px 20px rgba(0,0,0,.6);
+}
+.card:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.card img{
+    width:100%;
+    height: 170px;
+    border-radius:15px;
+    object-fit:cover;
+}
+.card label{
+    margin-bottom:10px;
+    font-size:16px;
+    color:gold;
+    text-align:center;
+}
+.card.selected{outline:3px solid lime}
+
+/* زر التالي */
+#nextBtn{
+    padding:8px 16px;
+    font-size:16px;
+    border-radius:12px;
+    background:linear-gradient(145deg,#00c6ff,#0072ff);
+    color:white;
+    cursor:pointer;
+}
+
+/* شاشة اللعبة */
+#gameScreen{display:none;margin-top:20px;position:relative}
+
+#backBtn, #changePlayersBtn{
+    position:absolute;
+    top:10px;
+    left:10px;
+    background:linear-gradient(145deg,#ff416c,#ff4b2b);
+    color:white;
+    padding:8px 16px;
+    border-radius:15px;
+    box-shadow:0 0 10px rgba(255,65,108,.7);
+}
+#changePlayersBtn{left:160px;}
+
+#gameContainer{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr); /* 3 فئات في الصف */
+    gap:30px;
+    padding:60px;
+    padding-left: 150px;
+}
+
+/* كل فئة داخل اللعبة */
+.game-row{
+    width:50%;
+    height:250px;
+    position:relative;
+    background:rgba(0,0,0,.5);
+    border-radius:15px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding:10px;
+    transition:.3s;
+}
+.game-row img{
+    width:80%;
+    height:240px;       
+    border-radius:10px;
+    object-fit:cover; /* الصورة تناسب الفئة */
+}
+.category-name{
+    margin-bottom:8px;
+    font-size:20px;
+    color:gold;
+    text-align:center;
+}
+#callPopup{
+    position:fixed;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    background:#222;
+    padding:20px;
+    border-radius:15px;
+    display:none;
+    z-index:1000; /* مهم */
+}
+#callPopup[style*="display: none"]{
+    pointer-events: none;
+}
+#optionsPopup{
+    position:fixed;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    background:#222;
+    padding:20px;
+    border-radius:15px;
+    display:none;
+    z-index:1000;
+    text-align:center;
+    box-shadow:0 0 20px rgba(255,255,255,.4);
+}
+
+#closeOptions{
+    position:absolute;
+    top:5px; right:5px;
+    border:none; background:#ff416c;
+    color:white; border-radius:50%;
+    width:30px; height:30px; cursor:pointer;
+}
+
+.timer-circle{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    border:8px solid #00ffcc;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    margin:20px auto;
+}
+/* أزرار النقاط على الجانبين */
+.points-left, .points-right{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    position:absolute;
+    top:10px;
+}
+.points-left{left:-80px;}
+.points-right{right:-80px;}
+.points-left button, .points-right button{
+    width:70px;
+    padding:5px;
+    font-size:22px;
+    border-radius:8px;
+    background:linear-gradient(145deg,#00c6ff,#0072ff);
+    color:white;
+    box-shadow:0 0 5px rgba(0,114,255,.7);
+}
+.points-left button.used, .points-right button.used{
+    background:linear-gradient(145deg,#ff416c,#ff4b2b);
+    box-shadow:0 0 5px rgba(255,65,108,.8);
+}
+
+/* شاشة السؤال */
+#questionScreen{display:none;text-align:center;margin-top:50px;background:#222;border-radius:15px;padding:20px;width:60%;margin:auto;box-shadow:0 0 20px rgba(255,255,255,.3);transition:all .3s}
+#answer{margin-top:15px;color:lime;font-size:20px;font-weight:bold;text-shadow:0 0 10px lime}
+.answer-buttons{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+.answer-buttons button{
+    min-width:120px;
+    padding:10px;
+    border-radius:12px;
+    font-size:14px;
+    transition:all .3s;
+}
+.question-box{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:15px;
+}
+
+.question-text{
+    font-size:24px;
+    font-weight:bold;
+    color:#fff;
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.question-media{
+    max-width:80%;
+    max-height:250px;
+    border-radius:15px;
+    box-shadow:0 0 15px rgba(0,0,0,.6);
+}
+.answer-box{
+    margin-top:15px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+}
+
+.answer-text{
+    color:#00ff88;
+    font-size:22px;
+    font-weight:bold;
+    text-shadow:0 0 10px #00ff88;
+}
+
+.answer-media{
+    max-width:70%;
+    max-height:220px;
+    border-radius:12px;
+    box-shadow:0 0 15px rgba(0,0,0,.6);
+}
+
+/* للفيديو تحديد حجم */
+video.question-media{
+    width:400px;
+}
+
+/* للصوت */
+audio.question-media{
+    width:300px;
+}
+.lifelines{
+    margin-top:10px;
+    display:flex;
+    justify-content:center;
+    gap:10px;
+}
+
+.life{
+    font-size:22px;
+    cursor:pointer;
+    padding:8px;
+    border-radius:50%;
+    background:linear-gradient(145deg,#00c6ff,#0072ff);
+    box-shadow:0 0 8px rgba(0,114,255,.8);
+    transition:.3s;
+}
+
+.life:hover{
+    transform:scale(1.2);
+}
+
+.life.used{
+    background:gray;
+    box-shadow:none;
+    cursor:not-allowed;
+    opacity:0.6;
+}
+.btn-current{background:linear-gradient(145deg,#00ffcc,#00c6ff);color:black}
+.btn-other{background:linear-gradient(145deg,#f7971e,#ffd200);color:black}
+.btn-none{background:linear-gradient(145deg,#8e9eab,#eef2f3);color:black}
+.btn-show{background:linear-gradient(145deg,#ff416c,#ff4b2b);color:white}
+
+/* نقاط تظهر عند الإضافة */
+#pointsPopup{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);font-size:40px;color:lime;display:none;z-index:999;animation:pop 1s}
+@keyframes pop{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}50%{transform:translate(-50%,-50%) scale(1.2);opacity:1}100%{opacity:0}}
+
+/* إعلان الفائز */
+#winScreen{
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,.9);
+    display:none; justify-content:center; align-items:center; flex-direction:column;
+    z-index:1000;
+}
+#winScreen h1{
+    font-size:50px;
+    color:gold;
+    text-shadow:0 0 20px gold;
+    margin-bottom:30px;
+}
+
+/* نافذة تأكيد الرجوع */
+#confirmPopup{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    background:#222;padding:20px;border-radius:15px;display:none;
+    box-shadow:0 0 15px rgba(255,255,255,.4);
+}
+/* تصميم أزرار 4 خيارات */
+.option-btn{
+    display:block;
+    width:220px;
+    padding:12px;
+    margin:10px auto;
+    border-radius:15px;
+    border:none;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    color:white !important;
+    box-shadow:0 5px 15px rgba(0,0,0,.5);
+    transition:all .3s;
+}
+
+.option-btn:hover{
+    transform:scale(1.08);
+    box-shadow:0 8px 20px rgba(0,0,0,.8);
+}
+
+.option-btn:active{
+    transform:scale(0.95);
+}
+
+/* 🔥 أجبر الألوان */
+.opt1{background:linear-gradient(145deg,#ff416c,#ff4b2b) !important;}
+.opt2{background:linear-gradient(145deg,#00c6ff,#0072ff) !important;}
+.opt3{background:linear-gradient(145deg,#f7971e,#ffd200) !important; color:black !important;}
+.opt4{background:linear-gradient(145deg,#43e97b,#38f9d7) !important; color:black !important;}
+/* للهواتف فقط */
+@media (max-width: 768px) {
+    /* تعديل الفئات داخل اللعبة */
+    #gameContainer {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 80px !important;
+        padding: 30px !important;
+    }
+    
+    .game-row {
+        width: 90% !important;
+        margin: 0 auto !important;
+        height: auto !important;
+        min-height: 280px !important;
+    }
+    
+    .game-row img {
+        width: 100% !important;
+        height: 180px !important;
+    }
+    
+    .points-left, .points-right {
+        position: static !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        gap: 30px !important;
+        margin-top: 15px !important;
+    }
+    
+    .points-left button, .points-right button {
+        width: 80px !important;
+        font-size: 24px !important;
+        padding: 10px !important;
+    }
+}
+/* للهواتف فقط */
+@media (max-width: 768px) {
+    #gameContainer {
+        gap: 80px !important;
+    }
+}
+</style>
+</head>
+<body>
+
+<div id="playerNames">
+<h1>أدخل أسماء اللاعبين</h1>
+<input id="player1" placeholder="اسم اللاعب الأول">
+<input id="player2" placeholder="اسم اللاعب الثاني">
+<button onclick="startPlayers()">ابدأ</button>
+</div>
+
+<div id="container" class="container" style="display:none;">
+<h2>اختر حتى 6 فئات</h2>
+<button id="changePlayersBtn" onclick="changePlayers()">تغيير أسماء اللاعبين</button>
+<div class="card" data-name="حيوانات" data-img="https://i.pinimg.com/736x/92/c2/71/92c271257c8b7910aa479dd03b1e5605.jpg">
+        <img src="https://i.pinimg.com/736x/92/c2/71/92c271257c8b7910aa479dd03b1e5605.jpg">
+        <label>حيوانات</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="نباتات" data-img="https://i.pinimg.com/736x/35/5b/bb/355bbbda47f5927e49b5407cdb0610fd.jpg">
+        <img src="https://i.pinimg.com/736x/35/5b/bb/355bbbda47f5927e49b5407cdb0610fd.jpg">
+        <label>نباتات</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="جغرافيا" data-img="https://i.pinimg.com/736x/49/62/cb/4962cb730fe0eaf9e611b4c5c5ee11dd.jpg">
+        <img src="https://i.pinimg.com/736x/49/62/cb/4962cb730fe0eaf9e611b4c5c5ee11dd.jpg">
+        <label>جغرافيا</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="كرة قدم" data-img="https://i.pinimg.com/736x/86/fe/44/86fe443c2535279d16c52687fe0ba87c.jpg">
+        <img src="https://i.pinimg.com/736x/86/fe/44/86fe443c2535279d16c52687fe0ba87c.jpg">
+        <label>كرة قدم</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="دوري ابطال اوروبا" data-img="https://i.pinimg.com/736x/20/53/ff/2053ff6a2a36065eadd4f7f9bdaab385.jpg">
+        <img src="https://i.pinimg.com/736x/20/53/ff/2053ff6a2a36065eadd4f7f9bdaab385.jpg">
+        <label>دوري ابطال اوروبا</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="الدوري الاسباني" data-img="https://i.pinimg.com/736x/98/e2/35/98e235bfce4e96284e2285ba7978e41a.jpg">
+        <img src="https://i.pinimg.com/736x/98/e2/35/98e235bfce4e96284e2285ba7978e41a.jpg">
+        <label>الدوري الاسباني</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="الدوري الانجليزي" data-img="https://i.pinimg.com/736x/b5/c9/3b/b5c93b5efffbea3cf61503b33b1191e3.jpg">
+        <img src="https://i.pinimg.com/736x/b5/c9/3b/b5c93b5efffbea3cf61503b33b1191e3.jpg">
+        <label>الدوري الانجليزي</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="الدوري الايطالي" data-img="https://i.pinimg.com/736x/30/64/36/3064366928090fbaa2e3d8bd460f057c.jpg">
+        <img src="https://i.pinimg.com/736x/30/64/36/3064366928090fbaa2e3d8bd460f057c.jpg">
+        <label>الدوري الايطالي</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="الدوري الالماني" data-img="https://i.pinimg.com/736x/48/39/06/483906030a23cfeff14b0463bbf61086.jpg">
+        <img src="https://i.pinimg.com/736x/48/39/06/483906030a23cfeff14b0463bbf61086.jpg">
+        <label>الدوري الالماني</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="الدوري الفرنسي" data-img="https://i.pinimg.com/736x/ba/ef/94/baef94d8e971ed5f371807a38e729326.jpg">
+        <img src="https://i.pinimg.com/736x/ba/ef/94/baef94d8e971ed5f371807a38e729326.jpg">
+        <label>الدوري الفرنسي</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="قران" data-img="https://i.pinimg.com/736x/1a/af/63/1aaf63c214bad4e8039b3d80b8e4d4d7.jpg">
+        <img src="https://i.pinimg.com/736x/1a/af/63/1aaf63c214bad4e8039b3d80b8e4d4d7.jpg">
+        <label>قران</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="اسلامي" data-img="https://i.pinimg.com/736x/31/25/5a/31255ab770dda7acd95cefc43c0ae59e.jpg">
+        <img src="https://i.pinimg.com/736x/31/25/5a/31255ab770dda7acd95cefc43c0ae59e.jpg">
+        <label>اسلامي</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="الصحابة" data-img="https://i.pinimg.com/736x/99/de/66/99de665c179256c959c1e0ea6b4e2cd5.jpg">
+        <img src="https://i.pinimg.com/736x/99/de/66/99de665c179256c959c1e0ea6b4e2cd5.jpg">
+        <label>الصحابة</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="دول وعواصم" data-img="https://i.pinimg.com/736x/85/85/fd/8585fd64928e77f47ac6b8170e5da667.jpg">
+        <img src="https://i.pinimg.com/736x/85/85/fd/8585fd64928e77f47ac6b8170e5da667.jpg">
+        <label>دول وعواصم</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="اعلام" data-img="https://i.pinimg.com/736x/06/0c/ef/060cef02485d4d78ac286fa4e595be91.jpg">
+        <img src="https://i.pinimg.com/736x/06/0c/ef/060cef02485d4d78ac286fa4e595be91.jpg">
+        <label>اعلام</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="حروف" data-img="https://i.pinimg.com/736x/2b/84/cd/2b84cd4b08ca53725bef2376207506e5.jpg">
+        <img src="https://i.pinimg.com/736x/2b/84/cd/2b84cd4b08ca53725bef2376207506e5.jpg">
+        <label>حروف</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="تحدي الصور" data-img="https://i.pinimg.com/1200x/bd/f0/76/bdf0766c4a4c1884cb9140a61d1bd27e.jpg">
+        <img src="https://i.pinimg.com/1200x/bd/f0/76/bdf0766c4a4c1884cb9140a61d1bd27e.jpg">
+        <label>تحدي الصور</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="game of throns" data-img="https://i.pinimg.com/736x/7a/c6/04/7ac604540c47120f0a5008278e56651e.jpg">
+        <img src="https://i.pinimg.com/736x/7a/c6/04/7ac604540c47120f0a5008278e56651e.jpg">
+        <label>game of throns</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="Breaking Bad" data-img="https://i.pinimg.com/736x/80/1a/ce/801ace76cef53811f1fbdb5d18ecd500.jpg">
+        <img src="https://i.pinimg.com/736x/80/1a/ce/801ace76cef53811f1fbdb5d18ecd500.jpg">
+        <label>Breaking Bad</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="ون بيس" data-img="https://i.pinimg.com/1200x/d0/81/39/d08139600d77ed80728bd342c16b6712.jpg">
+        <img src="https://i.pinimg.com/1200x/d0/81/39/d08139600d77ed80728bd342c16b6712.jpg">
+        <label>ون بيس</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="ناروتو" data-img="https://i.pinimg.com/736x/43/d6/7b/43d67b0ac2bed4de021646eb3ead2028.jpg">
+        <img src="https://i.pinimg.com/736x/43/d6/7b/43d67b0ac2bed4de021646eb3ead2028.jpg">
+        <label>ناروتو</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="بليتش" data-img="https://i.pinimg.com/736x/8b/3e/9c/8b3e9c7953d6cdc568b288bdf25b4f10.jpg">
+        <img src="https://i.pinimg.com/736x/8b/3e/9c/8b3e9c7953d6cdc568b288bdf25b4f10.jpg">
+        <label>بليتش</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="هجوم العمالقة" data-img="https://i.pinimg.com/736x/d6/db/56/d6db56701eb303d9dd3cddab3afb4701.jpg">
+        <img src="https://i.pinimg.com/736x/d6/db/56/d6db56701eb303d9dd3cddab3afb4701.jpg">
+        <label>هجوم العمالقة</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="باب الحارة" data-img="https://i.pinimg.com/1200x/3d/c0/30/3dc0304858875a048bdb7ff66c237273.jpg">
+        <img src="https://i.pinimg.com/1200x/3d/c0/30/3dc0304858875a048bdb7ff66c237273.jpg">
+        <label>باب الحارة</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="كاس العالم" data-img="https://i.pinimg.com/736x/8b/e1/29/8be1296925ff26df4fdd51b71a31bb02.jpg">
+        <img src="https://i.pinimg.com/736x/8b/e1/29/8be1296925ff26df4fdd51b71a31bb02.jpg">
+        <label>كاس العالم</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="معلومات عامة" data-img="https://i.pinimg.com/736x/75/16/6f/75166fcc5510bfc4018703da115f01c8.jpg">
+        <img src="https://i.pinimg.com/736x/75/16/6f/75166fcc5510bfc4018703da115f01c8.jpg">
+        <label>معلومات عامة</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="الغاز" data-img="https://i.pinimg.com/736x/9a/d0/cd/9ad0cd320161c8fda926bf14259a082f.jpg">
+        <img src="https://i.pinimg.com/736x/9a/d0/cd/9ad0cd320161c8fda926bf14259a082f.jpg">
+        <label>الغاز</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="دراغون بول" data-img="https://i.pinimg.com/736x/bd/ce/ad/bdceadeeab5646f1b96da700501ee7d9.jpg">
+        <img src="https://i.pinimg.com/736x/bd/ce/ad/bdceadeeab5646f1b96da700501ee7d9.jpg">
+        <label>دراغون بول</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="هنتر" data-img="https://i.pinimg.com/736x/9f/61/fe/9f61fe7d1c1078ba645cfa401d011d82.jpg">
+        <img src="https://i.pinimg.com/736x/9f/61/fe/9f61fe7d1c1078ba645cfa401d011d82.jpg">
+        <label>هنتر</label>
+        <div class="selected-box"></div>
+    </div>
+    <div class="card" data-name="الكلاسيكو" data-img="https://i.pinimg.com/1200x/d9/76/28/d976281b8d0eb0005be8a66427dc1d2a.jpg">
+        <img src="https://i.pinimg.com/1200x/d9/76/28/d976281b8d0eb0005be8a66427dc1d2a.jpg">
+        <label>الكلاسيكو</label>
+        <div class="selected-box"></div>
+    </div>
+<button id="nextBtn" onclick="startGame()">التالي</button>
+</div>
+
+<div id="scoreboard">
+
+<div class="player" id="player1Box">
+    <div id="player1Score"></div>
+    <div class="lifelines">
+        <span class="life" onclick="useDouble(0,this)">✖️</span>
+        
+        <span class="life" onclick="useTwo(0,this)">2️⃣</span>
+    </div>
+</div>
+
+<div class="player" id="player2Box">
+    <div id="player2Score"></div>
+    <div class="lifelines">
+        <span class="life" onclick="useDouble(1,this)">✖️</span>
+        
+        <span class="life" onclick="useTwo(1,this)">2️⃣</span>
+    </div>
+</div>
+<div id="callPopup" class="popup" style="display: none;">
+    <h2>📞 اختر نوع المساعدة</h2>
+    <button onclick="closeCallOptions()">✖</button>
+    <button onclick="startCall()">اتصال بصديق</button>
+    <button onclick="showOptions()">4 خيارات</button>
+</div>
+</div>
+<div id="timerPopup" class="popup" style="display: none;">
+    <button id="closeTimer" onclick="closeTimer()">✖</button>
+    <div class="timer-circle" id="timer">45</div>
+</div>
+<div id="gameScreen">
+<button id="backBtn" onclick="confirmBack()">⬅ رجوع للفئات</button>
+<h2 id="gameTurn"></h2>
+<div id="gameContainer"></div>
+</div>
+<div id="optionsPopup" class="popup">
+    <button id="closeOptions" onclick="closeOptions()">✖</button>
+    <div id="optionsContent"></div>
+</div>
+<div id="questionScreen"></div>
+<div id="pointsPopup"></div>
+
+<div id="winScreen">
+<h1 id="winnerText"></h1>
+<button onclick="location.reload()">إعادة اللعب</button>
+</div>
+
+<div id="confirmPopup">
+<p>هل أنت متأكد من الرجوع؟ سيتم اعادة تعيين النقاط.</p>
+<button onclick="confirmYes()">نعم</button>
+<button onclick="confirmNo()">لا</button>
+</div>
+
+<script>
+    const doubleSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
+    const tickSound = new Audio("https://www.soundjay.com/clock/sounds/clock-ticking-1.mp3");
+    let lifelinesUsed = [
+    {double:false, call:false, two:false},
+    {double:false, call:false, two:false}
+];
+
+let doubleActive = false;
+function useDouble(player, el){
+    if(player !== currentPlayerIndex){
+        alert("ليس دورك!");
+        return;
+    }
+    
+    if(lifelinesUsed[player].double) return;
+    
+    // if(inQuestion){
+    //     alert("❌ لا يمكن استخدام الدبل داخل السؤال!");
+    //     return;
+    // }
+    
+    // منع الاستخدام إذا تم اختيار سؤال في هذا الدور
+    if(doubleUsedThisTurn){
+        alert("⚠️ لا يمكن استخدام الدبل بعد اختيار السؤال!");
+        return;
+    }
+    
+    lifelinesUsed[player].double = true;
+    doubleActive = true;
+    
+    el.classList.add("used");
+    
+    doubleSound.currentTime = 0;
+    doubleSound.play().catch(()=>{});
+    
+    showDoubleEffect();
+}
+let timerUsed = [false, false]; // لكل لاعب
+
+function startCall() {
+    if (timerUsed[currentPlayerIndex]) return; // منع إعادة الاستخدام
+    timerUsed[currentPlayerIndex] = true;
+
+    let popup = document.getElementById("timerPopup");
+    popup.style.display = "none";
+
+    let time = 45;
+    document.getElementById("timer").innerText = time;
+
+    let interval = setInterval(()=>{
+        time--;
+        document.getElementById("timer").innerText = time;
+        if(time <= 0){
+            clearInterval(interval);
+            popup.style.display = "none";
+        }
+    },1000);
+
+    window.currentTimer = interval; // لايقافه عند الإغلاق
+}
+
+function closeTimer(){
+    clearInterval(window.currentTimer);
+    document.getElementById("timerPopup").style.display = "none";
+}
+function useCallInQuestion(){
+    document.getElementById("callPopup").style.display = "block";
+
+    document.getElementById("callPopup").innerHTML = `
+        <button onclick="closeCallPopup()" 
+        style="position:absolute;top:5px;right:5px;background:red;color:white;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;">✖</button>
+
+        <h2>📞 اختر</h2>
+        <button onclick="startCall()">اتصال بصديق</button>
+        <button onclick="showOptions()">4 خيارات</button>
+    `;
+}
+function closeCallPopup(){
+    document.getElementById("callPopup").style.display = "none";
+}
+function showOptions(){
+     if(currentPlayerIndex !== currentPlayerTurn){
+        alert("ليس دورك!");
+        return;
+    }
+
+    document.getElementById("callPopup").style.display = "none";
+    let opts = currentQuestion.options;
+    let container = document.getElementById("optionsContent");
+    container.innerHTML = "";
+ const colors = [
+        "#E91E63",  // وردي غامق
+        "#2196F3",  // أزرق
+        "#FF9800",  // برتقالي
+        "#4CAF50"   // أخضر
+    ];
+
+    opts.forEach((opt, index)=>{
+        let btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.style.background = colors[index];
+        btn.style.color = "white";
+        btn.style.margin = "10px";
+        btn.style.padding = "12px 20px";
+        btn.style.border = "none";
+        btn.style.borderRadius = "15px";
+        btn.style.fontSize = "16px";
+        btn.style.fontWeight = "bold";
+        btn.style.cursor = "pointer";
+        btn.style.width = "220px";
+        btn.style.display = "block";
+        btn.style.boxShadow = "0 5px 15px rgba(0,0,0,.5)";
+        btn.disabled = true;
+        container.appendChild(btn);
+    });
+
+    document.getElementById("optionsPopup").style.display = "block";
+}
+function showDoubleEffect(){
+    const effect = document.createElement("div");
+    effect.innerText = "⚡ DOUBLE!";
+    effect.style.position = "fixed";
+    effect.style.top = "40%";
+    effect.style.left = "50%";
+    effect.style.transform = "translate(-50%,-50%) scale(0.5)";
+    effect.style.fontSize = "50px";
+    effect.style.color = "yellow";
+    effect.style.textShadow = "0 0 20px yellow";
+    effect.style.zIndex = "9999";
+
+    document.body.appendChild(effect);
+
+    setTimeout(()=>{
+        effect.style.transform = "translate(-50%,-50%) scale(1.5)";
+    },50);
+
+    setTimeout(()=>{
+        effect.remove();
+    },1000);
+}
+let playerNames=[],playerScores=[0,0],currentPlayerIndex=0,selectedCategories=[];
+let inQuestion = false;
+let totalQuestions=0,answered=0;
+const correctSound=new Audio("https://www.soundjay.com/buttons/sounds/button-4.mp3");
+
+const questions={
+"حيوانات": {
+        100:[
+            // {q:"ما اسم أسرع حيوان بري؟", a:"الفهد", img:"https://picsum.photos/id/237/300/200",imgAnswer:"https://picsum.photos/id/237/300/200" },
+            { q: "كم عدد أرجل العنكبوت؟", a: "8 أرجل", options: ["6", "8", "10", "12"] },
+            { q: "ما اسم صغير الأسد؟", a: "شبل", options: ["شبل", "جرو", "هرة", "دغفل"] },
+            { q: "أي حيوان يعيش في القطب الشمالي وله فراء أبيض؟", a: "الدب القطبي", options: ["الدب البني", "الدب القطبي", "الثعلب القطبي", "البطريق"] },
+            { q: "ما هو أطول حيوان في العالم؟", a: "الزرافة", options: ["الفيل", "الحوت الأزرق", "الزرافة", "النعامة"] },
+            { q: "كم عدد أرجل النحلة؟", a: "6 أرجل", options: ["4", "6", "8", "10"] },
+            { q: "ما اسم الحيوان الذي يخزن الماء في سنامه؟", a: "الجمل", options: ["الفيل", "الجمل", "الثور", "الحصان"] },
+            { q: "أي حيوان معروف ببطء حركته الشديد؟", a: "السلحفاة", options: ["الحلزون", "السلحفاة", "الكسلان", "الباندا"] },
+            { q: "ما هو الطائر الذي لا يطير ولكنه يجيد السباحة؟", a: "البطريق", options: ["النعامة", "البطريق", "البطة", "النسر"] },
+            { q: "ما اسم صغير القط؟", a: "هرة", options: ["جرو", "هرة", "شبل", "كتكوت"] },
+            { q: "أي حيوان لديه خرطوم طويل؟", a: "الفيل", options: ["وحيد القرن", "فرس النهر", "الفيل", "الزرافة"] },
+            { q: "ما هو الحيوان الملقب بسفينة الصحراء؟", a: "الجمل", options: ["الحصان", "الجمل", "النعامة", "الغزال"] },
+            { q: "أي حيوان يصدر صوت نعيق؟", a: "الضفدع", options: ["البومة", "الضفدع", "الغراب", "الديك"] },
+            { q: "ما اسم منزل النحلة؟", a: "خلية", options: ["عش", "وكر", "خلية", "جحر"] },
+            { q: "أي حيوان لديه أطول رقبة؟", a: "الزرافة", options: ["الجمل", "النعامة", "الزرافة", "الحوت"] },
+            { q: "ما هو الحيوان الذي ينام وعيناه مفتوحتان؟", a: "السمك", options: ["الأرنب", "السمك", "البومة", "الدolphin"] },
+            { q: "أي حيوان معروف بحبه للموز؟", a: "القرد", options: ["الفيل", "القرد", "الببغاء", "الدب"] },
+            { q: "ما اسم صغير الكلب؟", a: "جرو", options: ["شبل", "جرو", "هرة", "دغفل"] },
+            { q: "ما هو أكبر حيوان في العالم؟", a: "الحوت الأزرق", options: ["الفيل الأفريقي", "الحوت الأزرق", "الزرافة", "الديناصور"] },
+            { q: "أي حيوان لديه قرون على رأسه؟", a: "الغزال", options: ["الحصان", "الغزال", "الأسد", "النمر"] },
+            { q: "ما هو الحيوان الذي يغير لونه للتمويه؟", a: "الحرباء", options: ["السمك المهرج", "الحرباء", "الأخطبوط", "السلحفاة"] },
+            { q: "أي حيوان معروف بصوت الزئير؟", a: "الأسد", options: ["النمر", "الأسد", "الفهد", "الذئب"] },
+            { q: "ما اسم صغير الدجاج؟", a: "كتكوت", options: ["فرخ", "كتكوت", "بيضة", "ديك"] },
+            { q: "أي حيوان يعيش في الماء وله قشر صلب؟", a: "السلحفاة البحرية", options: ["تمساح", "سلحفاة بحرية", "سرطان البحر", "محار"] },
+            { q: "ما هو الحيوان الذي لديه جيوب في بطنه؟", a: "الكنغر", options: ["الدب", "الكنغر", "الأبوسوم", "السنجاب"] },
+            { q: "أي طائر يكرر كلام الإنسان؟", a: "الببغاء", options: ["العندليب", "الببغاء", "الغراب", "البلبل"] },
+        ],
+        200:[
+            { q: "ما هو الحيوان الذي ينام حوالي 20 ساعة في اليوم؟", a: "الكوالا", options: ["الباندا", "الكوالا", "السلحفاة", "الأرماديلو"] },
+            { q: "أي حيوان لديه ثلاثة قلوب؟", a: "الأخطبوط", options: ["الحبار", "الأخطبوط", "الحوت", "السمكة المهرجة"] },
+            { q: "ما هو الطائر الذي يمكنه الطيران إلى الخلف؟", a: "الطائر الطنان", options: ["العصفور", "الطائر الطنان", "الببغاء", "النسر"] },
+            { q: "أي حيوان لا يشرب الماء طوال حياته؟", a: "جرذ الكنغر", options: ["الجمل", "جرذ الكنغر", "اليربوع", "الفأر"] },
+            { q: "ما اسم الحيوان الذي يمكنه تغيير جنسه؟", a: "السمكة المهرجة", options: ["ثعبان البحر", "السمكة المهرجة", "الحرباء", "الأخطبوط"] },
+            { q: "أي حيوان لديه دم أزرق؟", a: "الأخطبوط", options: ["الإنسان", "السلطعون", "الأخطبوط", "الحوت"] },
+            { q: "ما هو الحيوان الذي يمكنه تجديد أجزاء من جسمه؟", a: "نجم البحر", options: ["الوزغة", "نجم البحر", "السمكة الذهبية", "السلحفاة"] },
+            { q: "أي حيوان ينام واقفًا؟", a: "الحصان", options: ["البقرة", "الحصان", "الفيل", "الزرافة"] },
+            { q: "ما هو أسرع حيوان بري؟", a: "الفهد", options: ["الأسد", "الفهد", "الغزال", "الأرنب"] },
+            { q: "أي حيوان يتنفس من خلال جلده؟", a: "الضفدع", options: ["السحلية", "الضفدع", "الثعبان", "السمكة"] },
+            { q: "ما هو الحيوان الذي يعيش أطول فترة؟", a: "السلحفاة العملاقة", options: ["الفيل", "الحوت مقوس الرأس", "السلحفاة العملاقة", "ببغاء الماكاو"] },
+            { q: "أي حيوان يصدر أعلى صوت بين الحيوانات؟", a: "الحوت الأزرق", options: ["الأسد", "الفيل", "الحوت الأزرق", "الديك"] },
+            { q: "ما اسم الحيوان الذي إذا قطع ذيله يعود مرة أخرى؟", a: "الوزغة (أبو بريص)", options: ["السحلية", "الوزغة", "السمكة", "العقرب"] },
+            { q: "أي حيوان لديه لسان أطول من جسمه؟", a: "الحرباء", options: ["النمر", "الزرافة", "الحرباء", "الخلد"] },
+            { q: "ما هو الحيوان الذي لا يملك معدة؟", a: "خلد الماء", options: ["البطريق", "خلد الماء", "النعامة", "الكوالا"] },
+            { q: "ما هو الحيوان القادر على تحمل الظروف القاسية جدًا؟", a: "دب الماء (التارديغراد)", options: ["الجمل", "دب الماء", "الصرصور", "الدب القطبي"] },
+            { q: "أي حيوان يسمع بأرجله؟", a: "الجندب", options: ["الجد", "الصرصور", "الجندب", "النحلة"] },
+            { q: "ما هو الحيوان الذي يمكنه العيش بدون رأس لعدة أيام؟", a: "الصرصور", options: ["الذبابة", "الصرصور", "النملة", "العنكبوت"] },
+            { q: "أي حيوان يلد الذكر وليس الأنثى؟", a: "فرس البحر", options: ["الضفدع", "فرس البحر", "السمكة المهرجة", "الحوت"] },
+            { q: "ما هو الحيوان الذي له 4 أجنحة؟", a: "لا يوجد (الحشرات لها جناحان فقط)", options: ["اليعسوب", "لا يوجد", "الفراشة", "النحلة"] },
+            { q: "كم عدد العضلات في خرطوم الفيل؟", a: "حوالي 40,000 عضلة", options: ["1000 عضلة", "10,000 عضلة", "40,000 عضلة", "100,000 عضلة"] },
+            { q: "ما هي المجموعة التي يطلق عليها اسم 'جريمة' من الحيوانات؟", a: "الغربان (murder of crows)", options: ["الذئاب", "الغربان", "الأسود", "النحل"] },
+            { q: "ما هو الحيوان الذي يتذوق الطعام بأرجله؟", a: "الفراشة", options: ["النحلة", "الفراشة", "الذبابة", "العنكبوت"] },
+            { q: "كم عدد المفاصل في أرجل العنكبوت؟", a: "48 مفصلاً (6 مفاصل في كل رجل)", options: ["24 مفصلاً", "48 مفصلاً", "32 مفصلاً", "64 مفصلاً"] },
+            { q: "أي حيوان ينام بنصف دماغ فقط؟", a: "الدلفين", options: ["الحوت", "الدلفين", "الفقمة", "البطريق"] },
+            
+          //  {q:"ما هو الحيوان الذي لا ينام؟", a:"أسماك القرش", video:"https://www.w3schools.com/html/mov_bbb.mp4", videoAnswer:"https://www.w3schools.com/html/mov_bbb.mp4"}
+        ],
+        300:[
+            // {q:"ما اسم الحيوان الذي يمكنه تغيير لونه؟", a:"الحرباء", audio:"https://www.w3schools.com/html/horse.mp3",audioAnswer:"https://www.w3schools.com/html/horse.mp3"},
+            { q: "ما هو لون جلد الدب القطبي تحت الفراء الأبيض؟", a: "أسود", options: ["أبيض", "أسود", "وردي", "رمادي"] },
+            { q: "كم عدد البيض الذي يمكن أن تضعه السلحفاة البحرية في المرة الواحدة؟", a: "حتى 180 بيضة", options: ["حتى 50 بيضة", "حتى 100 بيضة", "حتى 180 بيضة", "حتى 300 بيضة"] },
+            { q: "أي حيوان يمكنه القفز لارتفاع يتجاوز 5 أقدام رغم وزنه الكبير؟", a: "البيسون (الثور الأمريكي)", options: ["الفيل", "فرس النهر", "البيسون", "وحيد القرن"] },
+            { q: "ما هو الحيوان الذي يعتمد عليه ابن مقرض (النمس) الأسود القدمين بشكل كامل للغذاء والمأوى؟", a: "كلب البراري", options: ["الأرنب", "كلب البراري", "الفأر", "السنجاب"] },
+            { q: "ما اسم قطعة الجلد المتدلية من حلق الموظ؟", a: "الجرس (bell)", options: ["اللحية", "الجرس", "القلادة", "الغمد"] },
+            { q: "ما هو اسم صغير الأرنب البري؟", a: "خرنق (leveret)", options: ["جرو", "هرة", "خرنق", "شبل"] },
+            { q: "ما هو الاسم العلمي للثعلب الأحمر؟", a: "Vulpes vulpes", options: ["Canis lupus", "Vulpes vulpes", "Felis catus", "Ursus arctos"] },
+            { q: "ما هي الهدية التي يقدمها ذكر بطريق جنتو لأنثاه عند التزاوج؟", a: "أجمل حصاة يجدها", options: ["سمكة", "حصاة", "عش من الأعشاب", "ريشة"] },
+            { q: "ما هو الاسم الذي يطلق على مجموعة حيوانات الباندا؟", a: "إحراج (embarrassment)", options: ["قطيع", "سرب", "إحراج", "عائلة"] },
+            { q: "ما هو الحيوان الوطني الأسكتلندي؟", a: "وحيد القرن (الخراف)", options: ["الأسد", "التنين", "وحيد القرن", "الغزال"] },
+            { q: "أي نوع من السلاحف يمكنه التنفس من خلال مؤخرته؟", a: "بعض السلاحف المائية", options: ["السلحفاة البرية", "بعض السلاحف المائية", "السلحفاة البحرية", "السلحفاة العملاقة"] },
+            { q: "ما هو الحيوان الذي يمتلك أسرع سرعة جري بين الحيوانات البرية؟", a: "الفهد", options: ["الأسد", "الفهد", "الغزال", "الحصان"] },
+            { q: "ما هو النمر الوحيد الذي يجيد الجري لمسافات طويلة؟", a: "الفهد (باقي النمور قافزة)", options: ["النمر", "الفهد", "النمر الأسود", "النمر الثلجي"] },
+            { q: "أي حيوان بحري لديه فراء أكثر كثافة (أكثر من مليون شعرة في البوصة المربعة)؟", a: "ثعلب البحر (قضاعة البحر)", options: ["الفقمة", "أسد البحر", "ثعلب البحر", "الدلفين"] },
+            { q: "ما هي الأفعى صاحبة أكثر السموم فتكًا في العالم؟", a: "ثعبان التايبان الداخلي", options: ["الكوبرا", "الأفعى الجرسية", "ثعبان التايبان الداخلي", "المامبا السوداء"] },
+            { q: "أي نوع من قنديل البحر يعتبر خالدًا بيولوجيًا؟", a: "قنديل البحر الخالد (Turritopsis dohrnii)", options: ["قنديل البحر العادي", "قنديل البحر الخالد", "قنديل البحر العملاق", "قنديل البحر المضيء"] },
+            { q: "أي حيوان يمكنه التكاثر دون تزاوج؟", a: "تنين الكومودو", options: ["الوزغة", "تنين الكومودو", "الحرباء", "الضفدع"] },
+            { q: "كم سنة يعتقد أن التماسيح موجودة على الأرض؟", a: "حوالي 200 مليون سنة", options: ["حوالي 65 مليون سنة", "حوالي 100 مليون سنة", "حوالي 200 مليون سنة", "حوالي 500 مليون سنة"] },
+            { q: "ما هي الميزة الفريدة في ريش البومة التي تسمح لها بالطيران بصمت؟", a: "تسريحات تشبه المشط على الحافة الأمامية للريش", options: ["ريش ناعم", "تسريحات تشبه المشط", "ريش سميك", "أجنحة قصيرة"] },
+            { q: "أي نوع من الأسماك له بيض سام؟", a: "سمك الجار", options: ["سمك السلمون", "سمك الجار", "سمك التونة", "سمك القرش"] },
+            { q: "كم عدد أنواع اليعسوب والسمك السنجابي المسجلة في أوكلاهوما؟", a: "176 نوعًا", options: ["76 نوعًا", "176 نوعًا", "276 نوعًا", "376 نوعًا"] },
+            { q: "ما هو الحيوان الوحيد الفقاري الذي يحمل اسم 'أوكلاهوما' في اسمه الشائع؟", a: "سمندل أوكلاهوما", options: ["سمكة أوكلاهوما", "سمندل أوكلاهوما", "سلحفاة أوكلاهوما", "ثعبان أوكلاهوما"] },
+            { q: "كم بلغ عمر أكبر سمكة جاموس صغيرة الفم مسجلة في أوكلاهوما؟", a: "62 عامًا", options: ["22 عامًا", "42 عامًا", "62 عامًا", "82 عامًا"] },
+            { q: "ما هو الحيوان الذي يمكنه تخزين أكثر من 30 جالونًا من الماء في دقائق؟", a: "الجمل", options: ["الفيل", "الجمل", "فرس النهر", "البيسون"] },
+            { q: "ما هو الحيوان الذي لا يستطيع التقيؤ؟", a: "الحصان", options: ["الكلب", "القط", "الحصان", "الأرنب"] },
+        ]
+    },
+    "نباتات": {
+    100:[
+            { q: "ما هو لون أوراق الشجر في الربيع؟", a: "أخضر", options: ["أخضر", "أصفر", "أحمر", "بني"] },
+            { q: "ما اسم العملية التي تصنع بها النباتات غذاءها؟", a: "البناء الضوئي (التمثيل الضوئي)", options: ["التنفس", "البناء الضوئي", "النتح", "الامتصاص"] },
+            { q: "ما هو أكبر زهرة في العالم من حيث الحجم؟", a: "الرافليسيا", options: ["دوار الشمس", "الرافليسيا", "الزنبق", "الأوركيد"] },
+            { q: "ما اسم الشجرة التي تنتج الجوز؟", a: "شجرة الجوز", options: ["شجرة اللوز", "شجرة الجوز", "شجرة البندق", "شجرة الكاجو"] },
+            { q: "أي نبات يستخدم في صناعة الورق؟", a: "الخيزران أو شجر الكينا", options: ["القمح", "الخيزران أو شجر الكينا", "الأرز", "القطن"] },
+            { q: "ما هو لون زهرة دوار الشمس؟", a: "أصفر", options: ["أحمر", "أصفر", "أبيض", "بنفسجي"] },
+            { q: "ما اسم النبات الذي ينتج القهوة؟", a: "شجرة البن", options: ["شجرة الكاكاو", "شجرة البن", "شجرة الشاي", "شجرة الماتشا"] },
+            { q: "أي نبات معروف برائحته العطرة ويستخدم في الزينة؟", a: "الورد", options: ["الصبار", "الورد", "القرنفل", "الياسمين"] },
+            { q: "ما هو الجزء الذي يمتص الماء من التربة؟", a: "الجذور", options: ["الساق", "الأوراق", "الجذور", "الزهرة"] },
+            { q: "أي نبات يستخدم في صناعة الخبز؟", a: "القمح", options: ["الشعير", "القمح", "الذرة", "الأرز"] },
+            { q: "ما اسم ثمرة شجرة الزيتون؟", a: "الزيتون", options: ["التمر", "الزيتون", "التين", "العنب"] },
+            { q: "أي نبات ينمو في الصحراء ويخزن الماء؟", a: "الصبار", options: ["النخيل", "الصبار", "العوسج", "الأكاسيا"] },
+            { q: "ما هو لون أوراق الشجر في الخريف؟", a: "أصفر أو برتقالي أو أحمر", options: ["أخضر فقط", "أصفر أو برتقالي أو أحمر", "أزرق", "بني غامق"] },
+            { q: "ما اسم النبات الذي ينتج الأرز؟", a: "نبات الأرز", options: ["القمح", "الذرة", "نبات الأرز", "الشوفان"] },
+            { q: "أي نبات يستخدم في صناعة الشاي؟", a: "نبات الشاي (الكاميليا)", options: ["النعناع", "البابونج", "نبات الشاي", "الزنجبيل"] },
+            { q: "ما هو الجزء الذي يحمل البذور في النبات؟", a: "الزهرة أو الثمرة", options: ["الجذور", "الساق", "الأوراق", "الزهرة أو الثمرة"] },
+            { q: "أي نبات معروف بأشواكه الحادة؟", a: "الصبار", options: ["الورد", "الصبار", "النخيل", "العوسج"] },
+            { q: "ما اسم أكبر شجرة في العالم من حيث الحجم؟", a: "السكويا العملاقة", options: ["البلوط", "السكويا العملاقة", "الباوباب", "الأرز"] },
+            { q: "أي نبات يستخدم في صناعة السكر؟", a: "قصب السكر أو بنجر السكر", options: ["الذرة", "قصب السكر أو بنجر السكر", "العنب", "التمر"] },
+            { q: "ما هو لون ثمرة الطماطم عند النضج؟", a: "أحمر", options: ["أخضر", "أصفر", "أحمر", "برتقالي"] },
+            { q: "أي نبات معروف بثمرته البرتقالية وغنية بفيتامين سي؟", a: "البرتقال", options: ["اليوسفي", "الجريب فروت", "البرتقال", "الليمون"] },
+            { q: "ما هو الجزء الذي ينمو فوق سطح الأرض؟", a: "الساق", options: ["الجذور", "الساق", "الدرنات", "البذور"] },
+            { q: "أي نبات يستخدم في صناعة الملابس القطنية؟", a: "القطن", options: ["الكتان", "القطن", "الصوف", "الحرير"] },
+            { q: "ما اسم النبات الذي ينتج الفول السوداني؟", a: "الفول السوداني", options: ["اللوز", "الفول السوداني", "الكاجو", "البندق"] },
+            { q: "أي نبات معروف بأوراقه الكبيرة التي تشبه المروحة؟", a: "نخيل", options: ["الموز", "نخيل", "السرخس", "السيكاس"] },
+        ],
+    200:[
+            { q: "ما هو أطول نوع من الأعشاب في العالم؟", a: "الخيزران", options: ["القصب", "الخيزران", "الذرة", "البامبو القزم"] },
+            { q: "أي نبات يعرف بـ 'لسان الحماة'؟", a: "نبات السانسفيريا (ألسنة الحماة)", options: ["الصبار", "نبات السانسفيريا", "الألوفيرا", "الدراسينا"] },
+            { q: "ما اسم النبات الذي يغلق أوراقه عند لمسه؟", a: "الميموزا الخجولة", options: ["الزهرة الجائعة", "الميموزا الخجولة", "نبات الندى", "صائد الذباب"] },
+            { q: "كم عدد أنواع أشجار البلوط في العالم؟", a: "أكثر من 500 نوع", options: ["حوالي 100 نوع", "أكثر من 500 نوع", "أكثر من 1000 نوع", "حوالي 50 نوع"] },
+            { q: "ما هو النبات الذي يحتاج إلى 100 عام ليزهر؟", a: "نبات القرن (Agave americana)", options: ["الخيزران", "نبات القرن", "الصبار العملاق", "السكويا"] },
+            { q: "أي شجرة معروفة بلحائها الذي يتقشر مثل الورق؟", a: "شجرة القضبان", options: ["شجرة البتولا", "شجرة القضبان", "شجرة الكينا", "شجرة البلوط"] },
+            { q: "ما اسم الزهرة التي تتفتح ليلاً فقط؟", a: "زهرة القمر أو زهرة الليل", options: ["دوار الشمس", "زهرة القمر", "الزنبق", "الأقحوان"] },
+            { q: "أي نبات يستخدم في علاج الملاريا؟", a: "شجرة الكينا", options: ["شجرة الشاي", "شجرة الكينا", "شجرة النيم", "شجرة الصفصاف"] },
+            { q: "ما هو النبات الذي له أوراق بحجم مظلة صغيرة؟", a: "نبات الراوند العملاق", options: ["الموز", "نبات الراوند العملاق", "اللوتس", "نخيل"] },
+            { q: "أي نبات يعتبر رمزًا للحب والرومانسية؟", a: "الورد الأحمر", options: ["الياسمين", "الخزامى", "الورد الأحمر", "التوليب"] },
+            { q: "ما اسم الشجرة التي تنتج ثمرة الكاكاو؟", a: "شجرة الكاكاو", options: ["شجرة البن", "شجرة الكاكاو", "شجرة الشوكولاتة", "شجرة الجوز"] },
+            { q: "أي نبات معروف بقدرته على طرد الحشرات؟", a: "اللافندر (الخزامى)", options: ["النعناع", "اللافندر", "الريحان", "إكليل الجبل"] },
+            { q: "ما هو النبات الذي تستخدم أوراقه في صناعة المأكولات البحرية اليابانية؟", a: "النوري (طحلب)", options: ["السبيرولينا", "النوري", "الكلوريلا", "عشب البحر"] },
+            { q: "أي شجرة تسمى 'شجرة الحياة'؟", a: "شجرة الباوباب", options: ["السكويا", "شجرة الباوباب", "الزيتون", "الأرز"] },
+            { q: "ما هو النبات الذي تنمو أزهاره على شكل جرّة تحتوي على سائل هاضم؟", a: "نبات الإبريق (النابنط)", options: ["صائد الذباب", "نبات الإبريق", "الندية", "الميموزا"] },
+            { q: "أي نبات يستخدم في صناعة العطور الفرنسية الشهيرة؟", a: "الياسمين أو الورد", options: ["اللافندر", "الياسمين أو الورد", "الزعفران", "المسك"] },
+            { q: "ما اسم النبات الذي له قدرة على تحمل الملوحة العالية؟", a: "المانغروف (القرم)", options: ["النخيل", "المانغروف", "الصبار", "الأكاسيا"] },
+            { q: "أي نبات يستخدم في صناعة المطاط الطبيعي؟", a: "شجرة الهيفيا", options: ["شجرة الكاوتشوك", "شجرة الهيفيا", "شجرة التين", "شجرة المطاط الهندي"] },
+            { q: "ما هي أسرع شجرة نموًا في العالم؟", a: "الخيزران", options: ["الصفصاف", "الخيزران", "الحور", "الأوكالبتوس"] },
+            { q: "أي نبات معروف بأزهاره الزرقاء الجميلة؟", a: "النبات (اللوسينث)", options: ["البنفسج", "اللوسينث", "الأوركيد", "الزنبق"] },
+            { q: "ما اسم الشجرة المقدسة في الهند؟", a: "شجرة البانيان (اللبخ)", options: ["شجرة البودي", "شجرة البانيان", "شجرة النيم", "شجرة التين"] },
+            { q: "أي نبات يستخدم في صناعة الأدوية المسكنة؟", a: "شجرة الصفصاف (مصدر الأسبرين)", options: ["شجرة الكينا", "شجرة الصفصاف", "شجرة الزيتون", "شجرة البلوط"] },
+            { q: "ما هو النبات الذي ينمو بدون تربة؟", a: "السرخس الهوائي أو الأوركيد الهوائي", options: ["الطحلب", "السرخس الهوائي", "الصبار", "الندية"] },
+            { q: "أي نبات معروف ببصيلاته ذات الرائحة القوية؟", a: "الثوم", options: ["البصل", "الثوم", "الكراث", "الشومر"] },
+            { q: "ما اسم الشجرة التي تنتج الفستق؟", a: "شجرة الفستق الحلبي", options: ["شجرة اللوز", "شجرة الفستق الحلبي", "شجرة الكاجو", "شجرة الجوز"] },
+
+
+        ],
+    300:[
+            { q: "ما هو أقدم شجرة معروفة في العالم وعمرها؟", a: "شجرة متوشالح (الصنوبر المعمر) عمرها 4,856 عامًا", options: ["السكويا عمرها 3,000 عام", "شجرة متوشالح عمرها 4,856 عامًا", "الزيتون عمرها 5,000 عام", "البلوط عمرها 2,000 عام"] },
+            { q: "أي نبات لديه أكبر بذرة في العالم؟", a: "نخيل سيشل (لودويسيا)، وزن البذرة يصل إلى 20 كجم", options: ["جوز الهند", "نخيل سيشل", "الباوباب", "الكاجو"] },
+            { q: "ما هو النبات الذي يتحرك بسرعة 3 سم في الساعة؟", a: "الدراكينا (شجرة التنين)", options: ["الخيزران", "الدراكينا", "الميموزا", "دوار الشمس"] },
+            { q: "كم عدد أنواع الصبار المعروفة في العالم؟", a: "أكثر من 2,000 نوع", options: ["حوالي 500 نوع", "أكثر من 1,000 نوع", "أكثر من 2,000 نوع", "أكثر من 5,000 نوع"] },
+            { q: "ما هو النبات الذي يستخدم في تحديد وقت الزراعة عند بعض القبائل الأفريقية؟", a: "نبات الشفلح (السيزال)", options: ["الصبار", "نبات الشفلح", "الباوباب", "نخيل التمر"] },
+            { q: "أي نبات ينتج ثمارًا تنمو مباشرة من الجذع وليس الأغصان؟", a: "شجرة الكاكاو", options: ["التين", "شجرة الكاكاو", "الباباي", "المانجو"] },
+            { q: "ما هو النبات الذي يمكنه تحمل درجة حرارة تصل إلى 70 درجة مئوية؟", a: "نبات الدغل (بعض أنواع الطحالب)", options: ["الصبار", "نبات الدغل", "الأثل", "السرخس"] },
+            { q: "أي نبات لديه نظام جذري يمكنه الوصول إلى عمق 68 مترًا؟", a: "شجرة التين البري في أفريقيا", options: ["السكويا", "شجرة التين البري", "الباوباب", "البلوط"] },
+            { q: "ما هو النبات الذي يعيش لمدة 20 عامًا ويزهر مرة واحدة فقط ثم يموت؟", a: "نبات القرن (Agave americana)", options: ["الخيزران", "نبات القرن", "دوار الشمس", "الصبار"] },
+            { q: "كم عدد البذور التي تنتجها شجرة دوار الشمس الواحدة؟", a: "بين 1,000 إلى 2,000 بذرة", options: ["100-200 بذرة", "500-800 بذرة", "1,000-2,000 بذرة", "5,000-10,000 بذرة"] },
+            { q: "أي نبات يستخدم في صناعة الأنسولين الطبيعي؟", a: "نبات الجيمنيما (Gymnema sylvestre)", options: ["المر", "نبات الجيمنيما", "الصبار", "الحلبة"] },
+            { q: "ما هو النبات الذي كانت أوراقه تستخدم كأوراق للكتابة في مصر القديمة؟", a: "نبات البردي", options: ["الخيزران", "نبات البردي", "القصب", "اللوتس"] },
+            { q: "أي شجرة تعرف بـ 'شجرة الـ 40 دواء'؟", a: "شجرة النيم (Azadirachta indica)", options: ["شجرة الشاي", "شجرة النيم", "شجرة الكينا", "شجرة الصفصاف"] },
+            { q: "ما هو النبات الذي يقتل الحشرات ويستخدمها كغذاء؟", a: "نبات الندى (Drosera)", options: ["نبات الإبريق", "نبات الندى", "صائد الذباب", "الميموزا"] },
+            { q: "أي نبات لديه أطول فترة تخمير في العالم؟", a: "نبات الفانيليا (9 أشهر)", options: ["القهوة", "نبات الفانيليا", "الكاكاو", "الشاي"] },
+            { q: "ما هو النبات الذي سمي على اسم الإله الإغريقي أبولو؟", a: "نبات الأرطماسيا (الشيح)", options: ["الغار", "نبات الأرطماسيا", "الزيتون", "السرو"] },
+            { q: "كم عدد الألوان التي يمكن أن تأخذها زهرة الكوبية (Hydrangea)؟", a: "أزرق، بنفسجي، وردي، وأبيض حسب حموضة التربة", options: ["لون واحد", "لونان", "ثلاثة ألوان", "أزرق، بنفسجي، وردي، وأبيض"] },
+            { q: "أي نبات يعتبر من أندر النباتات في العالم ولا يوجد إلا في جزيرة سقطرى؟", a: "شجرة دم التنين (Dracaena cinnabari)", options: ["الباوباب", "شجرة دم التنين", "نخيل سيشل", "السكويا"] },
+            { q: "ما هو النبات الذي يستخدم في تثبيت الكثبان الرملية؟", a: "نبات الأثل (الطرفاء)", options: ["الصبار", "نبات الأثل", "الحلفا", "النجيل"] },
+            { q: "أي نبات كان يستخدم في تحنيط الموتى في مصر القديمة؟", a: "المر والبخور (اللبان)", options: ["الصبار", "المر والبخور", "اللوتس", "البردي"] },
+            { q: "ما هو النبات الذي يحتوي على مادة الـ L-DOPA لعلاج باركنسون؟", a: "نبات الملوخية (نوع معين من البقوليات)", options: ["الحلبة", "نبات الملوخية", "الكركم", "الزنجبيل"] },
+            { q: "أي شجرة لها جذور هوائية تنمو من الأغصان إلى التربة؟", a: "شجرة البانيان (اللبخ)", options: ["الصفصاف", "شجرة البانيان", "المانغروف", "السرو"] },
+            { q: "ما هو النبات الذي يمكنه العيش في الظلام التام لمدة عام كامل؟", a: "بعض أنواع السرخس والنباتات الطفيلية", options: ["الصبار", "بعض أنواع السرخس", "الطحالب", "السراخس المائية"] },
+            { q: "كم عدد أنواع النباتات الطبية المعروفة في العالم؟", a: "حوالي 28,000 نوع (حسب منظمة الصحة العالمية)", options: ["حوالي 5,000 نوع", "حوالي 15,000 نوع", "حوالي 28,000 نوع", "حوالي 50,000 نوع"] },
+            { q: "ما هو النبات الذي يعد من أقدم النباتات على الأرض ويعود تاريخه إلى 300 مليون سنة؟", a: "السرخس", options: ["الصبار", "السرخس", "الطحلب", "السيكاس"] },
+                   
+        ]
+    },
+    "جغرافيا":{
+    100: [
+            { q: "ما هي أكبر قارة في العالم من حيث المساحة؟", a: "آسيا", options: ["أفريقيا", "آسيا", "أمريكا الشمالية", "أنتاركتيكا"] },
+            { q: "ما هو أكبر محيط في العالم؟", a: "المحيط الهادئ", options: ["المحيط الأطلسي", "المحيط الهادئ", "المحيط الهندي", "المحيط المتجمد الشمالي"] },
+            { q: "ما هي عاصمة مصر؟", a: "القاهرة", options: ["الإسكندرية", "القاهرة", "الجيزة", "الأقصر"] },
+            { q: "أي دولة تعرف ببلد الأرز؟", a: "لبنان", options: ["سوريا", "الأردن", "لبنان", "فلسطين"] },
+            { q: "ما هو أطول نهر في العالم؟", a: "نهر النيل", options: ["نهر الأمازون", "نهر النيل", "نهر اليانغتسي", "نهر المسيسيبي"] },
+            { q: "ما هي أعلى قمة جبلية في العالم؟", a: "إيفرست", options: ["كي 2", "إيفرست", "كانشينجونغا", "لوتسي"] },
+            { q: "ما هي عاصمة فرنسا؟", a: "باريس", options: ["ليون", "مرسيليا", "باريس", "بوردو"] },
+            { q: "أي دولة تعرف بأرض الشمس المشرقة؟", a: "اليابان", options: ["الصين", "كوريا الجنوبية", "اليابان", "تايلاند"] },
+            { q: "ما هو أكبر صحراء في العالم؟", a: "الصحراء الكبرى", options: ["الصحراء الكبرى", "صحراء الربع الخالي", "صحراء غوبي", "صحراء أستراليا"] },
+            { q: "ما هي عاصمة المملكة العربية السعودية؟", a: "الرياض", options: ["جدة", "مكة المكرمة", "الرياض", "الدمام"] },
+            { q: "أي دولة تتكون من 50 ولاية؟", a: "الولايات المتحدة الأمريكية", options: ["المكسيك", "كندا", "الولايات المتحدة الأمريكية", "البرازيل"] },
+            { q: "ما هو أعمق محيط في العالم؟", a: "المحيط الهادئ", options: ["المحيط الأطلسي", "المحيط الهندي", "المحيط الهادئ", "المحيط المتجمد الجنوبي"] },
+            { q: "ما هي عاصمة إيطاليا؟", a: "روما", options: ["فلورنسا", "البندقية", "ميلانو", "روما"] },
+            { q: "أي دولة تعرف بالبلدين (مزدوجة اليابسة)؟", a: "تركيا", options: ["مصر", "تركيا", "روسيا", "اليونان"] },
+            { q: "ما هو أكبر بحر في العالم؟", a: "البحر الأبيض المتوسط", options: ["البحر الكاريبي", "بحر الصين الجنوبي", "البحر الأبيض المتوسط", "بحر العرب"] },
+            { q: "ما هي عاصمة ألمانيا؟", a: "برلين", options: ["ميونخ", "فرانكفورت", "برلين", "هامبورغ"] },
+            { q: "أي دولة تعرف ببلد الكنغر؟", a: "أستراليا", options: ["نيوزيلندا", "أستراليا", "جنوب أفريقيا", "بابوا غينيا الجديدة"] },
+            { q: "ما هو أعلى شلال في العالم؟", a: "شلال آنجل", options: ["شلالات نياجرا", "شلال آنجل", "شلالات فيكتوريا", "شلالات إجوازو"] },
+            { q: "ما هي عاصمة الهند؟", a: "نيودلهي", options: ["مومباي", "كلكتا", "نيودلهي", "تشيناي"] },
+            { q: "أي دولة تعرف ببلد الثلوج البيضاء؟", a: "كندا", options: ["النرويج", "السويد", "كندا", "روسيا"] },
+            { q: "ما هو أكبر خليج في العالم؟", a: "خليج المكسيك", options: ["خليج البنغال", "خليج المكسيك", "خليج عدن", "الخليج العربي"] },
+            { q: "ما هي عاصمة البرازيل؟", a: "برازيليا", options: ["ريو دي جانيرو", "ساو باولو", "برازيليا", "سلفادور"] },
+            { q: "أي دولة تعرف ببلد الألف بحيرة؟", a: "فنلندا", options: ["السويد", "النرويج", "فنلندا", "كندا"] },
+            { q: "ما هو أطول سلسلة جبلية في العالم؟", a: "جبال الأنديز", options: ["جبال الهيمالايا", "جبال الأنديز", "جبال الروكي", "جبال الألب"] },
+            { q: "ما هي عاصمة اليابان؟", a: "طوكيو", options: ["كيوتو", "أوساكا", "طوكيو", "يوكوهاما"] },
+                
+            ],
+    200: [
+            { q: "ما هي الدولة التي تتكون من أكثر من 17,000 جزيرة؟", a: "إندونيسيا", options: ["الفلبين", "إندونيسيا", "اليابان", "جزر المالديف"] },
+            { q: "ما هو أطول جدار دفاعي في العالم؟", a: "سور الصين العظيم", options: ["سور هادريان", "سور الصين العظيم", "أسوار القسطنطينية", "سور برلين"] },
+            { q: "أي دولة تعرف ببلد النار والجليد؟", a: "آيسلندا", options: ["النرويج", "آيسلندا", "غرينلاند", "نيوزيلندا"] },
+            { q: "ما هو أخفض نقطة على سطح الأرض؟", a: "البحر الميت", options: ["منخفض القطارة", "وادي الموت", "البحر الميت", "بحيرة طبريا"] },
+            { q: "ما هي أكبر جزيرة في العالم؟", a: "جرينلاند", options: ["أستراليا", "جرينلاند", "مدغشقر", "بورنيو"] },
+            { q: "أي دولة ليس لها عاصمة رسمية؟", a: "ناورو", options: ["موناكو", "ناورو", "فانواتو", "بالاو"] },
+            { q: "ما هو أكبر مضيق في العالم؟", a: "مضيق ملقا", options: ["مضيق هرمز", "مضيق ملقا", "مضيق البوسفور", "مضيق جبل طارق"] },
+            { q: "أي دولة تعبر عليها خط الاستواء؟", a: "الإكوادور، كينيا، إندونيسيا (وغيرها)", options: ["البرازيل فقط", "الإكوادور، كينيا، إندونيسيا", "أستراليا", "الهند"] },
+            { q: "ما هو أعمق نقطة في المحيطات؟", a: "خندق ماريانا", options: ["خندق بورتوريكو", "خندق ماريانا", "خندق تونغا", "خندق الفلبين"] },
+            { q: "أي دولة تعرف ببلد الأرز؟", a: "لبنان", options: ["سوريا", "لبنان", "مصر", "العراق"] },
+            { q: "ما هي أكبر بحيرة من حيث المساحة؟", a: "بحر قزوين", options: ["بحيرة سوبيريور", "بحر قزوين", "بحيرة فيكتوريا", "البحيرات العظمى"] },
+            { q: "أي دولة لديها أكبر عدد من المناطق الزمنية؟", a: "فرنسا (12 منطقة)", options: ["روسيا", "الولايات المتحدة", "فرنسا", "كندا"] },
+            { q: "ما هو أطول نهر في أوروبا؟", a: "نهر الفولغا", options: ["نهر الدانوب", "نهر الراين", "نهر الفولغا", "نهر الدنيبر"] },
+            { q: "أي دولة تعرف بسويسرا الشرق الأوسط؟", a: "لبنان", options: ["الأردن", "لبنان", "سويسرا", "قبرص"] },
+            { q: "ما هي أكبر دولة من حيث المساحة في أفريقيا؟", a: "الجزائر", options: ["السودان", "الجزائر", "جمهورية الكونغو الديمقراطية", "ليبيا"] },
+            { q: "أي مدينة تعرف بمدينة الجسور السبعة؟", a: "البندقية", options: ["أمستردام", "البندقية", "سانت بطرسبرغ", "بروج"] },
+            { q: "ما هو أعلى جبل في أفريقيا؟", a: "جبل كليمنجارو", options: ["جبل كينيا", "جبل كليمنجارو", "جبال الأطلس", "جبل راس داجن"] },
+            { q: "أي دولة تعرف ببلد المليون شهيد؟", a: "الجزائر", options: ["مصر", "الجزائر", "العراق", "فلسطين"] },
+            { q: "ما هو أكبر واد في العالم؟", a: "الوادي المتصدع (Rift Valley)", options: ["وادي السيليكون", "الوادي المتصدع", "وادي النيل", "جراند كانيون"] },
+            { q: "أي دولة لديها أكبر احتياطي من النفط؟", a: "فنزويلا (أو السعودية حسب المصدر)", options: ["السعودية", "فنزويلا", "روسيا", "العراق"] },
+            { q: "ما هي عاصمة كازاخستان؟", a: "أستانا", options: ["ألماتي", "أستانا", "بيشكيك", "طشقند"] },
+            { q: "أي دولة تعرف ببلد الذهب الأسود؟", a: "الكويت أو السعودية", options: ["الإمارات", "الكويت أو السعودية", "قطر", "العراق"] },
+            { q: "ما هو أطول مضيق طبيعي في العالم؟", a: "مضيق جبل طارق", options: ["مضيق البوسفور", "مضيق ملقا", "مضيق جبل طارق", "مضيق هرمز"] },
+            { q: "أي دولة لديها أعلى كثافة سكانية في العالم؟", a: "موناكو", options: ["سنغافورة", "موناكو", "الفاتيكان", "مالطا"] },
+            { q: "ما هو أقدم ميناء في العالم؟", a: "ميناء جبيل في لبنان", options: ["ميناء الإسكندرية", "ميناء جبيل", "ميناء روما", "ميناء أثينا"] },                
+                
+        ],
+    300: [
+            { q: "ما هي الدولة الوحيدة التي تقع في ثلاث قارات؟", a: "مصر (أفريقيا، آسيا، وأوروبا عبر سيناء وجزر)", options: ["تركيا", "روسيا", "مصر", "اليونان"] },
+            { q: "كم عدد الدول التي لا يوجد بها أنهار دائمة الجريان؟", a: "20 دولة (مثل السعودية، عمان، الكويت)", options: ["5 دول", "12 دولة", "20 دولة", "35 دولة"] },
+            { q: "ما هو أعلى جبل بركاني نشط في العالم؟", a: "جبل أوخوس ديل سالادو (الأرجنتين - تشيلي)", options: ["جبل فوجي", "جبل إتنا", "جبل أوخوس ديل سالادو", "جبل كليمنجارو"] },
+            { q: "أي دولة لديها أكثر من 1,000 جزيرة في البحر الكاريبي؟", a: "جزر البهاما", options: ["كوبا", "جمهورية الدومينيكان", "جزر البهاما", "جامايكا"] },
+            { q: "ما هو أقدم نهر في العالم؟", a: "نهر فيخان (Finke River) في أستراليا", options: ["نهر النيل", "نهر فيخان", "نهر الأمازون", "نهر الغانج"] },
+            { q: "أي دولة تعرف بدولة الألف قلعة؟", a: "سلوفاكيا", options: ["جمهورية التشيك", "سلوفاكيا", "رومانيا", "المجر"] },
+            { q: "ما هي أكبر مدينة في العالم من حيث المساحة؟", a: "تشونغتشينغ (الصين)", options: ["بكين", "شنغهاي", "تشونغتشينغ", "طوكيو"] },
+            { q: "أي دولة لديها أكبر عدد من البحيرات الطبيعية؟", a: "كندا (حوالي 2 مليون بحيرة)", options: ["فنلندا", "السويد", "روسيا", "كندا"] },
+            { q: "ما هو أعمق بحيرة في العالم؟", a: "بحيرة بايكال (روسيا)", options: ["بحيرة تنجانيقا", "بحيرة بايكال", "بحيرة فيكتوريا", "البحيرات العظمى"] },
+            { q: "أي دولة تعرف ببلد الغروب الأحمر؟", a: "نيوزيلندا", options: ["أستراليا", "نيوزيلندا", "فيجي", "بابوا غينيا الجديدة"] },
+            { q: "ما هي أعلى عاصمة في العالم؟", a: "لاباز (بوليفيا)", options: ["كيوتو", "لاباز", "بوتو", "كيتو"] },
+            { q: "أي دولة لديها أطول ساحل في العالم؟", a: "كندا", options: ["إندونيسيا", "أستراليا", "روسيا", "كندا"] },
+            { q: "ما هو أكبر هضبة في العالم؟", a: "هضبة التبت", options: ["هضبة الأناضول", "هضبة التبت", "هضبة إيران", "هضبة ديكان"] },
+            { q: "أي دولة تعرف ببلد البراكين السبعة؟", a: "غواتيمالا", options: ["السلفادور", "غواتيمالا", "كوستاريكا", "نيكاراغوا"] },
+            { q: "ما هو أخفض بلد تحت مستوى سطح البحر؟", a: "هولندا", options: ["الدنمارك", "بلجيكا", "هولندا", "المجر"] },
+            { q: "أي مدينة تعرف بمدينة الرياح؟", a: "شيكاغو", options: ["نيويورك", "لوس أنجلوس", "شيكاغو", "بوسطن"] },
+            { q: "ما هو أطول كهف في العالم؟", a: "كهف ماموث (الولايات المتحدة)", options: ["كهف سون دونغ", "كهف ماموث", "كهف كرلينغ", "كهف بوستوينا"] },
+            { q: "أي دولة تعرف ببلد الشمس المشرقة في أفريقيا؟", a: "جيبوتي", options: ["الصومال", "جيبوتي", "إريتريا", "كينيا"] },
+            { q: "ما هي أكبر دلتا في العالم؟", a: "دلتا الغانج (الهند وبنغلاديش)", options: ["دلتا النيل", "دلتا الأمازون", "دلتا الغانج", "دلتا الميكونغ"] },
+            { q: "أي دولة لديها أكبر عدد من البراكين النشطة؟", a: "إندونيسيا", options: ["اليابان", "إندونيسيا", "الولايات المتحدة", "تشيلي"] },
+            { q: "ما هو أقدم بحيرة في العالم؟", a: "بحيرة بايكال", options: ["بحيرة تنجانيقا", "بحيرة بايكال", "بحيرة فيكتوريا", "بحر قزوين"] },
+            { q: "أي دولة تعرف ببلد الأرز والأرز؟", a: "فيتنام", options: ["تايلاند", "فيتنام", "كمبوديا", "ميانمار"] },
+            { q: "ما هي أكبر واحة في العالم؟", a: "واحة الأحساء (السعودية)", options: ["واحة سيوة", "واحة توات", "واحة الأحساء", "واحة توزر"] },
+            { q: "أي دولة لديها أعلى نقطة وأخفض نقطة في نفس البلد؟", a: "الولايات المتحدة (إيفرست الدنالي والبحر الميت)", options: ["الصين", "الولايات المتحدة", "روسيا", "الهند"] },
+            { q: "ما هو أسرع نهر جليدي في العالم؟", a: "نهر جاكوبشافن الجليدي (جرينلاند)", options: ["نهر بيردو الجليدي", "نهر لامبرت الجليدي", "نهر جاكوبشافن الجليدي", "نهر فاتنايوكول الجليدي"] },      
+            ],
+        },
+    "كرة قدم":{
+    100: [
+            { q: "كم عدد اللاعبين في فريق كرة القدم داخل الملعب؟", a: "11 لاعباً", options: ["9 لاعبين", "10 لاعبين", "11 لاعباً", "12 لاعباً"] },
+            { q: "ما هو الكأس الذي يمنح لبطل كأس العالم؟", a: "كأس العالم", options: ["كأس العالم", "الكرة الذهبية", "كأس الأبطال", "كأس الفيفا"] },
+            { q: "أي منتخب فاز بأول كأس عالم في التاريخ؟", a: "الأوروغواي", options: ["البرازيل", "الأوروغواي", "الأرجنتين", "إيطاليا"] },
+            { q: "ما هو اسم الكرة الذهبية التي تمنح لأفضل لاعب في العالم؟", a: "الكرة الذهبية (بالون دور)", options: ["الحذاء الذهبي", "الكرة الذهبية", "جائزة الفيفا", "القفاز الذهبي"] },
+            { q: "أي نادٍ يعرف باسم الريال؟", a: "ريال مدريد", options: ["ريال بيتيس", "ريال سوسيداد", "ريال مدريد", "ريال سرقسطة"] },
+            { q: "ما هو اسم ملعب نادي برشلونة؟", a: "كامب نو", options: ["سانتياغو برنابيو", "كامب نو", "واندا متروبوليتانو", "ميستايا"] },
+            { q: "أي لاعب يعرف بالأسطورة البرازيلية بيليه؟", a: "إدسون أرانتيس دو ناسيمنتو", options: ["رونالدو", "روماريو", "إدسون أرانتيس دو ناسيمنتو", "نيمار"] },
+            { q: "كم مرة فاز منتخب البرازيل بكأس العالم؟", a: "5 مرات", options: ["3 مرات", "4 مرات", "5 مرات", "6 مرات"] },
+            { q: "ما هو أكبر دوري في إنجلترا؟", a: "الدوري الإنجليزي الممتاز (بريميرليغ)", options: ["دوري الدرجة الأولى", "بريميرليغ", "دوري الأبطال", "كأس الاتحاد"] },
+            { q: "أي نادٍ فاز بأول دوري أبطال أوروبا؟", a: "ريال مدريد", options: ["ميلان", "بايرن ميونخ", "ريال مدريد", "بنفيكا"] },
+            { q: "ما هو اسم كأس دوري أبطال أوروبا؟", a: "كأس الأندية الأوروبية البطلة", options: ["كأس أوروبا", "كأس الأندية الأوروبية البطلة", "كأس الاتحاد", "كأس الفيفا"] },
+            { q: "أي لاعب holds الرقم القياسي في عدد الكرات الذهبية؟", a: "ليونيل ميسي (8 كرات)", options: ["كريستيانو رونالدو", "ليونيل ميسي", "ميشيل بلاتيني", "يوهان كرويف"] },
+            { q: "ما هو المنتخب الذي فاز بكأس العالم 2018؟", a: "فرنسا", options: ["كرواتيا", "فرنسا", "بلجيكا", "إنجلترا"] },
+            { q: "أي نادٍ يعرف باليوفنتوس؟", a: "نادي يوفنتوس الإيطالي", options: ["يوفنتوس", "ميلان", "إنتر ميلان", "روما"] },
+            { q: "ما هو اسم ملعب ويمبلي؟", a: "ملعب ويمبلي", options: ["أولد ترافورد", "ويمبلي", "أنفيلد", "ستامفورد بريدج"] },
+            { q: "أي لاعب يعرف بـ 'الدون'؟", a: "كريستيانو رونالدو", options: ["ليونيل ميسي", "كريستيانو رونالدو", "زين الدين زيدان", "رونالدينيو"] },
+            { q: "ما هو المنتخب الذي فاز بكأس العالم 2022؟", a: "الأرجنتين", options: ["فرنسا", "البرازيل", "الأرجنتين", "كرواتيا"] },
+            { q: "أي نادٍ يعرف بالبايرن؟", a: "بايرن ميونخ", options: ["باير ليفركوزن", "بوروسيا دورتموند", "بايرن ميونخ", "شالكه"] },
+            { q: "ما هو أكبر دوري في إسبانيا؟", a: "الدوري الإسباني (لا ليغا)", options: ["لا ليغا", "كأس الملك", "دوري الدرجة الثانية", "السوبر الإسباني"] },
+            { q: "أي لاعب سجل أكثر الأهداف في تاريخ كأس العالم؟", a: "ميروسلاف كلوزه (16 هدفاً)", options: ["رونالدو", "غيرد مولر", "ميروسلاف كلوزه", "بيليه"] },
+            { q: "ما هو اسم كأس الدوري الإنجليزي الممتاز؟", a: "بريميرليغ تروفي", options: ["كأس الاتحاد", "بريميرليغ تروفي", "كأس الرابطة", "الدرع الخيرية"] },
+            { q: "أي نادٍ يعرف بالإنتر؟", a: "إنتر ميلان", options: ["ميلان", "إنتر ميلان", "روما", "لاتسيو"] },
+            { q: "ما هو المنتخب الذي فاز بكأس العالم 2014؟", a: "ألمانيا", options: ["البرازيل", "الأرجنتين", "ألمانيا", "هولندا"] },
+            { q: "أي لاعب يعرف بـ 'الملك'؟", a: "بيليه", options: ["مارادونا", "بيليه", "كريستيانو رونالدو", "زين الدين زيدان"] },
+            { q: "ما هو أكبر دوري في إيطاليا؟", a: "الدوري الإيطالي (سيري آ)", options: ["سيري آ", "سيري بي", "كأس إيطاليا", "السوبر الإيطالي"] },
+            ],
+    200: [
+            { q: "من هو الهداف التاريخي لدوري أبطال أوروبا؟", a: "كريستيانو رونالدو (140 هدفاً)", options: ["ليونيل ميسي", "كريستيانو رونالدو", "روبرت ليفاندوفسكي", "راؤول"] },
+            { q: "أي نادٍ فاز بأكبر عدد من دوري أبطال أوروبا؟", a: "ريال مدريد (14 لقباً)", options: ["برشلونة", "بايرن ميونخ", "ريال مدريد", "ميلان"] },
+            { q: "من هو اللاعب الأكثر تتويجاً بكأس العالم؟", a: "بيليه (3 مرات)", options: ["دييغو مارادونا", "بيليه", "زين الدين زيدان", "كافو"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز أكثر من غيره؟", a: "مانشستر يونايتد (13 لقباً)", options: ["ليفربول", "آرسنال", "مانشستر سيتي", "مانشستر يونايتد"] },
+            { q: "من هو الهداف التاريخي لكأس العالم؟", a: "ميروسلاف كلوزه (16 هدفاً)", options: ["رونالدو", "غيرد مولر", "ميروسلاف كلوزه", "بيليه"] },
+            { q: "أي نادٍ فاز بالدوري الإسباني أكثر من غيره؟", a: "ريال مدريد (35 لقباً)", options: ["برشلونة", "أتلتيكو مدريد", "ريال مدريد", "أتلتيك بيلباو"] },
+            { q: "من هو اللاعب الأكثر مشاركة في نهائيات كأس العالم؟", a: "ليونيل ميسي (26 مباراة)", options: ["لوتار ماتيوس", "ميروسلاف كلوزه", "ليونيل ميسي", "كافو"] },
+            { q: "أي نادٍ فاز بالدوري الإيطالي أكثر من غيره؟", a: "يوفنتوس (36 لقباً)", options: ["إنتر ميلان", "ميلان", "يوفنتوس", "روما"] },
+            { q: "من هو اللاعب الأكثر تسجيلاً في مباراة واحدة بكأس العالم؟", a: "سالمينتو (5 أهداف عام 1994)", options: ["بيليه", "سالمينتو", "ميروسلاف كلوزه", "جاست فونتين"] },
+            { q: "أي نادٍ فاز بالدوري الألماني أكثر من غيره؟", a: "بايرن ميونخ (33 لقباً)", options: ["بوروسيا دورتموند", "بايرن ميونخ", "شالكه", "فيردر بريمن"] },
+            { q: "من هو أصغر لاعب يسجل في كأس العالم؟", a: "بيليه (17 عاماً و249 يوماً)", options: ["مبابي", "بيليه", "أوين", "ميسي"] },
+            { q: "أي نادٍ فاز بالدوري الفرنسي أكثر من غيره؟", a: "سانت إتيان (10 ألقاب)", options: ["باريس سان جيرمان", "سانت إتيان", "مارسيليا", "موناكو"] },
+            { q: "من هو اللاعب الأكثر تتويجاً بدوري أبطال أوروبا؟", a: "باكو خينتو (6 ألقاب)", options: ["كريستيانو رونالدو", "باكو خينتو", "مالديني", "سيرجيو راموس"] },
+            { q: "أي منتخب فاز بأول كأس عالم في التاريخ؟", a: "الأوروغواي (1930)", options: ["البرازيل", "الأرجنتين", "الأوروغواي", "إيطاليا"] },
+            { q: "من هو الحارس الأكثر مشاركة في كأس العالم؟", a: "مانويل نوير (19 مباراة)", options: ["كاسياس", "بوفون", "مانويل نوير", "زوف"] },
+            { q: "أي نادٍ فاز بثلاثية الدوري والكأس ودوري الأبطال في موسم واحد؟", a: "مانشستر يونايتد (1999)، برشلونة (2009، 2015)، بايرن ميونخ (2013)", options: ["ريال مدريد فقط", "مانشستر يونايتد وبرشلونة وبايرن ميونخ", "ميلان فقط", "ليفربول فقط"] },
+            { q: "من هو اللاعب الأكثر صناعة للأهداف في كأس العالم؟", a: "ليونيل ميسي (8 تمريرات)", options: ["مارادونا", "ليونيل ميسي", "بيليه", "زيدان"] },
+            { q: "أي منتخب شارك في أكبر عدد من نهائيات كأس العالم؟", a: "البرازيل (22 مرة)", options: ["ألمانيا", "إيطاليا", "البرازيل", "الأرجنتين"] },
+            { q: "من هو اللاعب الأكثر تسجيلاً في نهائيات كأس العالم؟", a: "كيليان مبابي (4 أهداف في النهائيات)", options: ["بيليه", "فافا", "كيليان مبابي", "زيدان"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز دون هزيمة؟", a: "آرسنال (2003-2004)", options: ["تشيلسي", "ليفربول", "آرسنال", "مانشستر يونايتد"] },
+            { q: "من هو اللاعب الأكبر سناً في كأس العالم؟", a: "فريدي بوب (42 عاماً)", options: ["فريدي بوب", "إيسوندر", "ماثيوز", "كاميرون"] },
+            { q: "أي نادٍ فاز بدوري أبطال أوروبا 3 مرات متتالية؟", a: "ريال مدريد (2016، 2017، 2018)", options: ["بايرن ميونخ", "أياكس", "ريال مدريد", "ميلان"] },
+            { q: "من هو الهداف التاريخي للدوري الإنجليزي الممتاز؟", a: "آلان شيرر (260 هدفاً)", options: ["واين روني", "هاري كين", "آلان شيرر", "سيرجيو أغويرو"] },
+            { q: "أي منتخب فاز بكأس العالم مرتين متتاليتين؟", a: "إيطاليا (1934، 1938) والبرازيل (1958، 1962)", options: ["البرازيل فقط", "إيطاليا فقط", "إيطاليا والبرازيل", "ألمانيا"] },
+            { q: "من هو اللاعب الأكثر تتويجاً بالكرة الذهبية؟", a: "ليونيل ميسي (8 كرات)", options: ["كريستيانو رونالدو", "ليونيل ميسي", "ميشيل بلاتيني", "يوهان كرويف"] },     
+        ],
+    300: [
+            { q: "من هو اللاعب الوحيد الذي سجل في ثلاث نهائيات مختلفة لكأس العالم؟", a: "بيليه (1958، 1970) - آخرون: زين الدين زيدان (1998، 2006)، فافا (1958، 1962)", options: ["بيليه", "زين الدين زيدان", "فافا", "ميروسلاف كلوزه"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز بفارق نقطة واحدة عن الوصيف؟", a: "مانشستر سيتي (2011-2012 و2018-2019)", options: ["مانشستر يونايتد", "آرسنال", "مانشستر سيتي", "تشيلسي"] },
+            { q: "من هو اللاعب الذي سجل أسرع هدف في تاريخ كأس العالم؟", a: "حسن كابادي (11 ثانية، 2002)", options: ["حسن كابادي", "هالكر", "فافا", "بيليه"] },
+            { q: "أي نادٍ فاز بدوري أبطال أوروبا بعد الخسارة في النهائي السابق؟", a: "ليفربول (2019 بعد خسارة 2018)، بايرن ميونخ (2013 بعد خسارة 2012)", options: ["ريال مدريد", "ليفربول وبايرن ميونخ", "برشلونة", "ميلان"] },
+            { q: "من هو الحارس الذي سجل هدفاً في كأس العالم؟", a: "لا يوجد حارس سجل في كأس العالم (لم يسجل أي حارس هدفاً في النهائيات)", options: ["شيلتون", "بوفون", "لا يوجد", "نوير"] },
+            { q: "أي منتخب فاز بكأس العالم بركلات الترجيح؟", a: "البرازيل (1994)، إيطاليا (2006)، فرنسا (2018)، الأرجنتين (2022)", options: ["ألمانيا فقط", "البرازيل وإيطاليا وفرنسا والأرجنتين", "فرنسا فقط", "الأرجنتين فقط"] },
+            { q: "من هو اللاعب الأكثر مشاركة في مباريات كأس العالم؟", a: "ليونيل ميسي (26 مباراة)", options: ["لوتار ماتيوس", "ميروسلاف كلوزه", "ليونيل ميسي", "كافو"] },
+            { q: "أي نادٍ فاز بالدوري الإسباني دون خسارة أي مباراة؟", a: "ريال مدريد (1931-1932) وبرشلونة (2009-2010) - موسم 1931-1932 فقط", options: ["ريال مدريد وبرشلونة", "أتلتيكو مدريد", "برشلونة فقط", "ريال مدريد فقط"] },
+            { q: "من هو اللاعب الأكثر تسجيلاً في مباراة واحدة بدوري أبطال أوروبا؟", a: "ليونيل ميسي (5 أهداف، 2012) - مشارك مع لوتو في 2012", options: ["كريستيانو رونالدو", "روبرت ليفاندوفسكي", "ليونيل ميسي", "راؤول"] },
+            { q: "أي منتخب سجل أكبر عدد من الأهداف في نسخة واحدة من كأس العالم؟", a: "المجر (27 هدفاً، 1954)", options: ["البرازيل", "ألمانيا", "المجر", "فرنسا"] },
+            { q: "من هو اللاعب الذي فاز بالكرة الذهبية دون أن يفاز بكأس العالم؟", a: "ليونيل ميسي (2022 فاز بها مع كأس العالم) - آخرون: كريستيانو رونالدو (2013، 2014، 2016، 2017)", options: ["كريستيانو رونالدو", "ليونيل ميسي", "يوهان كرويف", "ميشيل بلاتيني"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز 3 مرات متتالية؟", a: "مانشستر يونايتد (1998-1999، 1999-2000، 2000-2001) ومانشستر سيتي (2020-2021، 2021-2022، 2022-2023)", options: ["مانشستر يونايتد ومانشستر سيتي", "ليفربول", "آرسنال", "تشيلسي"] },
+            { q: "من هو اللاعب الأكثر تسجيلاً في نهائيات كأس العالم؟", a: "كيليان مبابي (4 أهداف في نهائيات 2018 و2022)", options: ["بيليه", "فافا", "كيليان مبابي", "زيدان"] },
+            { q: "أي نادٍ فاز بدوري أبطال أوروبا بعد العودة من تأخر بثلاثة أهداف؟", a: "ليفربول (2005 ضد ميلان)", options: ["برشلونة", "مانشستر يونايتد", "ليفربول", "ريال مدريد"] },
+            { q: "من هو اللاعب الأكبر سناً في كأس العالم؟", a: "فريدي بوب (42 عاماً و39 يوماً)", options: ["فريدي بوب", "إيسوندر", "ماثيوز", "كاميرون"] },
+            { q: "أي منتخب فاز بكأس العالم دون استقبال أي هدف في الأدوار الإقصائية؟", a: "فرنسا (1998) وإيطاليا (2006)", options: ["البرازيل", "فرنسا وإيطاليا", "ألمانيا", "الأرجنتين"] },
+            { q: "من هو اللاعب الذي سجل هاتريك في نهائي كأس العالم؟", a: "جيف هورست (1966) وكيليان مبابي (2022) - مبابي سجل 3 أهداف في النهائي", options: ["جيف هورست وكيليان مبابي", "بيليه", "زيدان", "فافا"] },
+            { q: "أي نادٍ فاز بالدوري الإسباني بنظام النقاط الحالي؟", a: "برشلونة (2012-2013) وريال مدريد (2011-2012) - أرقام قياسية", options: ["برشلونة وريال مدريد", "أتلتيكو مدريد", "فالنسيا", "إشبيلية"] },
+            { q: "من هو اللاعب الأكثر مشاركة في دوري أبطال أوروبا؟", a: "كريستيانو رونالدو (183 مباراة)", options: ["ليونيل ميسي", "كريستيانو رونالدو", "كاسياس", "مالديني"] },
+            { q: "أي منتخب فاز بكأس العالم كأول مشاركة له؟", a: "الأوروغواي (1930) وإيطاليا (1934) وإنجلترا (1966) - أوروغواي في 1930", options: ["الأوروغواي", "إيطاليا", "إنجلترا", "فرنسا"] },
+            { q: "من هو اللاعب الذي فاز بالكرة الذهبية والحذاء الذهبي في نفس النسخة؟", a: "ليونيل ميسي (2022) وميروسلاف كلوزه (2014) - كلوزه لم يفز بالكرة الذهبية", options: ["ليونيل ميسي", "ميروسلاف كلوزه", "كيليان مبابي", "رونالدو"] },
+            { q: "أي نادٍ فاز بالدوري الإيطالي 9 مرات متتالية؟", a: "يوفنتوس (2012-2020)", options: ["يوفنتوس", "إنتر ميلان", "ميلان", "روما"] },
+            { q: "من هو اللاعب الأكثر تسجيلاً في مباراة واحدة بكأس العالم؟", a: "سالمينتو (5 أهداف، 1994) وأوسكار ميبيرغ (5 أهداف، 1938)", options: ["سالمينتو وأوسكار ميبيرغ", "بيليه", "ميروسلاف كلوزه", "جاست فونتين"] },
+            { q: "أي منتخب فاز بكأس العالم بفارق الأهداف؟", a: "لا يوجد - يتم تحديد البطل بالفوز في النهائي", options: ["البرازيل", "ألمانيا", "لا يوجد", "إيطاليا"] },
+            { q: "من هو اللاعب الذي سجل أسرع هاتريك في تاريخ كأس العالم؟", a: "لاسلو كيس (7 دقائق، 1982)", options: ["لاسلو كيس", "بيليه", "مبابي", "سالينتوي"] },
+        ],
+        },
+    "دوري ابطال اوروبا":{
+    100: [
+            { q: "ما هو اسم الكأس الذي يمنح لبطل دوري أبطال أوروبا؟", a: "كأس الأندية الأوروبية البطلة", options: ["كأس العالم للأندية", "كأس الأندية الأوروبية البطلة", "كأس الاتحاد الأوروبي", "كأس السوبر الأوروبي"] },
+            { q: "أي نادٍ فاز بأول دوري أبطال أوروبا في التاريخ؟", a: "ريال مدريد (1955-1956)", options: ["ميلان", "بايرن ميونخ", "ريال مدريد", "بنفيكا"] },
+            { q: "كم مرة فاز ريال مدريد بلقب دوري أبطال أوروبا؟", a: "15 مرة", options: ["12 مرة", "13 مرة", "14 مرة", "15 مرة"] },
+            { q: "ما هو اسم البطولة قبل أن تعرف بدوري أبطال أوروبا؟", a: "كأس أوروبا (European Cup)", options: ["كأس الاتحاد", "كأس الكؤوس الأوروبية", "كأس أوروبا", "كأس المعارض"] },
+            { q: "أي نادٍ فاز بآخر نسخة من دوري أبطال أوروبا 2024-2025؟", a: "باريس سان جيرمان", options: ["ريال مدريد", "باريس سان جيرمان", "بايرن ميونخ", "مانشستر سيتي"] },
+            { q: "ما هو الهداف التاريخي لدوري أبطال أوروبا؟", a: "كريستيانو رونالدو", options: ["ليونيل ميسي", "روبرت ليفاندوفسكي", "كريستيانو رونالدو", "راؤول"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا 2023-2024؟", a: "ريال مدريد", options: ["بروسيا دورتموند", "بايرن ميونخ", "ريال مدريد", "مانشستر سيتي"] },
+            { q: "ما هو النادي الإنجليزي الأكثر تتويجًا بدوري أبطال أوروبا؟", a: "ليفربول (6 ألقاب)", options: ["مانشستر يونايتد", "تشيلسي", "ليفربول", "مانشستر سيتي"] },
+            { q: "أي نادٍ فاز بأول نسخة من دوري أبطال أوروبا بعد التغيير من كأس أوروبا؟", a: "مارسيليا (1992-1993)", options: ["مارسيليا", "ميلان", "أياكس", "ريال مدريد"] },
+            { q: "ما هو النادي الإيطالي الأكثر تتويجًا بدوري أبطال أوروبا؟", a: "إيه سي ميلان (7 ألقاب)", options: ["يوفنتوس", "إنتر ميلان", "إيه سي ميلان", "روما"] },
+            { q: "أي لاعب سجل أربعة أهداف في مباراة واحدة بدوري أبطال أوروبا؟", a: "كريستيانو رونالدو، ليو ميسي، روبرت ليفاندوفسكي وغيرهم", options: ["كريستيانو رونالدو فقط", "ليونيل ميسي فقط", "كريستيانو رونالدو وليو ميسي وليفاندوفسكي", "روبرت ليفاندوفسكي فقط"] },
+            { q: "ما هو النادي الألماني الأكثر تتويجًا بدوري أبطال أوروبا؟", a: "بايرن ميونخ (6 ألقاب)", options: ["بوروسيا دورتموند", "بايرن ميونخ", "هامبورغ", "بوروسيا مونشنغلادباخ"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا 2022-2023؟", a: "مانشستر سيتي", options: ["إنتر ميلان", "ريال مدريد", "مانشستر سيتي", "بايرن ميونخ"] },
+            { q: "ما هو الاسم الذي كان يطلق على دوري أبطال أوروبا قبل 1992؟", a: "كأس أوروبا للأندية البطلة", options: ["كأس الاتحاد الأوروبي", "كأس أوروبا للأندية البطلة", "كأس الكؤوس", "كأس المعارض"] },
+            { q: "أي نادٍ هولندي فاز بلقب دوري أبطال أوروبا؟", a: "أياكس أمستردام", options: ["بي إس في آيندهوفن", "فاينورد", "أياكس أمستردام", "تفينتي"] },
+            { q: "كم مرة فاز برشلونة بلقب دوري أبطال أوروبا؟", a: "5 مرات", options: ["3 مرات", "4 مرات", "5 مرات", "6 مرات"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا 2021-2022؟", a: "ريال مدريد", options: ["ليفربول", "تشيلسي", "ريال مدريد", "باريس سان جيرمان"] },
+            { q: "ما هو النادي الفرنسي الوحيد الذي فاز بلقب دوري أبطال أوروبا قبل 2025؟", a: "مارسيليا (1993)", options: ["باريس سان جيرمان", "ليون", "مارسيليا", "موناكو"] },
+            { q: "أي نادٍ برتغالي فاز بلقب دوري أبطال أوروبا؟", a: "بورتو", options: ["بنفيكا", "بورتو", "سبورتينغ لشبونة", "سبورتينغ براغا"] },
+            { q: "ما هو النادي الإنجليزي الذي فاز بلقب دوري أبطال أوروبا 2020-2021؟", a: "تشيلسي", options: ["مانشستر سيتي", "ليفربول", "تشيلسي", "مانشستر يونايتد"] },
+            { q: "كم مرة فاز ليفربول بلقب دوري أبطال أوروبا؟", a: "6 مرات", options: ["4 مرات", "5 مرات", "6 مرات", "7 مرات"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا 2019-2020؟", a: "بايرن ميونخ", options: ["باريس سان جيرمان", "ليفربول", "بايرن ميونخ", "ريال مدريد"] },
+            { q: "ما هو النادي الإيطالي الذي فاز بثلاثية الدوري والكأس ودوري الأبطال 2009-2010؟", a: "إنتر ميلان", options: ["يوفنتوس", "إيه سي ميلان", "إنتر ميلان", "روما"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا 2018-2019؟", a: "ليفربول", options: ["توتنهام", "ليفربول", "برشلونة", "أياكس"] },
+            { q: "ما هو النادي الذي فاز بلقب دوري أبطال أوروبا 3 مرات متتالية (2016-2018)؟", a: "ريال مدريد", options: ["برشلونة", "بايرن ميونخ", "ريال مدريد", "ميلان"] },
+        ],
+    200: [
+            { q: "من هو الهداف التاريخي لدوري أبطال أوروبا برصيد 140 هدفًا؟", a: "كريستيانو رونالدو", options: ["ليونيل ميسي", "كريستيانو رونالدو", "روبرت ليفاندوفسكي", "راؤول"] },
+            { q: "أي نادٍ فاز بأكبر عدد من ألقاب دوري أبطال أوروبا؟", a: "ريال مدريد (15 لقبًا)", options: ["برشلونة", "بايرن ميونخ", "ريال مدريد", "ميلان"] },
+            { q: "من هو اللاعب الأكثر مشاركة في تاريخ دوري أبطال أوروبا؟", a: "كريستيانو رونالدو (183 مباراة)", options: ["ليونيل ميسي", "إيكر كاسياس", "كريستيانو رونالدو", "توماس مولر"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا دون هزيمة في موسم كامل؟", a: "ليفربول (1983-1984) وآرسنال (2005-2006) وغيرهم", options: ["ليفربول وآرسنال", "ريال مدريد", "برشلونة", "بايرن ميونخ"] },
+            { q: "من هو اللاعب الأكثر تسجيلاً في موسم واحد بدوري أبطال أوروبا؟", a: "كريستيانو رونالدو (17 هدفًا في 2013-2014)", options: ["ليونيل ميسي", "روبرت ليفاندوفسكي", "كريستيانو رونالدو", "راؤول"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا كأول مشاركة له؟", a: "نوتنغهام فورست (1979) ومارسيليا (1993)", options: ["نوتنغهام فورست ومارسيليا", "ليفربول", "تشيلسي", "مانشستر سيتي"] },
+            { q: "من هو أصغر لاعب يسجل في نهائي دوري أبطال أوروبا؟", a: "باتريك كلايفرت (18 عامًا و327 يومًا مع أياكس 1995)", options: ["باتريك كلايفرت", "بيليه", "مبابي", "أوين"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا بركلات الترجيح؟", a: "ليفربول (2005)، مانشستر يونايتد (2008)، تشيلسي (2012)، ريال مدريد (2016)", options: ["ليفربول ومانشستر يونايتد وتشيلسي وريال مدريد", "برشلونة فقط", "بايرن ميونخ فقط", "ميلان فقط"] },
+            { q: "من هو اللاعب الوحيد الذي فاز بدوري أبطال أوروبا مع 3 أندية مختلفة؟", a: "كلارنس سيدورف (أياكس 1995، ريال مدريد 1998، إيه سي ميلان 2003، 2007)", options: ["كلارنس سيدورف", "زلاتان إبراهيموفيتش", "ديفيد بيكهام", "رونالدو"] },
+            { q: "أي نادٍ سجل أكبر عدد من الأهداف في موسم واحد بدوري أبطال أوروبا؟", a: "ريال مدريد (2013-2014) - 41 هدفًا", options: ["برشلونة", "بايرن ميونخ", "ريال مدريد", "ليفربول"] },
+            { q: "من هو الحارس الأكثر مشاركة في تاريخ دوري أبطال أوروبا؟", a: "إيكر كاسياس (177 مباراة)", options: ["مانويل نوير", "جانلويجي بوفون", "إيكر كاسياس", "بيتر تشيك"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا بعد العودة من تأخر 3-0؟", a: "ليفربول (2005 ضد إيه سي ميلان)", options: ["برشلونة", "مانشستر يونايتد", "ليفربول", "ريال مدريد"] },
+            { q: "من هو اللاعب الأكثر تسجيلاً في مباراة واحدة بدوري أبطال أوروبا؟", a: "ليونيل ميسي (5 أهداف ضد باير ليفركوزن 2012) وهداف آخرون", options: ["كريستيانو رونالدو", "ليونيل ميسي", "روبرت ليفاندوفسكي", "إيرلينغ هالاند"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا 3 مرات في 5 مواسم؟", a: "ريال مدريد (2014، 2016، 2017، 2018)", options: ["برشلونة", "بايرن ميونخ", "ريال مدريد", "ليفربول"] },
+            { q: "من هو المدرب الأكثر تتويجًا بدوري أبطال أوروبا؟", a: "كارلو أنشيلوتي (4 ألقاب مع ميلان وريال مدريد)", options: ["بيب غوارديولا", "يورغن كلوب", "كارلو أنشيلوتي", "زين الدين زيدان"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا في عقر داره؟", a: "إنتر ميلان (1965)، مانشستر يونايتد (1968)، بروسيا دورتموند (1997) وآخرون", options: ["إنتر ميلان ومانشستر يونايتد وبروسيا دورتموند", "ريال مدريد", "برشلونة", "بايرن ميونخ"] },
+            { q: "من هو اللاعب الأكبر سنًا الذي سجل في نهائي دوري أبطال أوروبا؟", a: "باولو مالديني (36 عامًا و333 يومًا في 2005)", options: ["باولو مالديني", "ريان غيغز", "توتي", "زلاتان إبراهيموفيتش"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا دون أن يخسر أي مباراة في الأدوار الإقصائية؟", a: "برشلونة (2015)، بايرن ميونخ (2020)", options: ["برشلونة وبايرن ميونخ", "ريال مدريد", "ليفربول", "تشيلسي"] },
+            { q: "من هو الهداف التاريخي للنهائيات؟", a: "ألفريدو دي ستيفانو (5 أهداف)، كريستيانو رونالدو (4 أهداف)", options: ["ألفريدو دي ستيفانو وكريستيانو رونالدو", "بيليه", "ميسي", "بوشكاش"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا بعد المشاركة في التصفيات؟", a: "ليفربول (2005)، مانشستر يونايتد (1999)", options: ["ليفربول ومانشستر يونايتد", "تشيلسي", "برشلونة", "بايرن ميونخ"] },
+            { q: "من هو أول لاعب يسجل هاتريك في نهائي دوري أبطال أوروبا؟", a: "لم يحدث قط (هدفان كحد أقصى في النهائي)", options: ["بيليه", "بوشكاش", "دي ستيفانو", "لم يحدث قط"] },
+            { q: "أي نادٍ خسر 3 نهائيات متتالية؟", a: "لا يوجد (خسر يوفنتوس 3 نهائيات ولكن ليس متتالية)", options: ["يوفنتوس", "لا يوجد", "بايرن ميونخ", "ميلان"] },
+            { q: "من هو اللاعب الأكثر تسجيلاً للأهداف في مرحلة المجموعات بموسم واحد؟", a: "كريستيانو رونالدو (11 هدفًا في 2015-2016)", options: ["ليونيل ميسي", "كريستيانو رونالدو", "روبرت ليفاندوفسكي", "هالاند"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا 4 مرات في 10 سنوات؟", a: "ريال مدريد (1998، 2000، 2002) وبرشلونة (2006، 2009، 2011، 2015)", options: ["ريال مدريد وبرشلونة", "بايرن ميونخ", "ليفربول", "ميلان"] },
+            { q: "من هو أصغر مدرب يفوز بدوري أبطال أوروبا؟", a: "جوسيب غوارديولا (38 عامًا مع برشلونة 2009)", options: ["زين الدين زيدان", "يورغن كلوب", "جوسيب غوارديولا", "كارلو أنشيلوتي"] },                
+                        ],
+    300: [
+            { q: "من هو اللاعب الوحيد الذي سجل هاتريك في مباراة واحدة وسجل في النهائي في نفس الموسم؟", a: "لارس ريكين (أياكس 1995) وكريستيانو رونالدو (2017)", options: ["لارس ريكين وكريستيانو رونالدو", "ليونيل ميسي", "روبرت ليفاندوفسكي", "راؤول"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا بعد خسارته في النهائي قبل عامين؟", a: "بايرن ميونخ (2013 بعد خسارة 2012)، ليفربول (2019 بعد خسارة 2018)", options: ["بايرن ميونخ وليفربول", "ريال مدريد", "برشلونة", "ميلان"] },
+            { q: "كم عدد الأندية التي فازت بلقب دوري أبطال أوروبا منذ انطلاق البطولة؟", a: "24 ناديًا", options: ["18 ناديًا", "21 ناديًا", "24 ناديًا", "27 ناديًا"] },
+            { q: "من هو اللاعب الوحيد الذي سجل في نهائيين لدوري أبطال أوروبا مع ناديين مختلفين؟", a: "فرانك ريكارد (ميلان 1990، أياكس 1995) وكريستيانو رونالدو (مانشستر يونايتد 2009، ريال مدريد 2014، 2017)", options: ["فرانك ريكارد وكريستيانو رونالدو", "ليونيل ميسي", "زين الدين زيدان", "راؤول"] },
+            { q: "أي نادٍ سجل أكبر فوز في تاريخ دوري أبطال أوروبا؟", a: "ليفربول 8-0 بشكتاش (2007) وريال مدريد 8-0 مالمو (2015)", options: ["ليفربول وريال مدريد", "برشلونة", "بايرن ميونخ", "مانشستر سيتي"] },
+            { q: "من هو اللاعب الأكثر تتويجًا بدوري أبطال أوروبا؟", a: "باكو خينتو (6 ألقاب مع ريال مدريد)", options: ["باكو خينتو", "كريستيانو رونالدو", "ليونيل ميسي", "مالديني"] },
+            { q: "أي نادٍ خسر 5 نهائيات من أصل 6 مشاركات؟", a: "يوفنتوس (خسر 5 نهائيات من أصل 6)", options: ["يوفنتوس", "بايرن ميونخ", "ميلان", "بنفيكا"] },
+            { q: "من هو الحارس الذي سجل هدفًا في دوري أبطال أوروبا؟", a: "فان دير سار (2009 مع مانشستر يونايتد)، هانز يورغ بوت (عدة أهداف)", options: ["فان دير سار وهانز يورغ بوت", "نوير", "بوفون", "كاسياس"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا في آخر مباراة له على ملعبه القديم؟", a: "تشيلسي (2012 على ملعب أليانز أرينا - ملعب بايرن)", options: ["تشيلسي", "ريال مدريد", "مانشستر يونايتد", "ليفربول"] },
+            { q: "كم عدد اللاعبين الذين شاركوا في 100 مباراة أو أكثر بدوري أبطال أوروبا؟", a: "55 لاعبًا (حتى 2026)", options: ["35 لاعبًا", "45 لاعبًا", "55 لاعبًا", "65 لاعبًا"] },
+            { q: "من هو أول لاعب يصل إلى 100 مباراة في دوري أبطال أوروبا؟", a: "راؤول غونزاليس (2006)", options: ["راؤول غونزاليس", "ريان غيغز", "باكو خينتو", "مالديني"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا كأول فريق غير أوروبي؟", a: "لا يوجد (البطولة مخصصة للأندية الأوروبية فقط)", options: ["لا يوجد", "بوكا جونيورز", "ريفر بليت", "ساو باولو"] },
+            { q: "من هو اللاعب الوحيد الذي سجل في نهائي كأس العالم ونهائي دوري أبطال أوروبا في نفس العام؟", a: "زين الدين زيدان (1998) وكيليان مبابي (2022)", options: ["زين الدين زيدان وكيليان مبابي", "بيليه", "ميسي", "رونالدو"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا بعد استقباله 7 أهداف في مرحلة المجموعات؟", a: "ليفربول (2005) - استقبل 6 أهداف", options: ["ليفربول", "برشلونة", "ميلان", "مانشستر يونايتد"] },
+            { q: "من هو الهداف التاريخي لدوري أبطال أوروبا من ركلات الجزاء؟", a: "كريستيانو رونالدو (19 ركلة جزاء)", options: ["كريستيانو رونالدو", "ليونيل ميسي", "روبرت ليفاندوفسكي", "راؤول"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا في أول موسم له تحت قيادة مدرب جديد؟", a: "تشيلسي (2012 مع دي ماتيو)، بايرن ميونخ (2013 مع هاينكس)", options: ["تشيلسي وبايرن ميونخ", "ريال مدريد", "برشلونة", "ليفربول"] },
+            { q: "من هو اللاعب الذي سجل أسرع هدف في تاريخ نهائي دوري أبطال أوروبا؟", a: "باولو مالديني (50 ثانية مع ميلان ضد ليفربول 2005)", options: ["باولو مالديني", "كريستيانو رونالدو", "مبابي", "زيدان"] },
+            { q: "أي نادٍ شارك في 4 نهائيات متتالية؟", a: "ريال مدريد (1956-1960) وريال مدريد (2016-2018) - 3 نهائيات متتالية", options: ["ريال مدريد", "ميلان", "بايرن ميونخ", "لا يوجد"] },
+            { q: "من هو المدرب الذي فاز بدوري أبطال أوروبا مع فريقين مختلفين؟", a: "كارلو أنشيلوتي (ميلان 2003، 2007؛ ريال مدريد 2014، 2022)، يوب هاينكس (ريال مدريد 1998، بايرن ميونخ 2013)", options: ["كارلو أنشيلوتي ويوب هاينكس", "بيب غوارديولا", "يورغن كلوب", "زين الدين زيدان"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا بركلات الترجيح 3 مرات؟", a: "لا يوجد (كل نادٍ فاز مرة أو مرتين)", options: ["لا يوجد", "ليفربول", "ميلان", "ريال مدريد"] },
+            { q: "من هو اللاعب الوحيد الذي فاز بدوري أبطال أوروبا كلاعب ومدرب مع نفس النادي؟", a: "زين الدين زيدان (ريال مدريد كمدرب 2016، 2017، 2018 وكلاعب 2002) وبيب غوارديولا (برشلونة 1992 كلاعب و2009، 2011 كمدرب)", options: ["زين الدين زيدان وبيب غوارديولا", "كارلو أنشيلوتي", "فرانك ريكارد", "يوهان كرويف"] },
+            { q: "أي نادٍ فاز بلقب دوري أبطال أوروبا بعد تصدره المجموعة برصيد 6 نقاط فقط؟", a: "ليفربول (2005) - تصدر المجموعة برصيد 10 نقاط", options: ["ليفربول", "ميلان", "برشلونة", "ريال مدريد"] },
+            { q: "من هو أصغر لاعب يشارك في دوري أبطال أوروبا؟", a: "يوسف موكوكو (16 عامًا و18 يومًا مع بوروسيا دورتموند 2020)", options: ["يوسف موكوكو", "بيليه", "مبابي", "أوين"] },
+            { q: "أي نادٍ خسر نهائي دوري أبطال أوروبا أمام نادٍ من نفس المدينة؟", a: "أتلتيكو مدريد (2014، 2016) أمام ريال مدريد", options: ["أتلتيكو مدريد", "إنتر ميلان", "إيفرتون", "مانشستر سيتي"] },
+            { q: "من هو اللاعب الذي سجل في 11 موسمًا متتاليًا بدوري أبطال أوروبا؟", a: "ليونيل ميسي (2005-2016) وكريستيانو رونالدو (2007-2018)", options: ["ليونيل ميسي وكريستيانو رونالدو", "روبرت ليفاندوفسكي", "راؤول", "بوشكاش"] },
+        ],
+        },
+    "الدوري الاسباني":{
+    100: [
+            { q: "ما هو اسم الدوري الإسباني لكرة القدم؟", a: "لا ليغا", options: ["لا ليغا", "سيري آ", "بريميرليغ", "بوندسليغا"] },
+            { q: "أي نادٍ يعرف باسم 'الريال' في إسبانيا؟", a: "ريال مدريد", options: ["ريال بيتيس", "ريال سوسيداد", "ريال مدريد", "ريال سرقسطة"] },
+            { q: "ما هو اسم ملعب نادي برشلونة؟", a: "كامب نو", options: ["سانتياغو برنابيو", "كامب نو", "واندا متروبوليتانو", "ميستايا"] },
+            { q: "ما هو اسم ملعب نادي ريال مدريد؟", a: "سانتياغو برنابيو", options: ["كامب نو", "سانتياغو برنابيو", "لا كارتوخا", "سيوطاداد فالنسيا"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإسباني أكثر من غيره؟", a: "ريال مدريد", options: ["برشلونة", "أتلتيكو مدريد", "ريال مدريد", "أتلتيك بيلباو"] },
+            { q: "كم مرة فاز برشلونة بلقب الدوري الإسباني؟", a: "27 مرة", options: ["20 مرة", "27 مرة", "30 مرة", "25 مرة"] },
+            { q: "من هو الهداف التاريخي للدوري الإسباني؟", a: "ليونيل ميسي", options: ["كريستيانو رونالدو", "تلمو زارا", "ليونيل ميسي", "راؤول"] },
+            { q: "أي مدينة يقع فيها نادي أتلتيكو مدريد؟", a: "مدريد", options: ["برشلونة", "إشبيلية", "مدريد", "بلباو"] },
+            { q: "ما هو اللقب الذي يطلق على نادي برشلونة؟", a: "البلوغرانا", options: ["البلانكو", "البلوغرانا", "الكلوب", "الروخيبلانكو"] },
+            { q: "ما هو اللقب الذي يطلق على نادي ريال مدريد؟", a: "البلانكو", options: ["البلوغرانا", "البلانكو", "الروخيبانكوس", "الكلوب"] },
+            { q: "أي نادٍ يعرف باسم 'الخزافين'؟", a: "فالنسيا", options: ["فالنسيا", "فياريال", "ليفانتي", "إلتشي"] },
+            { q: "من هو اللاعب الأكثر تتويجًا بالدوري الإسباني؟", a: "ليونيل ميسي", options: ["باكو خينتو", "سيرخيو بوسكيتس", "ليونيل ميسي", "أندريس إنييستا"] },
+            { q: "أي نادٍ يعرف باسم 'الفريق الجاليكي'؟", a: "سيلتا فيغو", options: ["ديبورتيفو لاكورونيا", "سيلتا فيغو", "بونتيفيدرا", "لوغو"] },
+            { q: "ما هي عاصمة إقليم الباسك التي يوجد فيها نادي أتلتيك بيلباو؟", a: "بلباو", options: ["سان سيباستيان", "فيتوريا", "بلباو", "بنبلونة"] },
+            { q: "أي نادٍ يعرف باسم 'السوبمارينو الأصفر'؟", a: "فياريال", options: ["فالنسيا", "فياريال", "ليفانتي", "إلتشي"] },
+            { q: "كم عدد الأندية التي تشارك في الدوري الإسباني؟", a: "20 ناديًا", options: ["18 ناديًا", "20 ناديًا", "22 ناديًا", "24 ناديًا"] },
+            { q: "ما هو اسم كأس الدوري الإسباني؟", a: "كأس الليغا (ألغيت)", options: ["كأس الملك", "كأس الليغا", "كأس السوبر", "كأس الاتحاد"] },
+            { q: "أي نادٍ يعرف باسم 'النادي الملكي'؟", a: "ريال مدريد", options: ["ريال سوسيداد", "ريال بيتيس", "ريال مدريد", "ريال سرقسطة"] },
+            { q: "ما هو لون قميص نادي برشلونة الأساسي؟", a: "أزرق وأحمر", options: ["أبيض", "أزرق وأحمر", "أصفر وأحمر", "أبيض وأسود"] },
+            { q: "ما هو لون قميص نادي ريال مدريد الأساسي؟", a: "أبيض", options: ["أزرق", "أبيض", "أحمر", "أصفر"] },
+            { q: "أي نادٍ يعرف باسم 'راموس ميكانيكوس'؟", a: "إشبيلية", options: ["ريال بيتيس", "إشبيلية", "غرناطة", "ملقا"] },
+            { q: "من هو المدرب الذي قاد برشلونة لتحقيق السداسية؟", a: "بيب غوارديولا", options: ["لويس إنريكي", "بيب غوارديولا", "فرانك ريكارد", "تيتو فيلانوفا"] },
+            { q: "أي نادٍ يعرف باسم 'الخفافيش'؟", a: "فالنسيا", options: ["فالنسيا", "ليفانتي", "فياريال", "إلتشي"] },
+            { q: "ما هو اسم النادي الذي يقع في إشبيلية ويعرف بالمنافس التقليدي لإشبيلية؟", a: "ريال بيتيس", options: ["ريال بيتيس", "إشبيلية", "ملقا", "قادش"] },
+            { q: "من هو اللاعب صاحب الرقم القياسي في عدد الأهداف في موسم واحد بالدوري الإسباني؟", a: "ليونيل ميسي (50 هدفًا 2011-2012)", options: ["كريستيانو رونالدو", "ليونيل ميسي", "تلمو زارا", "هوغو سانشيز"] },      
+        ],
+    200: [
+            { q: "من هو الهداف التاريخي لنادي برشلونة في الدوري الإسباني؟", a: "ليونيل ميسي (474 هدفًا)", options: ["سيزار رودريغيز", "لويس سواريز", "ليونيل ميسي", "صامويل إيتو"] },
+            { q: "من هو الهداف التاريخي لنادي ريال مدريد في الدوري الإسباني؟", a: "كريستيانو رونالدو (311 هدفًا)", options: ["راؤول", "ألفريدو دي ستيفانو", "كريستيانو رونالدو", "فيرينتس بوشكاش"] },
+            { q: "أي نادٍ يعرف باسم 'الفريق الفرعي' في إشبيلية؟", a: "ريال بيتيس", options: ["إشبيلية", "ريال بيتيس", "قادش", "ملقا"] },
+            { q: "من هو المدرب الأكثر تتويجًا بلقب الدوري الإسباني؟", a: "ميغيل مونيوز (9 ألقاب مع ريال مدريد)", options: ["يوهان كرويف", "بيب غوارديولا", "ميغيل مونيوز", "لوييس أراغونيس"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإسباني دون أي هزيمة؟", a: "ريال مدريد (1931-1932) وبرشلونة (2009-2010)", options: ["ريال مدريد فقط", "برشلونة فقط", "ريال مدريد وبرشلونة", "أتلتيكو مدريد"] },
+            { q: "ما هو اسم ملعب نادي أتلتيكو مدريد الحالي؟", a: "سيفيتاس ميتروبوليتانو", options: ["فيسينتي كالديرون", "واندا ميتروبوليتانو", "سيفيتاس ميتروبوليتانو", "كامب نو"] },
+            { q: "من هو اللاعب الذي سجل أسرع هاتريك في تاريخ الدوري الإسباني؟", a: "بافيتيمبي غوميز (4 دقائق و54 ثانية مع إشبيلية 2017)", options: ["ليونيل ميسي", "كريستيانو رونالدو", "بافيتيمبي غوميز", "راؤول"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإسباني 5 مرات متتالية؟", a: "ريال مدريد (1960-1965)", options: ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "أتلتيك بيلباو"] },
+            { q: "ما هو أكبر فوز في تاريخ الدوري الإسباني؟", a: "أتلتيك بيلباو 12-1 برشلونة (1931)", options: ["ريال مدريد 11-2 إلتشي", "برشلونة 10-1 تاراغونا", "أتلتيك بيلباو 12-1 برشلونة", "ريال مدريد 8-0 مالمو"] },
+            { q: "من هو اللاعب الأكثر مشاركة في تاريخ الدوري الإسباني؟", a: "أندوني زوبيزاريتا (622 مباراة)", options: ["راؤول", "ليونيل ميسي", "أندوني زوبيزاريتا", "خواكين"] },
+            { q: "أي نادٍ يعرف باسم 'الفريق الفارسي'؟", a: "ديبورتيفو لاكورونيا", options: ["سيلتا فيغو", "ديبورتيفو لاكورونيا", "سبورتينغ خيخون", "أوفييدو"] },
+            { q: "من هو أول لاعب غير إسباني يفوز بجائزة البيتشيشي؟", a: "هوغو سانشيز (المكسيك، 1985-1986)", options: ["كريستيانو رونالدو", "ليونيل ميسي", "هوغو سانشيز", "رونالدو"] },
+            { q: "أي نادٍ يعرف باسم 'الفريق التشيكي'؟", a: "ريال بيتيس", options: ["ريال سوسيداد", "ريال بيتيس", "إشبيلية", "فالنسيا"] },
+            { q: "ما هو اسم ملعب نادي فالنسيا؟", a: "ميستايا", options: ["كامب نو", "ميستايا", "لا روماريدا", "سان ماميس"] },
+            { q: "من هو اللاعب الوحيد الذي فاز بجائزة البيتشيشي مع 3 أندية مختلفة؟", a: "كيليان مبابي (موناكو، باريس سان جيرمان، ريال مدريد)", options: ["كريستيانو رونالدو", "ليونيل ميسي", "كيليان مبابي", "لويس سواريز"] },
+            { q: "أي نادٍ يلقب بـ 'الأسود'؟", a: "أتلتيك بيلباو", options: ["أتلتيكو مدريد", "أتلتيك بيلباو", "ريال سوسيداد", "سبورتينغ خيخون"] },
+            { q: "من هو الحارس الذي حافظ على شباكه نظيفة لأطول فترة في تاريخ الدوري الإسباني؟", a: "أبل ريسينو (1,275 دقيقة، 1990-1991)", options: ["إيكر كاسياس", "فيكتور فالديز", "أبل ريسينو", "يان أوبلاك"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإسباني بعد صعوده مباشرة إلى الدرجة الأولى؟", a: "ريال مدريد (1929)، أتلتيكو مدريد (1939-1940)، بيتيس (1934-1935)", options: ["ريال بيتيس", "أتلتيكو مدريد", "ريال مدريد", "جميع ما سبق"] },
+            { q: "ما هو اسم الكأس الذي يمنح لبطل الدوري الإسباني؟", a: "كأس الليغا (تمنح اللجنة)", options: ["كأس الملك", "كأس السوبر", "كأس الليغا", "كأس الاتحاد"] },
+            { q: "من هو أصغر لاعب يسجل هدفًا في تاريخ الدوري الإسباني؟", a: "لامين يامال (16 عامًا و87 يومًا مع برشلونة 2023)", options: ["أنسو فاتي", "لامين يامال", "بيدري", "راؤول"] },
+            { q: "أي نادٍ يعرف باسم 'الخضر'؟", a: "ريال بتيس", options: ["ريال بيتيس", "إشبيلية", "فالنسيا", "غرناطة"] },
+            { q: "ما هو أقدم نادٍ في الدوري الإسباني؟", a: "ريال مدريد (1902)، برشلونة (1899)، أتلتيك بيلباو (1898)", options: ["برشلونة", "ريال مدريد", "أتلتيك بيلباو", "إشبيلية"] },
+            { q: "من هو المدرب الذي قاد برشلونة لتحقيق الثلاثية التاريخية (2008-2009)؟", a: "بيب غوارديولا", options: ["لويس إنريكي", "بيب غوارديولا", "فرانك ريكارد", "يوهان كرويف"] },
+            { q: "أي نادٍ يعرف باسم 'الصقور'؟", a: "إشبيلية", options: ["ريال بيتيس", "إشبيلية", "غرناطة", "ملقا"] },
+            { q: "ما هو اسم ملعب نادي أتلتيك بيلباو؟", a: "سان ماميس", options: ["أنويتا", "ميستايا", "سان ماميس", "لا سيراميكا"] },
+        ],
+    300: [
+            { q: "من هو اللاعب الوحيد الذي فاز بجائزة البيتشيشي (هداف الدوري) 8 مرات؟", a: "تلمو زارا (أتلتيك بيلباو)", options: ["ليونيل ميسي", "تلمو زارا", "ألفريدو دي ستيفانو", "كريستيانو رونالدو"] },
+            { q: "أي نادٍ هبط إلى الدرجة الثانية رغم إنفاقه أكثر من 200 مليون يورو في موسم واحد؟", a: "إشبيلية (2024-2025)", options: ["فالنسيا", "فياريال", "إشبيلية", "أتلتيكو مدريد"] },
+            { q: "من هو المدرب الوحيد الذي فاز بالدوري الإسباني كلاعب ومدرب مع نفس النادي؟", a: "يوهان كرويف (برشلونة كلاعب 1973-1974، كمدرب 1990-1991، 1991-1992، 1992-1993، 1993-1994)", options: ["بيب غوارديولا", "يوهان كرويف", "دييغو سيميوني", "زين الدين زيدان"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإسباني برصيد 100 نقطة؟", a: "ريال مدريد (2011-2012)", options: ["برشلونة (2012-2013)", "ريال مدريد (2011-2012)", "برشلونة (2009-2010)", "أتلتيكو مدريد (2013-2014)"] },
+            { q: "من هو اللاعب الذي سجل أكبر عدد من الأهداف في مباراة واحدة بالدوري الإسباني؟", a: "أوغستين ساوتا (7 أهداف مع ريال مدريد ضد إلتشي 1932)", options: ["ليونيل ميسي", "تلمو زارا", "أوغستين ساوتا", "فيرينتس بوشكاش"] },
+            { q: "أي نادٍ يعرف باسم 'الفريق البحري'؟", a: "قادش", options: ["فياريال", "قادش", "فالنسيا", "ملقا"] },
+            { q: "ما هو النادي الوحيد الذي شارك في جميع نسخ الدوري الإسباني منذ انطلاقه عام 1929؟", a: "ريال مدريد، برشلونة، أتلتيك بيلباو (3 أندية)", options: ["ريال مدريد فقط", "برشلونة فقط", "أتلتيك بيلباو فقط", "ريال مدريد وبرشلونة وأتلتيك بيلباو"] },
+            { q: "من هو الهداف التاريخي لنادي فالنسيا في الدوري الإسباني؟", a: "إدموندو سواريز (186 هدفًا)", options: ["ماريو كيمبس", "دافيد فيا", "إدموندو سواريز", "بابلو أيمار"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإسباني في آخر جولة بعد انتظار 38 عامًا؟", a: "أتلتيكو مدريد (2013-2014)", options: ["ديبورتيفو لاكورونيا", "فالنسيا", "أتلتيكو مدريد", "ريال سوسيداد"] },
+            { q: "من هو اللاعب الأجنبي الأكثر مشاركة في تاريخ الدوري الإسباني؟", a: "ليونيل ميسي (520 مباراة)", options: ["كريستيانو رونالدو", "ليونيل ميسي", "زين الدين زيدان", "رونالدينيو"] },
+            { q: "ما هو اسم ملعب نادي ريال سوسيداد؟", a: "أنويتا", options: ["سان ماميس", "أنويتا", "ميستايا", "لا روماريدا"] },
+            { q: "أي نادٍ يعرف باسم 'الفريق الشطرنجي'؟", a: "أوساسونا", options: ["أوساسونا", "سيلتا فيغو", "ريال سرقسطة", "سبورتينغ خيخون"] },
+            { q: "من هو المدرب الذي قاد ريال مدريد لتحقيق 100 نقطة في موسم 2011-2012؟", a: "جوزيه مورينيو", options: ["كارلو أنشيلوتي", "زين الدين زيدان", "جوزيه مورينيو", "فابيو كابيلو"] },
+            { q: "أي نادٍ يعرف باسم 'الفريق الكتالوني الثاني'؟", a: "إسبانيول", options: ["جيرونا", "إسبانيول", "غرناطة", "ليدا"] },
+            { q: "من هو الحارس الذي حافظ على نظافة شباكه في 26 مباراة في موسم واحد؟", a: "يان أوبلاك (2015-2016 مع أتلتيكو مدريد)", options: ["إيكر كاسياس", "يان أوبلاك", "فيكتور فالديز", "تير شتيغن"] },
+            { q: "ما هو اسم ملعب نادي إشبيلية؟", a: "رامون سانشيز بيزخوان", options: ["بيتيس بالومو", "رامون سانشيز بيزخوان", "لا كارتوخا", "سانتياغو برنابيو"] },
+            { q: "أي نادٍ عوقب بحسم 6 نقاط بسبب مخالفات مالية في موسم 2023-2024؟", a: "برشلونة (قضية نيغريرا)", options: ["برشلونة", "ريال مدريد", "أتلتيكو مدريد", "فالنسيا"] },
+            { q: "من هو أصغر مدرب يفوز بلقب الدوري الإسباني؟", a: "بيب غوارديولا (38 عامًا مع برشلونة 2009)", options: ["دييغو سيميوني", "زين الدين زيدان", "بيب غوارديولا", "لويس أراغونيس"] },
+            { q: "أي نادٍ يعرف باسم 'الفريق الأندلسي العريق' الذي أسسه شقيقان بريطانيان؟", a: "ريال بيتيس", options: ["إشبيلية", "ريال بيتيس", "ملقا", "غرناطة"] },
+            { q: "من هو اللاعب الذي سجل 10 أهداف أو أكثر في 12 موسمًا متتاليًا بالدوري الإسباني؟", a: "ليونيل ميسي (2005-2017)", options: ["كريستيانو رونالدو", "ليونيل ميسي", "تلمو زارا", "راؤول"] },
+            { q: "ما هو اسم ملعب نادي فياريال؟", a: "لا سيراميكا", options: ["لا سيراميكا", "إل مادريغال", "سيوطاداد فالنسيا", "لا روماريدا"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإسباني في عيد ميلاده المئوي؟", a: "أتلتيكو مدريد (2003-2004)", options: ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "أتلتيك بيلباو"] },
+            { q: "من هو اللاعب الوحيد الذي سجل 4 أهداف في الكلاسيكو في عصر الليغا الحديث؟", a: "فيرينتس بوشكاش (4 أهداف مع ريال مدريد 1963)", options: ["ليونيل ميسي", "كريستيانو رونالدو", "فيرينتس بوشكاش", "ألفريدو دي ستيفانو"] },
+            { q: "ما هو اسم ملعب نادي أوساسونا؟", a: "إل سادار", options: ["إل سادار", "أنويتا", "لا روماريدا", "نويفو اركانخيل"] },
+            { q: "أي نادٍ سجل أكبر عدد من الأهداف في موسم واحد بالدوري الإسباني؟", a: "ريال مدريد (121 هدفًا في موسم 2011-2012)", options: ["برشلونة (2012-2013)", "ريال مدريد (2011-2012)", "برشلونة (2016-2017)", "أتلتيكو مدريد (2013-2014)"] },
+        ],
+    },
+    "الدوري الانجليزي":{
+    100: [
+            { q: "ما هو اسم الدوري الإنجليزي الممتاز؟", a: "بريميرليغ", options: ["لا ليغا", "بريميرليغ", "سيري آ", "بوندسليغا"] },
+            { q: "كم عدد الأندية التي تشارك في الدوري الإنجليزي الممتاز؟", a: "20 ناديًا", options: ["18 ناديًا", "20 ناديًا", "22 ناديًا", "24 ناديًا"] },
+            { q: "أي نادٍ يعرف باسم 'الريدز'؟", a: "ليفربول", options: ["مانشستر يونايتد", "ليفربول", "آرسنال", "تشيلسي"] },
+            { q: "أي نادٍ يعرف باسم 'اليونايتد'؟", a: "مانشستر يونايتد", options: ["نيوكاسل يونايتد", "مانشستر يونايتد", "ليدز يونايتد", "شيفيلد يونايتد"] },
+            { q: "ما هو اسم ملعب نادي مانشستر يونايتد؟", a: "أولد ترافورد", options: ["أنفيلد", "أولد ترافورد", "ستامفورد بريدج", "الإمارات"] },
+            { q: "ما هو اسم ملعب نادي ليفربول؟", a: "أنفيلد", options: ["أولد ترافورد", "أنفيلد", "ستامفورد بريدج", "الإمارات"] },
+            { q: "ما هو اسم ملعب نادي آرسنال؟", a: "الإمارات", options: ["وايت هارت لين", "الإمارات", "ستامفورد بريدج", "أولد ترافورد"] },
+            { q: "ما هو اسم ملعب نادي تشيلسي؟", a: "ستامفورد بريدج", options: ["الإمارات", "أنفيلد", "ستامفورد بريدج", "أولد ترافورد"] },
+            { q: "أي نادٍ يعرف باسم 'السيتيزنز'؟", a: "مانشستر سيتي", options: ["مانشستر يونايتد", "ليستر سيتي", "مانشستر سيتي", "برمنغهام سيتي"] },
+            { q: "من هو الهداف التاريخي للدوري الإنجليزي الممتاز؟", a: "آلان شيرر (260 هدفًا)", options: ["واين روني", "هاري كين", "آلان شيرر", "سيرجيو أغويرو"] },
+            { q: "أي نادٍ فاز بأول نسخة من الدوري الإنجليزي الممتاز؟", a: "مانشستر يونايتد (1992-1993)", options: ["آرسنال", "ليفربول", "مانشستر يونايتد", "بلاكبيرن روفرز"] },
+            { q: "ما هو اللقب الذي يطلق على نادي ليفربول؟", a: "الريدز", options: ["السيتيزنز", "الريدز", "البلوز", "الغانرز"] },
+            { q: "ما هو اللقب الذي يطلق على نادي آرسنال؟", a: "الغانرز", options: ["السبيرز", "الغانرز", "البلوز", "الريدز"] },
+            { q: "ما هو اللقب الذي يطلق على نادي تشيلسي؟", a: "البلوز", options: ["الريدز", "الغانرز", "البلوز", "السيتيزنز"] },
+            { q: "أي نادٍ يعرف باسم 'السبيرز'؟", a: "توتنهام هوتسبير", options: ["آرسنال", "تشيلسي", "توتنهام هوتسبير", "وست هام"] },
+            { q: "من هو المدرب الذي قاد مانشستر يونايتد لأطول فترة؟", a: "السير أليكس فيرغسون", options: ["أرسين فينغر", "السير أليكس فيرغسون", "بيب غوارديولا", "يورغن كلوب"] },
+            { q: "كم مرة فاز مانشستر يونايتد بالدوري الإنجليزي الممتاز؟", a: "13 مرة", options: ["10 مرات", "13 مرة", "15 مرة", "8 مرات"] },
+            { q: "كم مرة فاز مانشستر سيتي بالدوري الإنجليزي الممتاز؟", a: "8 مرات (حتى 2025)", options: ["6 مرات", "8 مرات", "10 مرات", "4 مرات"] },
+            { q: "أي نادٍ يعرف باسم 'الماوسايدرز'؟", a: "ليفربول", options: ["إيفرتون", "ليفربول", "مانشستر يونايتد", "نيوكاسل"] },
+            { q: "ما هو لون قميص نادي ليفربول الأساسي؟", a: "أحمر", options: ["أزرق", "أحمر", "أبيض", "أسود"] },
+            { q: "ما هو لون قميص نادي مانشستر سيتي الأساسي؟", a: "أزرق فاتح", options: ["أحمر", "أزرق داكن", "أزرق فاتح", "أبيض"] },
+            { q: "أي نادٍ يعرف باسم 'التوفي'؟", a: "إيفرتون", options: ["ليفربول", "إيفرتون", "مانشستر سيتي", "بيرمنغهام"] },
+            { q: "من هو اللاعب الأكثر تتويجًا بالدوري الإنجليزي الممتاز؟", a: "ريان غيغز (13 لقبًا)", options: ["بول سكولز", "ريان غيغز", "واين روني", "غاري نيفيل"] },
+            { q: "ما هو اسم بطولة كأس الاتحاد الإنجليزي؟", a: "إف إيه كاب", options: ["كاراباو كاب", "إف إيه كاب", "بريميرليغ كاب", "كوميونيتي شيلد"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز دون هزيمة؟", a: "آرسنال (2003-2004)", options: ["ليفربول", "مانشستر يونايتد", "آرسنال", "تشيلسي"] },
+        ],
+    200: [
+            { q: "من هو المدرب الأكثر تتويجًا بالدوري الإنجليزي الممتاز؟", a: "السير أليكس فيرغسون (13 لقبًا)", options: ["أرسين فينغر", "بيب غوارديولا", "السير أليكس فيرغسون", "يورغن كلوب"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز 3 مرات متتالية؟", a: "مانشستر يونايتد (1998-2001) ومانشستر سيتي (2020-2023)", options: ["مانشستر يونايتد فقط", "مانشستر سيتي فقط", "مانشستر يونايتد ومانشستر سيتي", "ليفربول"] },
+            { q: "من هو الهداف التاريخي لنادي ليفربول في الدوري الإنجليزي الممتاز؟", a: "محمد صلاح (200+ هدف)", options: ["ستيفن جيرارد", "روبي فاولر", "محمد صلاح", "إيان راش"] },
+            { q: "من هو الهداف التاريخي لنادي آرسنال في الدوري الإنجليزي الممتاز؟", a: "تييري هنري (175 هدفًا)", options: ["إيان رايت", "تييري هنري", "روبن فان بيرسي", "دينيس بيركامب"] },
+            { q: "من هو الهداف التاريخي لنادي مانشستر سيتي في الدوري الإنجليزي الممتاز؟", a: "سيرجيو أغويرو (184 هدفًا)", options: ["إيرلينغ هالاند", "سيرجيو أغويرو", "دافيد فيا", "يايا توري"] },
+            { q: "ما هو أكبر فوز في تاريخ الدوري الإنجليزي الممتاز؟", a: "مانشستر يونايتد 9-0 إيبسويتش (1995) وليستر 9-0 ساوثامبتون (2019)", options: ["مانشستر يونايتد 8-0 آرسنال", "مانشستر سيتي 8-0 واتفورد", "مانشستر يونايتد 9-0 إيبسويتش", "تشيلسي 8-0 ويغان"] },
+            { q: "من هو اللاعب الأكثر مشاركة في تاريخ الدوري الإنجليزي الممتاز؟", a: "غاريث باري (653 مباراة)", options: ["ريان غيغز", "فرانك لامبارد", "غاريث باري", "جيمس ميلنر"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز بعد صعوده مباشرة؟", a: "بلاكبيرن روفرز (1912)، إيبسويتش (1962)، نوتنغهام فورست (1978)، ليستر سيتي (2016)", options: ["ليستر سيتي", "بلاكبيرن روفرز", "نوتنغهام فورست", "جميع ما سبق"] },
+            { q: "ما هو اسم ملعب نادي توتنهام هوتسبير الجديد؟", a: "توتنهام هوتسبير ستاديوم", options: ["وايت هارت لين", "توتنهام هوتسبير ستاديوم", "ويمبلي", "الإمارات"] },
+            { q: "من هو أصغر لاعب يسجل هدفًا في تاريخ الدوري الإنجليزي الممتاز؟", a: "جيمس ميلنر (16 عامًا و357 يومًا مع ليدز 2002)", options: ["واين روني", "مايكل أوين", "جيمس ميلنر", "هارفي إليوت"] },
+            { q: "أي نادٍ يعرف باسم 'الهامسترز'؟", a: "نورويتش سيتي", options: ["نورويتش سيتي", "واتفورد", "بيرنلي", "بورنموث"] },
+            { q: "من هو اللاعب الوحيد الذي فاز بالحذاء الذهبي للدوري الإنجليزي الممتاز 3 مرات متتالية؟", a: "آلان شيرر (1994-1997)", options: ["تييري هنري", "آلان شيرر", "هاري كين", "محمد صلاح"] },
+            { q: "ما هو اسم ملعب نادي نيوكاسل يونايتد؟", a: "سانت جيمس بارك", options: ["سانت جيمس بارك", "غوديسون بارك", "فيلا بارك", "ستاد أو لايت"] },
+            { q: "أي نادٍ يعرف باسم 'البلايز'؟", a: "ليستر سيتي", options: ["لوتون تاون", "ليستر سيتي", "نوتنغهام فورست", "ساوثامبتون"] },
+            { q: "من هو الحارس الأكثر حفاظًا على نظافة شباكه في تاريخ الدوري الإنجليزي الممتاز؟", a: "بيتر تشيك (202 مباراة)", options: ["ديفيد سيمان", "إيدوين فان دير سار", "بيتر تشيك", "جو هارت"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز بعد أن كان في المركز الأخير في ديسمبر؟", a: "ليستر سيتي (2015-2016)", options: ["آرسنال", "ليستر سيتي", "مانشستر سيتي", "تشيلسي"] },
+            { q: "ما هو اسم ملعب نادي إيفرتون؟", a: "غوديسون بارك", options: ["غوديسون بارك", "أنفيلد", "بريدلي ميل", "كرافن كوتيج"] },
+            { q: "من هو اللاعب الأجنبي الأكثر تسجيلًا في تاريخ الدوري الإنجليزي الممتاز؟", a: "سيرجيو أغويرو (184 هدفًا)", options: ["تييري هنري", "محمد صلاح", "سيرجيو أغويرو", "واين روني"] },
+            { q: "أي نادٍ يعرف باسم 'القطط السوداء'؟", a: "سندرلاند", options: ["نيوكاسل", "سندرلاند", "ميدلزبره", "بلاكبيرن"] },
+            { q: "من هو المدرب الذي قاد ليستر سيتي للفوز بالدوري الإنجليزي الممتاز 2016؟", a: "كلاوديو رانييري", options: ["نايجل بيرسون", "كلاوديو رانييري", "بريندان رودجرز", "مارتن أونيل"] },
+            { q: "ما هو اسم ملعب نادي وست هام يونايتد؟", a: "ملعب لندن", options: ["أبتون بارك", "ملعب لندن", "كرافن كوتيج", "فالمر"] },
+            { q: "من هو اللاعب الذي سجل أسرع هاتريك في تاريخ الدوري الإنجليزي الممتاز؟", a: "ساديو ماني (2 دقيقة و56 ثانية مع ساوثامبتون 2015)", options: ["إيرلينغ هالاند", "ساديو ماني", "روبي فاولر", "دييغو كوستا"] },
+            { q: "أي نادٍ يعرف باسم 'القطط البرية'؟", a: "هال سيتي", options: ["هال سيتي", "بيرنلي", "ستوك سيتي", "بلاكبيرن"] },
+            { q: "من هو الحارس الذي حافظ على نظافة شباكه في 14 مباراة متتالية؟", a: "إيدوين فان دير سار (2008-2009 مع مانشستر يونايتد)", options: ["بيتر تشيك", "إيدوين فان دير سار", "ديفيد دي خيا", "أليسون بيكر"] },
+            { q: "ما هو اسم ملعب نادي أستون فيلا؟", a: "فيلا بارك", options: ["سانت أندروز", "فيلا بارك", "مولينيو", "كرافن كوتيج"] },
+        ],
+    300: [
+            { q: "من هو اللاعب الوحيد الذي سجل في 17 موسمًا متتاليًا في الدوري الإنجليزي الممتاز؟", a: "رايان غيغز (1992-2008)", options: ["فرانك لامبارد", "واين روني", "رايان غيغز", "جيمس ميلنر"] },
+            { q: "أي نادٍ هبط من الدوري الإنجليزي الممتاز رغم حصوله على 42 نقطة؟", a: "وست هام يونايتد (2002-2003)", options: ["وست هام", "سندرلاند", "بلاكبيرن", "بولتون"] },
+            { q: "من هو المدرب الوحيد الذي فاز بالدوري الإنجليزي الممتاز مع ناديين مختلفين؟", a: "كارلو أنشيلوتي (تشيلسي 2010، ريال مدريد - خارج البريميرليغ) - لا يوجد في البريميرليغ", options: ["لا يوجد", "جوزيه مورينيو", "كارلو أنشيلوتي", "بيب غوارديولا"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز برصيد 100 نقطة؟", a: "مانشستر سيتي (2017-2018)", options: ["ليفربول (2019-2020)", "مانشستر سيتي (2017-2018)", "آرسنال (2003-2004)", "تشيلسي (2004-2005)"] },
+            { q: "من هو اللاعب الذي سجل أكبر عدد من الأهداف في موسم واحد بالدوري الإنجليزي الممتاز؟", a: "إيرلينغ هالاند (36 هدفًا 2022-2023)", options: ["آلان شيرر", "محمد صلاح", "إيرلينغ هالاند", "أندي كول"] },
+            { q: "ما هو النادي الوحيد الذي لم يهبط من الدوري الإنجليزي الممتاز منذ انطلاقه عام 1992؟", a: "آرسنال، إيفرتون، ليفربول، مانشستر يونايتد، توتنهام، تشيلسي (6 أندية)", options: ["آرسنال فقط", "مانشستر يونايتد فقط", "ليفربول فقط", "6 أندية لم تهبط"] },
+            { q: "من هو أصغر مدرب يفوز بالدوري الإنجليزي الممتاز؟", a: "جوزيه مورينيو (41 عامًا مع تشيلسي 2005)", options: ["بيب غوارديولا", "جوزيه مورينيو", "يورغن كلوب", "ميكل أرتيتا"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز بفارق نقطة واحدة عن الوصيف في موسمين مختلفين؟", a: "مانشستر سيتي (2011-2012 و2018-2019)", options: ["مانشستر يونايتد", "ليفربول", "مانشستر سيتي", "آرسنال"] },
+            { q: "من هو اللاعب الأكثر صناعة للأهداف في تاريخ الدوري الإنجليزي الممتاز؟", a: "ريان غيغز (162 تمريرة حاسمة)", options: ["فرانك لامبارد", "واين روني", "ريان غيغز", "سيسك فابريغاس"] },
+            { q: "ما هو اسم ملعب نادي لوتون تاون؟", a: "كينيل وورث رود", options: ["كينيل وورث رود", "كرافن كوتيج", "فالمر", "أبتون بارك"] },
+            { q: "أي نادٍ حصل على أقل عدد من النقاط في موسم واحد بالدوري الإنجليزي الممتاز؟", a: "ديربي كاونتي (11 نقطة 2007-2008)", options: ["سندرلاند", "ديربي كاونتي", "هدرسفيلد", "شيفيلد يونايتد"] },
+            { q: "من هو اللاعب الذي سجل أسرع هدف في تاريخ الدوري الإنجليزي الممتاز؟", a: "شين لونغ (7.69 ثانية مع ساوثامبتون 2019)", options: ["شين لونغ", "آلان شيرر", "تييري هنري", "محمد صلاح"] },
+            { q: "أي نادٍ يعرف باسم 'الخيول'؟", a: "وست بروميتش ألبيون", options: ["وست بروميتش", "بلاكبيرن", "بولتون", "ستوك سيتي"] },
+            { q: "من هو المدرب الوحيد الذي فاز بالدوري الإنجليزي الممتاز في موسمه الأول مع النادي؟", a: "جوزيه مورينيو (تشيلسي 2005)، كارلو أنشيلوتي (تشيلسي 2010)، مانويل بيليغريني (مانشستر سيتي 2014)", options: ["جوزيه مورينيو وكارلو أنشيلوتي ومانويل بيليغريني", "بيب غوارديولا", "يورغن كلوب", "السير أليكس فيرغسون"] },
+            { q: "ما هو اسم ملعب نادي برينتفورد؟", a: "مجتمع جريفين بارك", options: ["مجتمع جريفين بارك", "كرافن كوتيج", "لوفتس رود", "أبتون بارك"] },
+            { q: "من هو اللاعب الأكثر تسجيلًا من ركلات الجزاء في تاريخ الدوري الإنجليزي الممتاز؟", a: "آلان شيرر (56 ركلة جزاء)", options: ["فرانك لامبارد", "واين روني", "آلان شيرر", "هاري كين"] },
+            { q: "أي نادٍ عوقب بحسم 9 نقاط بسبب مخالفات مالية؟", a: "بورتسموث (2009-2010)", options: ["بورتسموث", "ليدز يونايتد", "مانشستر سيتي", "إيفرتون"] },
+            { q: "من هو الحارس الذي سجل هدفًا في الدوري الإنجليزي الممتاز؟", a: "بيتر شمايكل (2001)، بول روبنسون (2007)، أليسون بيكر (2021)", options: ["بيتر شمايكل", "بول روبنسون", "أليسون بيكر", "جميع ما سبق"] },
+            { q: "ما هو اسم ملعب نادي كريستال بالاس؟", a: "سيلهرست بارك", options: ["سيلهرست بارك", "كرافن كوتيج", "فالمر", "أبتون بارك"] },
+            { q: "أي نادٍ فاز بالدوري الإنجليزي الممتاز بعد أن كان في المركز العاشر في يناير؟", a: "آرسنال (1997-1998)", options: ["مانشستر يونايتد", "آرسنال", "تشيلسي", "ليفربول"] },
+            { q: "من هو اللاعب الذي سجل 5 أهداف في مباراة واحدة بالدوري الإنجليزي الممتاز؟", a: "آلان شيرر، أندي كول، ديميتار برباتوف، سيرجيو أغويرو (4 لاعبين)", options: ["آلان شيرر", "سيرجيو أغويرو", "ديميتار برباتوف", "جميع ما سبق"] },
+            { q: "ما هو اسم ملعب نادي بلاكبول؟", a: "بلومفيلد رود", options: ["بلومفيلد رود", "فالمر", "دين كورت", "كرافن كوتيج"] },
+            { q: "من هو المدرب الذي قاد 3 أندية مختلفة لتحقيق أول 100 مباراة في البريميرليغ؟", a: "هاري ريدناب (ويست هام، بورتسموث، توتنهام)", options: ["هاري ريدناب", "سام ألاردايس", "آلان باردو", "ستيف بروس"] },
+            { q: "أي نادٍ سجل أكبر عدد من الأهداف في موسم واحد بالدوري الإنجليزي الممتاز؟", a: "مانشستر سيتي (106 أهداف 2017-2018)", options: ["ليفربول (2019-2020)", "مانشستر سيتي (2017-2018)", "تشيلسي (2009-2010)", "مانشستر يونايتد (1999-2000)"] },
+            { q: "من هو اللاعب الأكثر تسجيلًا في ديربي مانشستر؟", a: "واين روني (11 هدفًا)", options: ["سيرجيو أغويرو", "واين روني", "إيرلينغ هالاند", "ريان غيغز"] },
+        ],
+    },
+    "الدوري الايطالي":{
+    100: [
+            { q: "ما هو اسم الدوري الإيطالي لكرة القدم؟", a: "سيري آ", options: ["سيري آ", "سيري بي", "لا ليغا", "بريميرليغ"] },
+            { q: "كم عدد الأندية التي تشارك في الدوري الإيطالي؟", a: "20 ناديًا", options: ["18 ناديًا", "20 ناديًا", "22 ناديًا", "24 ناديًا"] },
+            { q: "أي نادٍ يعرف باسم 'البيانكونيري'؟", a: "يوفنتوس", options: ["ميلان", "إنتر ميلان", "يوفنتوس", "روما"] },
+            { q: "أي نادٍ يعرف باسم 'الروسونيري'؟", a: "ميلان", options: ["يوفنتوس", "إنتر ميلان", "ميلان", "روما"] },
+            { q: "أي نادٍ يعرف باسم 'النيراتزوري'؟", a: "إنتر ميلان", options: ["يوفنتوس", "إنتر ميلان", "ميلان", "روما"] },
+            { q: "ما هو اسم ملعب نادي يوفنتوس؟", a: "أليانز ستاديوم", options: ["سان سيرو", "أليانز ستاديوم", "الأولمبيكو", "سان باولو"] },
+            { q: "ما هو اسم ملعب نادي ميلان وإنتر ميلان المشترك؟", a: "سان سيرو", options: ["أليانز ستاديوم", "سان سيرو", "الأولمبيكو", "أرتيميو فرانكي"] },
+            { q: "ما هو اسم ملعب نادي روما؟", a: "الأولمبيكو", options: ["سان سيرو", "أليانز ستاديوم", "الأولمبيكو", "أرتيميو فرانكي"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإيطالي أكثر من غيره؟", a: "يوفنتوس (36 لقبًا)", options: ["ميلان", "إنتر ميلان", "يوفنتوس", "روما"] },
+            { q: "كم مرة فاز إنتر ميلان بلقب الدوري الإيطالي؟", a: "20 مرة", options: ["18 مرة", "19 مرة", "20 مرة", "21 مرة"] },
+            { q: "كم مرة فاز ميلان بلقب الدوري الإيطالي؟", a: "19 مرة", options: ["17 مرة", "18 مرة", "19 مرة", "20 مرة"] },
+            { q: "من هو الهداف التاريخي للدوري الإيطالي؟", a: "سيلفيو بيولا (274 هدفًا)", options: ["فرانشيسكو توتي", "غابرييل باتيستوتا", "سيلفيو بيولا", "جوزيبي مياتزا"] },
+            { q: "أي نادٍ يعرف باسم 'الذئاب'؟", a: "روما", options: ["لاتسيو", "روما", "فيورنتينا", "نابولي"] },
+            { q: "أي نادٍ يعرف باسم 'النسور'؟", a: "لاتسيو", options: ["روما", "لاتسيو", "نابولي", "فيورنتينا"] },
+            { q: "أي نادٍ يعرف باسم 'البيارتيمزي'؟", a: "نابولي", options: ["روما", "لاتسيو", "نابولي", "فيورنتينا"] },
+            { q: "ما هو لون قميص يوفنتوس الأساسي؟", a: "أبيض وأسود", options: ["أحمر وأسود", "أزرق وأسود", "أبيض وأسود", "أصفر وأحمر"] },
+            { q: "ما هو لون قميص ميلان الأساسي؟", a: "أحمر وأسود", options: ["أحمر وأسود", "أزرق وأسود", "أبيض وأسود", "أزرق فاتح"] },
+            { q: "ما هو لون قميص إنتر ميلان الأساسي؟", a: "أزرق وأسود", options: ["أحمر وأسود", "أزرق وأسود", "أبيض وأسود", "أصفر وأحمر"] },
+            { q: "من هو المدرب الأسطوري الذي قاد ميلان في فترة الثمانينات والتسعينات؟", a: "أريغو ساكي", options: ["فابيو كابيلو", "أريغو ساكي", "كارلو أنشيلوتي", "جوزيبي مياتزا"] },
+            { q: "أي نادٍ يعرف باسم 'البنفسج'؟", a: "فيورنتينا", options: ["فيورنتينا", "نابولي", "بارما", "أودينيزي"] },
+            { q: "من هو اللاعب الذي يعتبر أسطورة نابولي؟", a: "دييغو مارادونا", options: ["غابرييل باتيستوتا", "دييغو مارادونا", "أليساندرو دل بييرو", "فرانشيسكو توتي"] },
+            { q: "ما هو اسم ملعب نادي نابولي؟", a: "دييغو أرماندو مارادونا", options: ["سان سيرو", "الأولمبيكو", "دييغو أرماندو مارادونا", "أرتيميو فرانكي"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإيطالي 9 مرات متتالية؟", a: "يوفنتوس (2012-2020)", options: ["إنتر ميلان", "ميلان", "يوفنتوس", "تورينو"] },
+            { q: "من هو الهداف التاريخي ليوفنتوس في الدوري الإيطالي؟", a: "أليساندرو دل بييرو (188 هدفًا)", options: ["أليساندرو دل بييرو", "جونلويجي بوفون", "ميشيل بلاتيني", "روبرتو باجيو"] },
+            { q: "من هو الهداف التاريخي لميلان في الدوري الإيطالي؟", a: "غونار نوردال (210 أهداف)", options: ["ماركو فان باستن", "غونار نوردال", "أندري شيفتشينكو", "زي لاتو"] },
+        ],
+    200: [
+            { q: "من هو المدرب الأكثر تتويجًا بلقب الدوري الإيطالي؟", a: "جوفاني تراباتوني (7 ألقاب)", options: ["فابيو كابيلو", "جوفاني تراباتوني", "مارتشيلو ليبي", "أنطونيو كونتي"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإيطالي دون أي هزيمة؟", a: "يوفنتوس (2011-2012) وبيروجيا (1978-1979)", options: ["يوفنتوس فقط", "بيروجيا فقط", "يوفنتوس وبيروجيا", "ميلان"] },
+            { q: "من هو اللاعب الأكثر مشاركة في تاريخ الدوري الإيطالي؟", a: "جانلويجي بوفون (657 مباراة)", options: ["باولو مالديني", "فرانشيسكو توتي", "جانلويجي بوفون", "خافيير زانيتي"] },
+            { q: "أي نادٍ يعرف باسم 'الغراناتا'؟", a: "تورينو", options: ["تورينو", "بارما", "جنوى", "بولونيا"] },
+            { q: "ما هو اسم ملعب نادي فيورنتينا؟", a: "أرتيميو فرانكي", options: ["أرتيميو فرانكي", "الأولمبيكو", "ريناتو دالارا", "سان سيرو"] },
+            { q: "من هو اللاعب الذي سجل أكبر عدد من الأهداف في موسم واحد بالدوري الإيطالي؟", a: "غونار نوردال (35 هدفًا 1949-1950)", options: ["غونزالو هيغواين", "غونار نوردال", "تشيرو إيموبيلي", "جوزيبي مياتزا"] },
+            { q: "أي نادٍ يعرف باسم 'الجنويين'؟", a: "جنوى", options: ["سمبدوريا", "جنوى", "تورينو", "بولونيا"] },
+            { q: "ما هو أكبر فوز في تاريخ الدوري الإيطالي؟", a: "تورينو 10-0 أليساندريا (1948)", options: ["يوفنتوس 9-0 فوجيا", "إنتر ميلان 9-0 بريشيا", "ميلان 9-0 باليرمو", "تورينو 10-0 أليساندريا"] },
+            { q: "من هو اللاعب الأجنبي الأكثر تسجيلًا في تاريخ الدوري الإيطالي؟", a: "غابرييل باتيستوتا (184 هدفًا)", options: ["غابرييل باتيستوتا", "زلاتان إبراهيموفيتش", "هيرنان كريسبو", "أندري شيفتشينكو"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإيطالي برصيد 102 نقطة؟", a: "يوفنتوس (2013-2014)", options: ["إنتر ميلان (2006-2007)", "يوفنتوس (2013-2014)", "ميلان (2010-2011)", "نابولي (2017-2018)"] },
+            { q: "من هو الحارس الأكثر حفاظًا على نظافة شباكه في تاريخ الدوري الإيطالي؟", a: "جانلويجي بوفون (300+ مباراة)", options: ["جانلويجي بوفون", "ديدا", "والتر زينغا", "سيباستيانو روسي"] },
+            { q: "ما هو اسم ملعب نادي بولونيا؟", a: "ريناتو دالارا", options: ["أرتيميو فرانكي", "ريناتو دالارا", "الأولمبيكو", "مارك أنطونيو بينتجودي"] },
+            { q: "أي نادٍ يعرف باسم 'الدوريا'؟", a: "سمبدوريا", options: ["سمبدوريا", "جنوى", "فيورنتينا", "بارما"] },
+            { q: "من هو أول لاعب يفوز بجائزة أفضل لاعب في الدوري الإيطالي مرتين متتاليتين؟", a: "زلاتان إبراهيموفيتش (2008، 2009)", options: ["زلاتان إبراهيموفيتش", "أندريا بيرلو", "فرانشيسكو توتي", "باولو مالديني"] },
+            { q: "أي نادٍ هبط إلى الدرجة الثانية رغم فوزه بالدوري قبل 3 سنوات؟", a: "نابولي (1998)", options: ["نابولي", "سمبدوريا", "فيورنتينا", "بارما"] },
+            { q: "ما هو اسم ملعب نادي أتالانتا؟", a: "جيويس", options: ["جيويس", "أرتيميو فرانكي", "بينتو", "مارك أنطونيو بينتجودي"] },
+            { q: "من هو اللاعب الوحيد الذي فاز بلقب هداف الدوري الإيطالي مع 4 أندية مختلفة؟", a: "تشيرو إيموبيلي (تورينو، نابولي، لاتسيو، بريشيا)", options: ["تشيرو إيموبيلي", "غابرييل باتيستوتا", "زلاتان إبراهيموفيتش", "أندري شيفتشينكو"] },
+            { q: "أي نادٍ يعرف باسم 'الزبراء'؟", a: "يوفنتوس", options: ["يوفنتوس", "ميلان", "إنتر ميلان", "روما"] },
+            { q: "ما هو اسم ملعب نادي كالياري؟", a: "ساردينيا أرينا", options: ["ساردينيا أرينا", "ريناتو دالارا", "أرتيميو فرانكي", "الأولمبيكو"] },
+            { q: "من هو المدرب الذي قاد ميلان للفوز بلقب الدوري في موسم 1998-1999؟", a: "ألبيرتو زاكيروني", options: ["فابيو كابيلو", "ألبيرتو زاكيروني", "أريغو ساكي", "كارلو أنشيلوتي"] },
+            { q: "أي نادٍ فاز بالدوري الإيطالي في موسمه الأول تحت قيادة مدرب جديد؟", a: "إنتر ميلان (2006-2007 مع روبرتو مانشيني)", options: ["إنتر ميلان", "يوفنتوس", "ميلان", "روما"] },
+            { q: "من هو أصغر لاعب يسجل هدفًا في تاريخ الدوري الإيطالي؟", a: "أمادو ديالو (15 عامًا و280 يومًا مع أتالانتا 2021)", options: ["بيترو بيليغري", "أمادو ديالو", "موسى كييزا", "جيانلويجي دوناروما"] },
+            { q: "ما هو اسم ملعب نادي أودينيزي؟", a: "فريولي", options: ["فريولي", "مارك أنطونيو بينتجودي", "أرتيميو فرانكي", "ريناتو دالارا"] },
+            { q: "من هو اللاعب الذي سجل أسرع هاتريك في تاريخ الدوري الإيطالي؟", a: "عبد الله كونتي (3 دقائق مع لاتسيو 2018)", options: ["تشيرو إيموبيلي", "عبد الله كونتي", "ماورو إيكاردي", "كريستيانو رونالدو"] },
+            { q: "أي نادٍ يعرف باسم 'الجيالوروسي'؟", a: "روما", options: ["روما", "لاتسيو", "فيورنتينا", "تورينو"] },
+        ],
+    300: [
+            { q: "من هو اللاعب الوحيد الذي فاز بلقب الدوري الإيطالي كلاعب ومدرب مع نفس النادي؟", a: "فابيو كابيلو (ميلان كلاعب 1979، كمدرب 1992، 1993، 1994، 1996)", options: ["فابيو كابيلو", "كارلو أنشيلوتي", "أنطونيو كونتي", "مارتشيلو ليبي"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإيطالي بعد أن بدأ الموسم بخصم 11 نقطة؟", a: "يوفنتوس (2006-2007) - لكنه لم يفز باللقب، فاز إنتر ميلان", options: ["إنتر ميلان", "يوفنتوس", "ميلان", "فيورنتينا"] },
+            { q: "من هو الهداف التاريخي لديربي ميلانو (ديربي ديلا مادونينا)؟", a: "أندري شيفتشينكو (14 هدفًا)", options: ["جوزيبي مياتزا", "أندري شيفتشينكو", "زلاتان إبراهيموفيتش", "باولو مالديني"] },
+            { q: "ما هو اسم ملعب نادي ليتشي؟", a: "فيادي ديل ماري", options: ["فيادي ديل ماري", "بينتو", "جيويس", "أرتيميو فرانكي"] },
+            { q: "أي نادٍ عوقب بحسم 30 نقطة في قضية الكالتشيوبولي؟", a: "يوفنتوس (2006)", options: ["يوفنتوس", "ميلان", "فيورنتينا", "لاتسيو"] },
+            { q: "من هو اللاعب الأكثر تسجيلًا في تاريخ ديربي روما (روما ضد لاتسيو)؟", a: "فرانشيسكو توتي (11 هدفًا)", options: ["فرانشيسكو توتي", "دينو باجيو", "جيوزيبي سينيوري", "أليساندرو دل بييرو"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإيطالي برصيد أقل عدد من النقاط في عصر النقاط الثلاث؟", a: "يوفنتوس (52 نقطة في 20 مباراة 1949-1950) - النظام القديم", options: ["نابولي (2017-2018)", "يوفنتوس (2011-2012)", "إنتر ميلان (2005-2006)", "لاتسيو (1999-2000)"] },
+            { q: "من هو المدرب الوحيد الذي فاز بالدوري الإيطالي مع 3 أندية مختلفة؟", a: "جوفاني تراباتوني (يوفنتوس، إنتر ميلان، يوفنتوس - مرتين)", options: ["جوفاني تراباتوني", "فابيو كابيلو", "مارتشيلو ليبي", "أنطونيو كونتي"] },
+            { q: "ما هو اسم ملعب نادي بارما؟", a: "إنيو تارديني", options: ["إنيو تارديني", "أرتيميو فرانكي", "ريناتو دالارا", "فريولي"] },
+            { q: "من هو اللاعب الذي سجل 5 أهداف في مباراة واحدة بالدوري الإيطالي؟", a: "سيلفيو بيولا، غابرييل باتيستوتا، تشيرو إيموبيلي وآخرون", options: ["سيلفيو بيولا", "غابرييل باتيستوتا", "تشيرو إيموبيلي", "جميع ما سبق"] },
+            { q: "أي نادٍ يعرف باسم 'الأسود'؟", a: "كاتانيا", options: ["كاتانيا", "باليرمو", "ريدينا", "كالياري"] },
+            { q: "من هو اللاعب الأكبر سنًا الذي سجل هدفًا في تاريخ الدوري الإيطالي؟", a: "أليساندرو كوستانكورتا (41 عامًا مع ميلان 2007)", options: ["أليساندرو كوستانكورتا", "باولو مالديني", "فرانشيسكو توتي", "خافيير زانيتي"] },
+            { q: "ما هو اسم ملعب نادي إمبولي؟", a: "كارلو كاستيلاني", options: ["كارلو كاستيلاني", "أرتيميو فرانكي", "ريناتو دالارا", "بينتو"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإيطالي ثم هبط في الموسم التالي؟", a: "نابولي (1990 ثم هبط 1998)", options: ["نابولي", "سمبدوريا", "فيورنتينا", "لاتسيو"] },
+            { q: "من هو الحارس الذي حافظ على نظافة شباكه في 11 مباراة متتالية؟", a: "ديدا (ميلان 2003)", options: ["ديدا", "جانلويجي بوفون", "والتر زينغا", "سيباستيانو روسي"] },
+            { q: "ما هو اسم ملعب نادي فينيزيا؟", a: "بينزو", options: ["بينزو", "فيادي ديل ماري", "جيويس", "أرتيميو فرانكي"] },
+            { q: "من هو اللاعب الوحيد الذي فاز بجائزة أفضل لاعب في الدوري الإيطالي 3 مرات؟", a: "زلاتان إبراهيموفيتش (2008، 2009، 2011)", options: ["زلاتان إبراهيموفيتش", "أندريا بيرلو", "فرانشيسكو توتي", "باولو مالديني"] },
+            { q: "أي نادٍ يعرف باسم 'الأسود الصغار'؟", a: "ساسولو", options: ["ساسولو", "أودينيزي", "بولونيا", "تورينو"] },
+            { q: "من هو المدرب الذي قاد فيورنتينا للفوز بلقب الدوري الإيطالي آخر مرة؟", a: "فولفيو برنارديني (1968-1969)", options: ["تشيزاري برانديلي", "فولفيو برنارديني", "فينتشينزو مونتيلا", "جوزيبي ياكيني"] },
+            { q: "ما هو اسم ملعب نادي مونزا؟", a: "بريانتيو", options: ["بريانتيو", "جيويس", "بينزو", "كارلو كاستيلاني"] },
+            { q: "من هو اللاعب الذي سجل أكبر عدد من الأهداف في ديربي تورينو (يوفنتوس ضد تورينو)؟", a: "أليساندرو دل بييرو (11 هدفًا)", options: ["أليساندرو دل بييرو", "جونلويجي بوفون", "ميشيل بلاتيني", "أومبيرتو كالابريس"] },
+            { q: "أي نادٍ فاز بلقب الدوري الإيطالي في أول موسم له بعد الصعود؟", a: "نوفارا (1922)، كاسالي (1914) - فقط في بداية الدوري", options: ["نوفارا", "كاسالي", "يوفنتوس", "لا يوجد"] },
+            { q: "ما هو اسم ملعب نادي كريمونيسي؟", a: "جيوفاني زيني", options: ["جيوفاني زيني", "بينزو", "فريولي", "إنيو تارديني"] },
+            { q: "من هو اللاعب الأكثر مشاركة في ديربي ديلا كابيتالي (روما ضد لاتسيو)؟", a: "فرانشيسكو توتي (44 مباراة)", options: ["فرانشيسكو توتي", "أليساندرو نيستا", "دانييلي دي روسي", "ميروسلاف كلوزه"] },
+            { q: "أي نادٍ يعرف باسم 'الرسل'؟", a: "لاتسيو", options: ["لاتسيو", "روما", "نابولي", "فيورنتينا"] },
+        ],
+    },
+    "الدوري الالماني":{
+    100: [
+            { q: "ما هو اسم الدوري الألماني لكرة القدم؟", a: "بوندسليغا", options: ["بوندسليغا", "سيري آ", "لا ليغا", "بريميرليغ"] },
+            { q: "كم عدد الأندية التي تشارك في الدوري الألماني؟", a: "18 ناديًا", options: ["16 ناديًا", "18 ناديًا", "20 ناديًا", "22 ناديًا"] },
+            { q: "أي نادٍ يعرف باسم 'البافاري'؟", a: "بايرن ميونخ", options: ["بوروسيا دورتموند", "بايرن ميونخ", "شالكه", "باير ليفركوزن"] },
+            { q: "أي نادٍ يعرف باسم 'الأسود'؟", a: "ميونخ 1860", options: ["بايرن ميونخ", "ميونخ 1860", "بوروسيا دورتموند", "فيردر بريمن"] },
+            { q: "ما هو اسم ملعب نادي بايرن ميونخ؟", a: "أليانز أرينا", options: ["سيغنال إيدونا بارك", "أليانز أرينا", "فيلتينس أرينا", "باي أرينا"] },
+            { q: "ما هو اسم ملعب نادي بوروسيا دورتموند؟", a: "سيغنال إيدونا بارك", options: ["سيغنال إيدونا بارك", "أليانز أرينا", "فيلتينس أرينا", "مرسيدس بنز أرينا"] },
+            { q: "ما هو اللقب الذي يطلق على نادي بوروسيا دورتموند؟", a: "الأسود والأصفر", options: ["البافاري", "الأسود والأصفر", "الأسود والأبيض", "الأحمر والأبيض"] },
+            { q: "أي نادٍ فاز بلقب الدوري الألماني أكثر من غيره؟", a: "بايرن ميونخ (33 لقبًا)", options: ["بوروسيا دورتموند", "بوروسيا مونشنغلادباخ", "بايرن ميونخ", "فيردر بريمن"] },
+            { q: "كم مرة فاز بايرن ميونخ بلقب الدوري الألماني؟", a: "33 مرة", options: ["28 مرة", "30 مرة", "33 مرة", "35 مرة"] },
+            { q: "كم مرة فاز بوروسيا دورتموند بلقب الدوري الألماني؟", a: "8 مرات", options: ["5 مرات", "8 مرات", "10 مرات", "12 مرة"] },
+            { q: "من هو الهداف التاريخي للدوري الألماني؟", a: "غيرد مولر (365 هدفًا)", options: ["روبرت ليفاندوفسكي", "غيرد مولر", "كلاوس فيشر", "يوب هاينكس"] },
+            { q: "أي نادٍ يعرف باسم 'الفرسان'؟", a: "بوروسيا دورتموند", options: ["بوروسيا دورتموند", "بوروسيا مونشنغلادباخ", "شالكه", "بايرن ميونخ"] },
+            { q: "أي نادٍ يعرف باسم 'الخنازير البرية'؟", a: "شالكه", options: ["شالكه", "بوروسيا دورتموند", "بايرن ميونخ", "فيردر بريمن"] },
+            { q: "ما هو لون قميص بايرن ميونخ الأساسي؟", a: "أحمر", options: ["أصفر", "أحمر", "أزرق", "أبيض"] },
+            { q: "ما هو لون قميص بوروسيا دورتموند الأساسي؟", a: "أصفر", options: ["أصفر", "أحمر", "أسود", "أزرق"] },
+            { q: "من هو المدرب الأسطوري الذي قاد بايرن ميونخ في السبعينات؟", a: "أودو لاتيك", options: ["يوب هاينكس", "أودو لاتيك", "أوتو ريهاغل", "فرانز بكنباور"] },
+            { q: "أي نادٍ يعرف باسم 'النسور'؟", a: "آينتراخت فرانكفورت", options: ["آينتراخت فرانكفورت", "فيردر بريمن", "هوفنهايم", "ماينتس"] },
+            { q: "ما هو اسم ملعب نادي شالكه؟", a: "فيلتينس أرينا", options: ["فيلتينس أرينا", "سيغنال إيدونا بارك", "أليانز أرينا", "مرسيدس بنز أرينا"] },
+            { q: "أي نادٍ يعرف باسم 'فيردر'؟", a: "فيردر بريمن", options: ["فيردر بريمن", "فولفسبورغ", "هانوفر", "آينتراخت براونشفايغ"] },
+            { q: "من هو لاعب بايرن ميونخ الأسطوري الذي عرف بـ 'القيصر'؟", a: "فرانز بكنباور", options: ["غيرد مولر", "فرانز بكنباور", "لوتار ماتيوس", "أوليفر كان"] },
+            { q: "أي نادٍ يعرف باسم 'الصناع'؟", a: "باير ليفركوزن", options: ["باير ليفركوزن", "بوروسيا دورتموند", "شالكه", "فولفسبورغ"] },
+            { q: "ما هو اسم ملعب نادي فيردر بريمن؟", a: "فيسر شتاديون", options: ["فيسر شتاديون", "مرسيدس بنز أرينا", "باي أرينا", "أليانز أرينا"] },
+            { q: "من هو الهداف التاريخي لبوروسيا دورتموند في الدوري الألماني؟", a: "ألبرت برولس (105 أهداف)", options: ["ماركو رويس", "ألبرت برولس", "ميشائيل تسورك", "روبرت ليفاندوفسكي"] },
+            { q: "أي نادٍ يعرف باسم 'الثوار'؟", a: "سانت باولي", options: ["سانت باولي", "هامبورغ", "هانوفر", "آينتراخت براونشفايغ"] },
+            { q: "ما هو اسم ملعب نادي هامبورغ؟", a: "فولكسبارك شتاديون", options: ["فولكسبارك شتاديون", "فيسر شتاديون", "مرسيدس بنز أرينا", "أليانز أرينا"] },
+        ],
+    200: [
+            { q: "من هو المدرب الأكثر تتويجًا بلقب الدوري الألماني؟", a: "أوتو ريهاغل (3 ألقاب مع فيردر بريمن وكايزرسلاوترن)", options: ["أوتو ريهاغل", "يوب هاينكس", "أودو لاتيك", "أوتو هيتسفيلد"] },
+            { q: "أي نادٍ فاز بلقب الدوري الألماني بعد صعوده مباشرة؟", a: "كايزرسلاوترن (1997-1998)", options: ["بايرن ميونخ", "بوروسيا دورتموند", "كايزرسلاوترن", "فيردر بريمن"] },
+            { q: "من هو الهداف التاريخي لنادي بايرن ميونخ في الدوري الألماني؟", a: "غيرد مولر (365 هدفًا)", options: ["روبرت ليفاندوفسكي", "غيرد مولر", "توماس مولر", "كارل هاينتس رومينيغه"] },
+            { q: "ما هو أكبر فوز في تاريخ الدوري الألماني؟", a: "بوروسيا مونشنغلادباخ 12-0 بوروسيا دورتموند (1978)", options: ["بايرن ميونخ 11-0 بوروسيا دورتموند", "بوروسيا مونشنغلادباخ 12-0 بوروسيا دورتموند", "فيردر بريمن 10-0 كايزرسلاوترن", "بايرن ميونخ 10-0 نورنبيرغ"] },
+            { q: "من هو اللاعب الأكثر مشاركة في تاريخ الدوري الألماني؟", a: "كارل هاينتس كوربل (602 مباراة)", options: ["لوتار ماتيوس", "أوليفر كان", "كارل هاينتس كوربل", "تشابي ألونسو"] },
+            { q: "أي نادٍ يعرف باسم 'النجوم'؟", a: "هامبورغ", options: ["هامبورغ", "فيردر بريمن", "شالكه", "شتوتغارت"] },
+            { q: "ما هو اسم ملعب نادي شتوتغارت؟", a: "مرسيدس بنز أرينا", options: ["مرسيدس بنز أرينا", "فيلتينس أرينا", "باي أرينا", "أليانز أرينا"] },
+            { q: "من هو اللاعب الذي سجل أكبر عدد من الأهداف في موسم واحد بالدوري الألماني؟", a: "روبرت ليفاندوفسكي (41 هدفًا 2020-2021)", options: ["غيرد مولر", "روبرت ليفاندوفسكي", "لوتار ماتيوس", "إرلينغ هالاند"] },
+            { q: "أي نادٍ فاز بلقب الدوري الألماني 3 مرات متتالية؟", a: "بايرن ميونخ (1972-1974، 1985-1987، 1999-2001، 2013-2017، 2021-2023)", options: ["بايرن ميونخ", "بوروسيا دورتموند", "بوروسيا مونشنغلادباخ", "فيردر بريمن"] },
+            { q: "من هو الحارس الأكثر حفاظًا على نظافة شباكه في تاريخ الدوري الألماني؟", a: "مانويل نوير (200+ مباراة)", options: ["أوليفر كان", "مانويل نوير", "سيب ماير", "ينس ليمان"] },
+            { q: "ما هو اسم ملعب نادي باير ليفركوزن؟", a: "باي أرينا", options: ["باي أرينا", "أليانز أرينا", "فيلتينس أرينا", "مرسيدس بنز أرينا"] },
+            { q: "أي نادٍ يعرف باسم 'النمور'؟", a: "شتوتغارت", options: ["شتوتغارت", "فيردر بريمن", "شالكه", "هانوفر"] },
+            { q: "من هو أول لاعب يفوز بجائزة أفضل لاعب في الدوري الألماني مرتين؟", a: "فرانز بكنباور (1974، 1976)", options: ["فرانز بكنباور", "غيرد مولر", "لوتار ماتيوس", "يورغن كلينسمان"] },
+            { q: "أي نادٍ فاز بلقب الدوري الألماني دون أي هزيمة؟", a: "بايرن ميونخ (1986-1987) - خسر مباراة واحدة فقط", options: ["بايرن ميونخ", "بوروسيا دورتموند", "لا يوجد", "فيردر بريمن"] },
+            { q: "ما هو اسم ملعب نادي بوروسيا مونشنغلادباخ؟", a: "بوروسيا بارك", options: ["بوروسيا بارك", "سيغنال إيدونا بارك", "أليانز أرينا", "فيلتينس أرينا"] },
+            { q: "من هو اللاعب الأجنبي الأكثر تسجيلًا في تاريخ الدوري الألماني؟", a: "روبرت ليفاندوفسكي (312 هدفًا)", options: ["روبرت ليفاندوفسكي", "إرلينغ هالاند", "أوبافيمي مارتينز", "كلوديو بيتزارو"] },
+            { q: "أي نادٍ يعرف باسم 'الأحمر والأبيض'؟", a: "فيردر بريمن", options: ["فيردر بريمن", "بايرن ميونخ", "شالكه", "آينتراخت فرانكفورت"] },
+            { q: "ما هو اسم ملعب نادي كولن؟", a: "راين إنرجي شتاديون", options: ["راين إنرجي شتاديون", "فيسر شتاديون", "مرسيدس بنز أرينا", "باي أرينا"] },
+            { q: "من هو المدرب الذي قاد بايرن ميونخ لتحقيق الثلاثية عام 2013؟", a: "يوب هاينكس", options: ["بيب غوارديولا", "يوب هاينكس", "كارلو أنشيلوتي", "هانسي فليك"] },
+            { q: "أي نادٍ هبط من الدوري الألماني رغم فوزه بالدوري قبل 3 سنوات؟", a: "بوروسيا دورتموند (2004-2005)", options: ["بوروسيا دورتموند", "فيردر بريمن", "شتوتغارت", "هامبورغ"] },
+            { q: "ما هو اسم ملعب نادي هانوفر؟", a: "ه دي آي أرينا", options: ["ه دي آي أرينا", "فولكسبارك شتاديون", "فيسر شتاديون", "باي أرينا"] },
+            { q: "من هو اللاعب الذي سجل أسرع هاتريك في تاريخ الدوري الألماني؟", a: "إرلينغ هالاند (19 دقيقة مع بوروسيا دورتموند 2020)", options: ["إرلينغ هالاند", "روبرت ليفاندوفسكي", "ميروسلاف كلوزه", "توماس مولر"] },
+            { q: "أي نادٍ يعرف باسم 'القديسون'؟", a: "سانت باولي", options: ["سانت باولي", "هامبورغ", "فيردر بريمن", "ماينتس"] },
+            { q: "من هو أصغر لاعب يسجل هدفًا في تاريخ الدوري الألماني؟", a: "يوسف موكوكو (16 عامًا و28 يومًا مع بوروسيا دورتموند 2020)", options: ["يوسف موكوكو", "جمال موسيالا", "فلوريان فيرتز", "ماريو غوتزه"] },
+            { q: "ما هو اسم ملعب نادي ماينتس؟", a: "أم بروخفيغ", options: ["أم بروخفيغ", "باي أرينا", "راين إنرجي شتاديون", "مرسيدس بنز أرينا"] },
+        ],
+    300: [
+            { q: "من هو اللاعب الوحيد الذي فاز بلقب هداف الدوري الألماني 7 مرات؟", a: "غيرد مولر (1967، 1969، 1970، 1972، 1973، 1974، 1978)", options: ["غيرد مولر", "روبرت ليفاندوفسكي", "كلاوس فيشر", "أوفه زيلر"] },
+            { q: "أي نادٍ فاز بلقب الدوري الألماني ثم هبط في الموسم التالي؟", a: "بايرن ميونخ (1932 ثم هبط 1955) - في بداية الدوري", options: ["بايرن ميونخ", "بوروسيا دورتموند", "لا يوجد", "فيردر بريمن"] },
+            { q: "من هو المدرب الوحيد الذي فاز بالدوري الألماني مع 3 أندية مختلفة؟", a: "أوتو ريهاغل (فيردر بريمن 1988، كايزرسلاوترن 1998)", options: ["أوتو ريهاغل", "أوتو هيتسفيلد", "يوب هاينكس", "لا يوجد"] },
+            { q: "ما هو اسم ملعب نادي فرايبورغ؟", a: "أوروبا بارك شتاديون", options: ["أوروبا بارك شتاديون", "أم بروخفيغ", "فيسر شتاديون", "باي أرينا"] },
+            { q: "أي نادٍ حصل على أقل عدد من النقاط في موسم واحد بالدوري الألماني؟", a: "تاسمانيا برلين (8 نقاط 1965-1966)", options: ["تاسمانيا برلين", "دويسبورغ", "يونيون برلين", "نورنبيرغ"] },
+            { q: "من هو اللاعب الأكثر تسجيلًا في ديربي الرور (بوروسيا دورتموند ضد شالكه)؟", a: "مانفريد بورغسمولر (10 أهداف)", options: ["مانفريد بورغسمولر", "روبرت ليفاندوفسكي", "ماركو رويس", "كلاوس فيشر"] },
+            { q: "ما هو اسم ملعب نادي أوغسبورغ؟", a: "دبليو دبليو كيه أرينا", options: ["دبليو دبليو كيه أرينا", "أم بروخفيغ", "أوروبا بارك شتاديون", "باي أرينا"] },
+            { q: "من هو اللاعب الأكبر سنًا الذي سجل هدفًا في تاريخ الدوري الألماني؟", a: "كلاوديو بيتزارو (40 عامًا و3 أشهر مع فيردر بريمن 2019)", options: ["كلاوديو بيتزارو", "ميروسلاف كلوزه", "لوتار ماتيوس", "أوليفر كان"] },
+            { q: "أي نادٍ عوقب بحسم 5 نقاط بسبب مخالفات مالية؟", a: "فيردر بريمن (2019)", options: ["فيردر بريمن", "بايرن ميونخ", "بوروسيا دورتموند", "شالكه"] },
+            { q: "ما هو اسم ملعب نادي بوخوم؟", a: "فونوفيا رور شتاديون", options: ["فونوفيا رور شتاديون", "أم بروخفيغ", "دبليو دبليو كيه أرينا", "باي أرينا"] },
+            { q: "من هو اللاعب الوحيد الذي فاز بلقب الدوري الألماني كلاعب ومدرب مع نفس النادي؟", a: "فرانز بكنباور (بايرن ميونخ كلاعب 1969، 1972، 1973، 1974 كمدرب 1994)", options: ["فرانز بكنباور", "يوب هاينكس", "أوتو هيتسفيلد", "لوتار ماتيوس"] },
+            { q: "أي نادٍ فاز بلقب الدوري الألماني برصيد أقل عدد من الأهداف المسجلة؟", a: "نورنبيرغ (28 هدفًا 1967-1968)", options: ["نورنبيرغ", "بايرن ميونخ", "فيردر بريمن", "شتوتغارت"] },
+            { q: "ما هو اسم ملعب نادي يونيون برلين؟", a: "آنه دير آلتن فورشتراي", options: ["آنه دير آلتن فورشتراي", "فولكسبارك شتاديون", "أم بروخفيغ", "أوروبا بارك شتاديون"] },
+            { q: "من هو الحارس الذي سجل هدفًا في الدوري الألماني؟", a: "فرانك روست (2002)، ينس ليمان (1997)، مانويل نوير (2013)", options: ["فرانك روست", "جينز ليمان", "مانويل نوير", "جميع ما سبق"] },
+            { q: "أي نادٍ يعرف باسم 'الرهبان'؟", a: "باير ليفركوزن", options: ["باير ليفركوزن", "بوروسيا مونشنغلادباخ", "شالكه", "هوفنهايم"] },
+            { q: "ما هو اسم ملعب نادي هوفنهايم؟", a: "راين نيكار أرينا", options: ["راين نيكار أرينا", "أم بروخفيغ", "أوروبا بارك شتاديون", "باي أرينا"] },
+            { q: "من هو اللاعب الذي سجل 5 أهداف في مباراة واحدة بالدوري الألماني؟", a: "غيرد مولر، روبرت ليفاندوفسكي، ميروسلاف كلوزه وآخرون", options: ["غيرد مولر", "روبرت ليفاندوفسكي", "ميروسلاف كلوزه", "جميع ما سبق"] },
+            { q: "أي نادٍ فاز بلقب الدوري الألماني في آخر جولة بعد انتظار 9 سنوات؟", a: "بايرن ميونخ (2000)", options: ["بايرن ميونخ", "بوروسيا دورتموند", "فيردر بريمن", "شالكه"] },
+            { q: "ما هو اسم ملعب نادي دازنشتات؟", a: "مرك شتاديون أم بولن فالتر", options: ["مرك شتاديون أم بولن فالتر", "آنه دير آلتن فورشتراي", "فونوفيا رور شتاديون", "دبليو دبليو كيه أرينا"] },
+            { q: "من هو المدرب الذي قاد كايزرسلاوترن للفوز بالدوري بعد الصعود مباشرة عام 1998؟", a: "أوتو ريهاغل", options: ["أوتو ريهاغل", "أوتو هيتسفيلد", "يوب هاينكس", "فولفغانغ فولف"] },
+            { q: "أي نادٍ يعرف باسم 'الماسيون'؟", a: "نورنبيرغ", options: ["نورنبيرغ", "آينتراخت براونشفايغ", "دويسبورغ", "دازنشتات"] },
+            { q: "ما هو اسم ملعب نادي فولفسبورغ؟", a: "فولكسفاغن أرينا", options: ["فولكسفاغن أرينا", "باي أرينا", "أليانز أرينا", "فيلتينس أرينا"] },
+            { q: "من هو أصغر مدرب يفوز بلقب الدوري الألماني؟", a: "ماتياس زامر (29 عامًا مع بوروسيا دورتموند 2002)", options: ["ماتياس زامر", "يورغن كلوب", "يوليان ناغلسمان", "أوتو ريهاغل"] },
+            { q: "أي نادٍ سجل أكبر عدد من الأهداف في موسم واحد بالدوري الألماني؟", a: "بايرن ميونخ (101 هدف 1971-1972)", options: ["بايرن ميونخ (1971-1972)", "بوروسيا دورتموند (2015-2016)", "بايرن ميونخ (2019-2020)", "فيردر بريمن (1984-1985)"] },
+            { q: "من هو اللاعب الوحيد الذي فاز بالدوري الألماني مع 5 أندية مختلفة؟", a: "لا يوجد (لوتار ماتيوس فاز مع بايرن ميونخ وبوروسيا مونشنغلادباخ)", options: ["لوتار ماتيوس", "لا يوجد", "يورغن كلينسمان", "أندرياس بريمه"] },
+        ],
+    },
+    "الدوري الفرنسي":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "قران":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "اسلامي":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "الصحابة":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "دول وعواصم":{
+    100: [
+
+        ],
+    200: [
+        
+        ],
+    300: [
+
+        ],
+    },
+    "اعلام":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "حروف":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "تحدي الصور":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "game of throns":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "Breaking Bad":{
+    100: [
+
+        ],
+    200: [
+        
+        ],
+    300: [
+
+        ],
+    },
+    "ون بيس":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "ناروتو":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "بليتش":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "هجوم العمالقة":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "باب الحارة":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "كاس العالم":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "معلومات عامة":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "الغاز":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "دراغون بول":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    "هنتر":{
+    100: [
+
+        ],
+    200: [
+
+        ],
+    300: [
+        
+        ],
+    },
+    "الكلاسيكو":{
+    100: [  
+
+        ],
+    200: [
+
+        ],
+    300: [
+
+        ],
+    },
+    
+};
+// تتبع الأسئلة المستخدمة لكل فئة ونقطة
+let usedQuestions = {}; // كائن لتخزين الأسئلة المستخدمة
+let doubleUsedThisTurn = false;
+// عند بدء اللعبة، أضف هذا داخل دالة startGame بعد selectedCategories.forEach
+selectedCategories.forEach(cat=>{
+    usedQuestions[cat.name] = {};
+    [100,200,300].forEach(point => usedQuestions[cat.name][point] = []);
+});
+function startPlayers(){
+    let p1=player1.value.trim(),p2=player2.value.trim();
+    if(!p1||!p2)return alert("ادخل الاسماء");
+    playerNames=[p1,p2];
+    document.getElementById("playerNames").style.display="none";
+    container.style.display="flex";
+}
+
+function changePlayers(){
+    container.style.display="none";
+    playerNames.length=0;
+    playerScores=[0,0];
+    document.getElementById("playerNames").style.display="flex";
+}
+
+function confirmBack(){document.getElementById("confirmPopup").style.display="block";}
+function confirmYes(){
+    // إخفاء نافذة التأكيد
+    document.getElementById("confirmPopup").style.display="none";
+
+    // إعادة تهيئة البيانات
+    playerScores = [0,0];
+    answered = 0;
+    currentPlayerIndex = 0;
+    selectedCategories = [];
+
+    // إعادة تهيئة الـ scoreboard و gameContainer
+    document.getElementById("scoreboard").style.display = "none";
+    document.getElementById("player1Score").innerText = "";
+    document.getElementById("player2Score").innerText = "";
+    document.getElementById("gameContainer").innerHTML = "";
+    document.getElementById("gameScreen").style.display = "none";
+
+    // إزالة تحديد كل الفئات
+    const cards = document.querySelectorAll(".card");
+    cards.forEach(card => card.classList.remove("selected"));
+     doubleActive = false;
+    canUseDouble = true;
+     optionsUsed = [false, false];
+    // إظهار شاشة اختيار الفئات
+    container.style.display = "flex";
+}
+function confirmNo(){document.getElementById("confirmPopup").style.display="none";}
+let optionsUsed = [false, false];
+const cards=document.querySelectorAll(".card");
+cards.forEach(card=>{
+card.onclick=()=>{
+    if(card.classList.contains("selected")){
+        card.classList.remove("selected");
+        selectedCategories=selectedCategories.filter(c=>c.name!==card.dataset.name);
+        return;
+    }
+    if(selectedCategories.length>=6)return alert("6 فقط");
+    card.classList.add("selected");
+    selectedCategories.push({name:card.dataset.name,img:card.dataset.img});
+};
+});
+
+function startGame(){
+        inQuestion = true;
+    // ✅ إعادة تعيين المساعدات
+    lifelinesUsed = [
+        {double:false, call:false, two:false},
+        {double:false, call:false, two:false}
+    ];
+
+    timerUsed = [false, false];
+    doubleActive = false;
+     doubleUsedThisTurn = false;
+      optionsUsed = [false, false];
+    canUseDouble = true;
+    // ✅ إعادة لون الأزرار
+    document.querySelectorAll(".life").forEach(btn => {
+        btn.classList.remove("used");
+    });
+
+    // 🔁 الرجوع للفئات
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("container").style.display = "block";
+    if(!selectedCategories.length) return alert("اختر فئة");
+    container.style.display="none";
+    gameScreen.style.display="block";
+    scoreboard.style.display="flex";
+    updateScoreboard();
+    updateTurn();
+
+    gameContainer.innerHTML=""; 
+    totalQuestions=0; 
+    answered=0;
+
+    usedQuestions = {}; // إعادة تهيئة الأسئلة المستخدمة
+
+    selectedCategories.forEach(cat=>{
+        usedQuestions[cat.name] = {};
+        [100,200,300].forEach(point => usedQuestions[cat.name][point] = []);
+
+        let box=document.createElement("div");
+        box.className="game-row";
+       box.innerHTML=`
+        <img src="${cat.img}">
+        <div class="category-name">${cat.name}</div>
+        <div class="points-left">
+        <button onclick="showQuestion('${cat.name}',100,this,'left')">100</button>
+        <button onclick="showQuestion('${cat.name}',200,this,'left')">200</button>
+        <button onclick="showQuestion('${cat.name}',300,this,'left')">300</button>
+    </div>
+    <div class="points-right">
+        <button onclick="showQuestion('${cat.name}',100,this,'right')">100</button>
+        <button onclick="showQuestion('${cat.name}',200,this,'right')">200</button>
+        <button onclick="showQuestion('${cat.name}',300,this,'right')">300</button>
+    </div>`;
+        gameContainer.appendChild(box);
+        totalQuestions += 6;
+    });
+}
+
+function updateTurn(){document.getElementById("gameTurn").innerText="الدور: "+playerNames[currentPlayerIndex];}
+
+function showQuestion(category,point,btn){
+     doubleUsedThisTurn = true; 
+    if(btn.classList.contains("used")) return;
+
+    btn.classList.add("used");
+
+    let qList = questions[category][point];
+
+    let q = qList[Math.floor(Math.random()*qList.length)];
+
+    // 👇 حط هذا هنا بعد تعريف q
+    currentQuestion = q;
+
+    questionScreen.style.display="block";
+    gameScreen.style.display="none";
+
+    questionScreen.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="flex: 1; text-align: center;">${q.q}</h2>
+        <button onclick="useCallInQuestion()" style="background: linear-gradient(145deg,#00c6ff,#0072ff); color: white; padding: 8px 15px; border-radius: 50px;">📞</button>
+    </div>`;
+
+    if(q.img){
+        questionScreen.innerHTML += `<img class="question-media" src="${q.img}" style="max-width: 100%; max-height: 300px; margin: 20px auto; display: block; border-radius: 15px;">`;
+    }
+    if(q.video){
+        questionScreen.innerHTML += `<video class="question-media" controls style="max-width: 100%; margin: 20px auto; display: block;"><source src="${q.video}" type="video/mp4"></video>`;
+    }
+    if(q.audio){
+        questionScreen.innerHTML += `<audio class="question-media" controls style="margin: 20px auto; display: block;"><source src="${q.audio}" type="audio/mpeg"></audio>`;
+    }
+
+    questionScreen.innerHTML += `
+    <div class="answer-buttons">
+        <button class="btn-current" onclick="addPoints(${point},true)">${playerNames[currentPlayerIndex]}</button>
+        <button class="btn-other" onclick="addPoints(${point},false)">${playerNames[1-currentPlayerIndex]}</button>
+        <button class="btn-none" onclick="noOne()">لم يجب أحد</button>
+        <button class="btn-show" onclick='showAnswer("${q.a}", ${JSON.stringify(q)})'>إظهار الإجابة</button>
+    </div>
+    <div id="answer"></div>
+`;
+}
+function showOptions(){
+    if(optionsUsed[currentPlayerIndex]) {
+        alert("لقد استخدمت خاصية الـ 4 خيارات مسبقاً!");
+        return;
+    }
+    
+    optionsUsed[currentPlayerIndex] = true;
+    
+    document.getElementById("callPopup").style.display = "none";
+    let opts = currentQuestion.options;
+    let container = document.getElementById("optionsContent");
+    container.innerHTML = "";
+  const colors = [
+        "#E91E63",  // وردي غامق
+        "#2196F3",  // أزرق
+        "#FF9800",  // برتقالي
+        "#4CAF50"   // أخضر
+    ];
+
+    opts.forEach((opt, index)=>{
+        let btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.style.background = colors[index];
+        btn.style.color = "white";
+        btn.style.margin = "10px";
+        btn.style.padding = "12px 20px";
+        btn.style.border = "none";
+        btn.style.borderRadius = "15px";
+        btn.style.fontSize = "16px";
+        btn.style.fontWeight = "bold";
+        btn.style.cursor = "pointer";
+        btn.style.width = "220px";
+        btn.style.display = "block";
+        btn.style.boxShadow = "0 5px 15px rgba(0,0,0,.5)";
+        btn.disabled = true;
+        container.appendChild(btn);
+    });
+
+    document.getElementById("optionsPopup").style.display = "block";
+}
+function startCall(){
+    if(lifelinesUsed[currentPlayerIndex].call) {
+    alert("لقد استخدمت خاصية الاتصال مسبقًا");
+    return;
+}
+lifelinesUsed[currentPlayerIndex].call = true;
+    document.getElementById("callPopup").style.display = "none";
+
+    let popup = document.getElementById("timerPopup");
+    popup.style.display = "block";
+
+    let time = 45;
+    document.getElementById("timer").innerText = time;
+
+    let interval = setInterval(()=>{
+        time--;
+        document.getElementById("timer").innerText = time;
+        if(time <= 0){
+            clearInterval(interval);
+            popup.style.display = "none";
+        }
+    },1000);
+
+    window.currentTimer = interval; // لتتمكن من الإيقاف عند الإغلاق
+}
+
+function closeTimer(){
+    document.getElementById("timerPopup").style.display = "none";
+    if(window.currentTimer) clearInterval(window.currentTimer);
+    clearInterval(window.currentTimer);
+    document.getElementById("timerPopup").style.display = "none";
+}
+
+function closeOptions(){
+    document.getElementById("optionsPopup").style.display = "none";
+}
+function noOne(){
+    questionScreen.style.display="none";
+    gameScreen.style.display="block";
+    canUseDouble = true;
+    currentPlayerIndex=1-currentPlayerIndex;
+     doubleUsedThisTurn = false; 
+    updateTurn();
+}
+function useCall(player, el){
+    if(player !== currentPlayerIndex){
+        alert("ليس دورك!");
+        return;
+    }
+    if (callUsed[currentPlayerIndex]) return; // إذا استخدمها مسبقاً
+    callUsed[currentPlayerIndex] = true;
+    document.getElementById("optionsPopup").style.display = "none"; // اخفاء نافذة الاختيار
+    if(lifelinesUsed[player].call) return;
+    startCall(); // يبدأ العد
+    
+
+    lifelinesUsed[player].call = true;
+    el.classList.add("used");
+
+    alert("📞 تواصل مع صديقك!");
+}
+function useTwo(player, el){
+    if(player !== currentPlayerIndex){
+        alert("ليس دورك!");
+        return;
+    }
+
+    if(lifelinesUsed[player].two) return;
+
+    lifelinesUsed[player].two = true;
+    el.classList.add("used");
+
+    alert("يمكنك إعطاء إجابتين!");
+}
+function addPoints(point, isCurrent){
+    correctSound.play(); // صوت صحيح
+
+    let idx = isCurrent ? currentPlayerIndex : 1 - currentPlayerIndex;
+
+    // حساب النقاط مع الدبل
+    let finalPoints = doubleActive ? point * 2 : point;
+
+    playerScores[idx] += finalPoints;
+
+    // إظهار نقاط وسط الشاشة مع تأثير البدل
+    showPoints(point, doubleActive);
+
+    doubleActive = false; // إعادة تعيين بعد استخدام الدبل
+
+    answered++;
+    updateScoreboard();
+
+    questionScreen.style.display = "none";
+    gameScreen.style.display = "block";
+
+    // تغيير الدور
+    currentPlayerIndex = 1 - currentPlayerIndex;
+    doubleUsedThisTurn = false;
+    updateTurn();
+    canUseDouble = true;
+    checkWinner(); // تحقق من انتهاء اللعبة وإعلان الفائز
+}
+
+function showPoints(p, isDouble){
+    const pointsPopup = document.getElementById("pointsPopup");
+    pointsPopup.innerText = isDouble ? `+${p} (×2)` : `+${p}`;
+    pointsPopup.style.display = "block";
+
+    // التأثير البصري
+    if(isDouble){
+        pointsPopup.style.color = "yellow";
+        pointsPopup.style.fontSize = "50px";
+        pointsPopup.style.textShadow = "0 0 20px yellow";
+    } else {
+        pointsPopup.style.color = "lime";
+        pointsPopup.style.fontSize = "40px";
+        pointsPopup.style.textShadow = "0 0 10px lime";
+    }
+
+    // الحركة (تكبير ثم اختفاء)
+    pointsPopup.style.transform = "translate(-50%,-50%) scale(0.5)";
+    pointsPopup.style.opacity = 0;
+
+    setTimeout(()=>{
+        pointsPopup.style.transition = "all 0.5s ease";
+        pointsPopup.style.transform = "translate(-50%,-50%) scale(1.2)";
+        pointsPopup.style.opacity = 1;
+    }, 50);
+
+    setTimeout(()=>{
+        pointsPopup.style.transform = "translate(-50%,-50%) scale(1)";
+        pointsPopup.style.opacity = 0;
+    }, 1000);
+}
+function showAnswer(a, q){
+    document.getElementById("answer").innerHTML = `
+    <div class="answer-box">
+        <div class="answer-text">${a}</div>
+
+        ${q.imgAnswer ? `<img class="answer-media" src="${q.imgAnswer}">` : ""}
+
+        ${q.videoAnswer ? `
+            <video class="answer-media" controls>
+                <source src="${q.videoAnswer}" type="video/mp4">
+            </video>` : ""}
+
+        ${q.audioAnswer ? `
+            <audio class="answer-media" controls>
+                <source src="${q.audioAnswer}" type="audio/mpeg">
+            </audio>` : ""}
+    </div>
+    `;
+}
+function updateScoreboard(){
+    player1Score.innerText=playerNames[0]+": "+playerScores[0];
+    player2Score.innerText=playerNames[1]+": "+playerScores[1];
+}
+
+function checkWinner(){
+    inQuestion = false;
+    
+    // حساب عدد الأسئلة التي تم الإجابة عليها بالفعل
+    let answeredCount = 0;
+    document.querySelectorAll("#gameContainer .points-left button.used, #gameContainer .points-right button.used").forEach(btn => {
+        answeredCount++;
+    });
+    
+    // حساب إجمالي الأسئلة (6 أسئلة لكل فئة)
+    let total = selectedCategories.length * 6;
+    
+    if(answeredCount >= total){
+        let winner = playerScores[0] > playerScores[1] ? playerNames[0] :
+                     playerScores[0] < playerScores[1] ? playerNames[1] : "تعادل";
+
+        const winScreen = document.getElementById("winScreen");
+        const winnerText = document.getElementById("winnerText");
+
+        winnerText.innerText = `🎉 الفائز: ${winner} 🎉`;
+        winScreen.style.display = "flex";
+    }
+}
+// تعديل دالة showQuestion للتحقق من العمود
+function showQuestionWithCheck(category, point, btn, side) {
+    // التحقق من أن اللاعب يضغط على العمود الخاص به
+    if(currentPlayerIndex === 0 && side !== 'left') {
+        alert(`⚠️ هذه الأسئلة ليست لك! اختر الأسئلة من العمود الأيسر.`);
+        return;
+    }
+    
+    if(currentPlayerIndex === 1 && side !== 'right') {
+        alert(`⚠️ هذه الأسئلة ليست لك! اختر الأسئلة من العمود الأيمن.`);
+        return;
+    }
+    
+    // استدعاء الدالة الأصلية
+    originalShowQuestion(category, point, btn);
+}
+
+// تخزين الدالة الأصلية
+let originalShowQuestion = window.showQuestion;
+
+// استبدال الدالة
+window.showQuestion = function(category, point, btn, side) {
+    if(side) {
+        showQuestionWithCheck(category, point, btn, side);
+    } else {
+        originalShowQuestion(category, point, btn);
+    }
+};
+    // كشف إذا كان المستخدم يدخل من هاتف
+    function isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
+    // دالة لفحص اتجاه الشاشة
+    function checkOrientation() {
+        if(isMobile() && window.innerHeight > window.innerWidth) {
+            showOrientationMessage();
+        }
+    }
+    
+    // دالة لإظهار الرسالة
+    function showOrientationMessage() {
+        let msg = document.createElement("div");
+        msg.id = "orientationMsg";
+        msg.innerHTML = "🔄 الرجاء وضع الهاتف بالعرض (أفقي) لتجربة ممتازة 🔄";
+        msg.style.position = "fixed";
+        msg.style.bottom = "20px";
+        msg.style.left = "50%";
+        msg.style.transform = "translateX(-50%)";
+        msg.style.background = "linear-gradient(145deg,#00c6ff,#0072ff)";
+        msg.style.color = "white";
+        msg.style.padding = "12px 20px";
+        msg.style.borderRadius = "25px";
+        msg.style.fontSize = "14px";
+        msg.style.fontWeight = "bold";
+        msg.style.textAlign = "center";
+        msg.style.zIndex = "9999";
+        msg.style.boxShadow = "0 0 15px rgba(0,0,0,0.3)";
+        msg.style.border = "1px solid gold";
+        document.body.appendChild(msg);
+        
+        // إخفاء الرسالة بعد 4 ثواني
+        setTimeout(() => {
+            if(msg) msg.remove();
+        }, 10000);
+    }
+    
+    // مراقبة عند الضغط على زر التالي
+    const nextBtn = document.getElementById("nextBtn");
+    if(nextBtn) {
+        nextBtn.addEventListener("click", function() {
+            setTimeout(() => {
+                checkOrientation();
+            }, 100);
+        });
+    }
+    
+    // مراقبة تغيير اتجاه الشاشة
+    window.addEventListener("resize", function() {
+        if(isMobile() && window.innerHeight > window.innerWidth) {
+            let existingMsg = document.getElementById("orientationMsg");
+            if(!existingMsg) {
+                showOrientationMessage();
+            }
+        } else {
+            let existingMsg = document.getElementById("orientationMsg");
+            if(existingMsg) existingMsg.remove();
+        }
+    });
+</script>
+
+
+</body>
+</html>
