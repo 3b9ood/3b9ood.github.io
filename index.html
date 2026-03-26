@@ -4603,7 +4603,7 @@ function watchAd() {
     window.adOpenedTime = Date.now();
     
     // إضافة مؤقت اختياري
-    let countdown = 15;
+    let countdown = 5;
     const countdownElement = document.createElement("p");
     countdownElement.id = "adCountdown";
     countdownElement.style.marginTop = "10px";
@@ -4624,8 +4624,8 @@ function watchAd() {
 }
 function confirmWatched() {
     // التحقق من مرور الوقت الكافي
-    if (!window.adOpenedTime || (Date.now() - window.adOpenedTime) < 15000) {
-        alert("⏳ يرجى مشاهدة الإعلان لمدة 15 ثانية على الأقل للحصول على المكافأة!");
+    if (!window.adOpenedTime || (Date.now() - window.adOpenedTime) < 5000) {
+        alert("⏳ يرجى مشاهدة الإعلان لمدة 5 ثواني على الأقل للحصول على المكافأة!");
         return;
     }
     
