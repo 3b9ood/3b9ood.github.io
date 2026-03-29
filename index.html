@@ -680,7 +680,87 @@
 </style>
 </head>
 <body>
+<!-- فحص مانع الإعلانات -->
+<div id="adblockWarning" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; font-family: Arial, sans-serif;">
+    <div style="background: linear-gradient(145deg, #1a1a2e, #16213e); padding: 40px; border-radius: 30px; max-width: 400px; margin: 20px; border: 2px solid #ff416c; box-shadow: 0 0 50px rgba(255,65,108,0.3);">
+        <div style="font-size: 80px; margin-bottom: 20px;">🚫</div>
+        <h2 style="color: #ff416c; margin-bottom: 15px;">⚠️ مانع الإعلانات نشط</h2>
+        <p style="color: white; font-size: 18px; line-height: 1.6; margin-bottom: 25px;">
+            عذراً، لا يمكنك استخدام الموقع مع تفعيل مانع الإعلانات.<br><br>
+            يرجى <strong style="color: #ffaa00;">تعطيل مانع الإعلانات</strong> (AdBlock) ثم <strong style="color: #00ffaa;">تحديث الصفحة</strong> للاستمرار.
+        </p>
+        <button onclick="location.reload()" style="background: linear-gradient(145deg, #00c6ff, #0072ff); color: white; border: none; padding: 12px 30px; font-size: 18px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s;">
+            🔄 تحديث الصفحة
+        </button>
+        <p style="color: #aaa; font-size: 12px; margin-top: 25px;">
+            ملاحظة: الموقع يحتاج للإعلانات لدعم المحتوى المجاني
+        </p>
+    </div>
+</div>
 
+<script>
+// فحص وجود مانع الإعلانات
+(function checkAdBlocker() {
+    const adBlockWarning = document.getElementById('adblockWarning');
+    let adBlockDetected = false;
+    
+    // طريقة 1: إنشاء عنصر اختبار
+    const testAd = document.createElement('div');
+    testAd.className = 'adblock-test';
+    testAd.style.position = 'absolute';
+    testAd.style.top = '-100px';
+    testAd.style.left = '-100px';
+    testAd.style.width = '1px';
+    testAd.style.height = '1px';
+    testAd.style.background = 'url("https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png")';
+    testAd.style.backgroundSize = '1px 1px';
+    document.body.appendChild(testAd);
+    
+    // طريقة 2: فتح نافذة اختبار (بديلة)
+    setTimeout(() => {
+        const computedStyle = window.getComputedStyle(testAd);
+        const display = computedStyle.getPropertyValue('display');
+        const visibility = computedStyle.getPropertyValue('visibility');
+        
+        // إذا تم حظر العنصر بسبب مانع الإعلانات
+        if (display === 'none' || visibility === 'hidden' || testAd.offsetHeight === 0) {
+            adBlockDetected = true;
+        }
+        
+        // طريقة 3: فحص أداء تحميل الصورة (بديل إضافي)
+        const imgTest = new Image();
+        imgTest.src = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png';
+        imgTest.onerror = function() {
+            adBlockDetected = true;
+            showWarning();
+        };
+        
+        if (adBlockDetected) {
+            showWarning();
+        } else {
+            imgTest.onload = function() {
+                // لا يوجد مانع إعلانات
+                if (adBlockWarning) adBlockWarning.style.display = 'none';
+                testAd.remove();
+            };
+            setTimeout(() => {
+                if (!adBlockDetected && adBlockWarning) {
+                    adBlockWarning.style.display = 'none';
+                }
+                testAd.remove();
+            }, 500);
+        }
+        
+        function showWarning() {
+            if (adBlockWarning) {
+                adBlockWarning.style.display = 'flex';
+                // منع التفاعل مع الموقع
+                document.body.style.overflow = 'hidden';
+            }
+        }
+    }, 100);
+})();
+</script>
 <!-- شاشة تسجيل الدخول -->
 <div id="authScreen" class="auth-screen">
     <div class="auth-box">
