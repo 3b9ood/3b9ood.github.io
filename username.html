@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>سين جيم الغلابة</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<style>
+    /* جميع الستايلات الموجودة تبقى كما هي */
+    @media (max-width: 768px) {
+        #gameContainer {
+            gap: 100px;
+        }
+        .game-row {
+            row-gap: 100px;
+        }
+    }
+    @media (orientation: landscape) and (max-height: 500px) {
+        #gameContainer {
+            column-gap: 150px !important;
+            padding: 0 50px !important;
+        }
+        .game-row {
+            margin-left: 30px !important;
+        }
+    }
+    body{
+        font-family:Arial;
+        background:linear-gradient(135deg,#0f2027,#203a43,#2c5364,#1f4037);
+        color:white;
+        text-align:center;
+        margin:0;
+        min-height:100vh;
+    }
+    h1,h2{padding:15px}
+    button{padding:10px 15px;margin:5px;border-radius:12px;border:none;cursor:pointer;font-weight:bold;transition:.2s}
+    button:hover{transform:scale(1.05)}
+    #playerNames{display:flex;flex-direction:column;align-items:center;margin-top:50px}
+    #playerNames input{padding:12px;margin:10px;font-size:16px;width:220px;border-radius:10px;border:none}
+    #scoreboard{
+        display:flex;
+        justify-content:space-around;
+        margin:20px;
+        display:none;
+    }
+    .player{
+        font-size:20px;
+        padding:15px 25px;
+        border-radius:15px;
+        background:linear-gradient(145deg,#1e1e1e,#333);
+        box-shadow:0 0 15px rgba(0,0,0,.6);
+    }
+    #gameTurn{
+        font-size:22px;
+        color:#00ffd5;
+        text-shadow:0 0 10px #00ffd5;
+    }
+    .container{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:25px;
+        margin-top:20px;
+        position:relative;
+    }
+    .card{
+        width:150px;          
+        height:180px;
+        background:linear-gradient(160deg,#1c1c1c,#2b2b2b);
+        border-radius:20px;
+        padding:10px;
+        cursor:pointer;
+        transition:.3s;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:flex-start;
+        box-shadow:0 5px 20px rgba(0,0,0,.6);
+        position:relative;
+    }
+    .card:hover {
+        transform: scale(1.1);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card img{
+        width:100%;
+        height: 170px;
+        border-radius:15px;
+        object-fit:cover;
+    }
+    .card label{
+        margin-bottom:10px;
+        font-size:16px;
+        color:gold;
+        text-align:center;
+    }
+    .card.selected{outline:3px solid lime}
+    #nextBtn{
+        padding:8px 16px;
+        font-size:16px;
+        border-radius:12px;
+        background:linear-gradient(145deg,#00c6ff,#0072ff);
+        color:white;
+        cursor:pointer;
+        margin-top:20px;
+    }
+    #gameScreen{display:none;margin-top:20px;position:relative}
+    #backBtn, #changePlayersBtn{
+        position:absolute;
+        top:10px;
+        left:10px;
+        background:linear-gradient(145deg,#ff416c,#ff4b2b);
+        color:white;
+        padding:8px 16px;
+        border-radius:15px;
+        box-shadow:0 0 10px rgba(255,65,108,.7);
+    }
+    #changePlayersBtn{left:160px;}
+    #gameContainer{
+        display:grid;
+        grid-template-columns:repeat(3, 1fr);
+        gap:30px;
+        padding:60px;
+        padding-left: 150px;
+    }
+    .game-row{
+        width:50%;
+        height:250px;
+        position:relative;
+        background:rgba(0,0,0,.5);
+        border-radius:15px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:flex-start;
+        padding:10px;
+        transition:.3s;
+    }
+    .game-row img{
+        width:80%;
+        height:240px;       
+        border-radius:10px;
+        object-fit:cover;
+    }
+    .category-name{
+        margin-bottom:8px;
+        font-size:20px;
+        color:gold;
+        text-align:center;
+    }
+    #callPopup{
+        position:fixed;
+        top:50%; left:50%;
+        transform:translate(-50%,-50%);
+        background:#222;
+        padding:20px;
+        border-radius:15px;
+        display:none;
+        z-index:1000;
+    }
+    #optionsPopup{
+        position:fixed;
+        top:50%; left:50%;
+        transform:translate(-50%,-50%);
+        background:#222;
+        padding:20px;
+        border-radius:15px;
+        display:none;
+        z-index:1000;
+        text-align:center;
+        box-shadow:0 0 20px rgba(255,255,255,.4);
+    }
+    #closeOptions{
+        position:absolute;
+        top:5px; right:5px;
+        border:none; background:#ff416c;
+        color:white; border-radius:50%;
+        width:30px; height:30px; cursor:pointer;
+    }
+    .timer-circle{
+        width:120px;
+        height:120px;
+        border-radius:50%;
+        border:8px solid #00ffcc;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:30px;
+        margin:20px auto;
+    }
+    .points-left, .points-right{
+        display:flex;
+        flex-direction:column;
+        gap:20px;
+        position:absolute;
+        top:10px;
+    }
+    .points-left{left:-80px;}
+    .points-right{right:-80px;}
+    .points-left button, .points-right button{
+        width:70px;
+        padding:5px;
+        font-size:22px;
+        border-radius:8px;
+        background:linear-gradient(145deg,#00c6ff,#0072ff);
+        color:white;
+        box-shadow:0 0 5px rgba(0,114,255,.7);
+    }
+    .points-left button.used, .points-right button.used{
+        background:linear-gradient(145deg,#ff416c,#ff4b2b);
+        box-shadow:0 0 5px rgba(255,65,108,.8);
+    }
+    #questionScreen{display:none;text-align:center;margin-top:50px;background:#222;border-radius:15px;padding:20px;width:60%;margin:auto;box-shadow:0 0 20px rgba(255,255,255,.3);transition:all .3s}
+    #answer{margin-top:15px;color:lime;font-size:20px;font-weight:bold;text-shadow:0 0 10px lime}
+    .answer-buttons{
+        display:flex;
+        justify-content:center;
+        gap:15px;
+        margin-top:20px;
+        flex-wrap:wrap;
+    }
+    .answer-buttons button{
+        min-width:120px;
+        padding:10px;
+        border-radius:12px;
+        font-size:14px;
+        transition:all .3s;
+    }
+    .question-media{
+        max-width:80%;
+        max-height:250px;
+        border-radius:15px;
+        box-shadow:0 0 15px rgba(0,0,0,.6);
+    }
+    .answer-box{
+        margin-top:15px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:12px;
+    }
+    .answer-text{
+        color:#00ff88;
+        font-size:22px;
+        font-weight:bold;
+        text-shadow:0 0 10px #00ff88;
+    }
+    .lifelines{
+        margin-top:10px;
+        display:flex;
+        justify-content:center;
+        gap:10px;
+    }
+    .life{
+        font-size:22px;
+        cursor:pointer;
+        padding:8px;
+        border-radius:50%;
+        background:linear-gradient(145deg,#00c6ff,#0072ff);
+        box-shadow:0 0 8px rgba(0,114,255,.8);
+        transition:.3s;
+    }
+    .life:hover{
+        transform:scale(1.2);
+    }
+    .life.used{
+        background:gray;
+        box-shadow:none;
+        cursor:not-allowed;
+        opacity:0.6;
+    }
+    .btn-current{background:linear-gradient(145deg,#00ffcc,#00c6ff);color:black}
+    .btn-other{background:linear-gradient(145deg,#f7971e,#ffd200);color:black}
+    .btn-none{background:linear-gradient(145deg,#8e9eab,#eef2f3);color:black}
+    .btn-show{background:linear-gradient(145deg,#ff416c,#ff4b2b);color:white}
+    #pointsPopup{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);font-size:40px;color:lime;display:none;z-index:999;animation:pop 1s}
+    @keyframes pop{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}50%{transform:translate(-50%,-50%) scale(1.2);opacity:1}100%{opacity:0}}
+    #winScreen{
+        position:fixed;
+        top:0; left:0;
+        width:100%; height:100%;
+        background:rgba(0,0,0,.9);
+        display:none; justify-content:center; align-items:center; flex-direction:column;
+        z-index:1000;
+    }
+    #winScreen h1{
+        font-size:50px;
+        color:gold;
+        text-shadow:0 0 20px gold;
+        margin-bottom:30px;
+    }
+    #confirmPopup{
+        position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+        background:#222;padding:20px;border-radius:15px;display:none;
+        box-shadow:0 0 15px rgba(255,255,255,.4);
+    }
+    @media (max-width: 768px) {
+        #gameContainer {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 80px !important;
+            padding: 30px !important;
+        }
+        .game-row {
+            width: 90% !important;
+            margin: 0 auto !important;
+            height: auto !important;
+            min-height: 280px !important;
+        }
+        .game-row img {
+            width: 100% !important;
+            height: 180px !important;
+        }
+        .points-left, .points-right {
+            position: static !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            gap: 30px !important;
+            margin-top: 15px !important;
+        }
+        .points-left button, .points-right button {
+            width: 80px !important;
+            font-size: 24px !important;
+            padding: 10px !important;
+        }
+    }
+    .game-row.locked {
+        opacity: 0.6;
+        filter: grayscale(0.5);
+        position: relative;
+    }
+    .game-row.locked::after {
+        content: "🔒";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 50px;
+        background: rgba(0,0,0,0.7);
+        padding: 20px;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .auth-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    }
+    .auth-box {
+        background: rgba(0,0,0,0.85);
+        padding: 40px;
+        border-radius: 25px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 0 50px rgba(0,255,255,0.3);
+        border: 1px solid rgba(0,255,255,0.5);
+    }
+    .auth-box h2 {
+        color: gold;
+        margin-bottom: 25px;
+        font-size: 28px;
+    }
+    .auth-box input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border: none;
+        background: rgba(255,255,255,0.9);
+        font-size: 16px;
+        text-align: right;
+    }
+    .auth-box button {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border: none;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .btn-login {
+        background: linear-gradient(145deg, #00c6ff, #0072ff);
+        color: white;
+    }
+    .btn-register {
+        background: linear-gradient(145deg, #ff416c, #ff4b2b);
+        color: white;
+    }
+    .auth-message {
+        color: #ffaa00;
+        margin-top: 15px;
+        font-size: 14px;
+    }
+    .logout-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        background: linear-gradient(145deg, #ff416c, #ff4b2b);
+        border: none;
+        border-radius: 25px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+        z-index: 100;
+        display: none;
+    }
+    .store-btn {
+        position: fixed;
+        top: 20px;
+        right: 120px;
+        padding: 8px 16px;
+        background: linear-gradient(145deg, #f7971e, #ffd200);
+        border: none;
+        border-radius: 25px;
+        color: black;
+        cursor: pointer;
+        font-weight: bold;
+        z-index: 100;
+        display: none;
+    }
+    .stars-indicator {
+        position: fixed;
+        top: 20px;
+        right: 220px;
+        background: rgba(0,0,0,0.7);
+        padding: 8px 15px;
+        border-radius: 50px;
+        color: gold;
+        font-weight: bold;
+        z-index: 100;
+        display: none;
+        cursor: pointer;
+    }
+    .store-screen {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 10001;
+        justify-content: center;
+        align-items: center;
+        overflow-y: auto;
+    }
+    .store-box {
+        background: linear-gradient(145deg, #1a1a2e, #16213e);
+        padding: 30px;
+        border-radius: 25px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        text-align: center;
+        border: 2px solid gold;
+        position: relative;
+        margin: 20px;
+    }
+    .stars-balance {
+        background: rgba(0,0,0,0.5);
+        padding: 15px;
+        border-radius: 15px;
+        margin: 15px 0;
+    }
+    .stars-balance span {
+        font-size: 32px;
+        color: gold;
+        font-weight: bold;
+    }
+    .category-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255,255,255,0.1);
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 12px;
+    }
+    .category-item img {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    .category-item button {
+        padding: 5px 15px;
+        background: linear-gradient(145deg, #00c6ff, #0072ff);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .close-store-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #ff416c;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+    .close-store-bottom {
+        background: linear-gradient(145deg, #00c6ff, #0072ff);
+        color: white;
+        padding: 10px 25px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .notification {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.9);
+        color: gold;
+        padding: 20px 40px;
+        border-radius: 15px;
+        font-size: 18px;
+        z-index: 10002;
+        display: none;
+        text-align: center;
+        border: 2px solid gold;
+    }
+    #adConfirmPopup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #222;
+        padding: 20px;
+        border-radius: 15px;
+        display: none;
+        z-index: 10003;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(255,255,255,0.5);
+        border: 1px solid gold;
+    }
+    #adConfirmPopup button {
+        margin: 10px;
+        padding: 8px 20px;
+    }
+    /* رسالة الخطأ المميزة */
+    .error-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10005;
+        animation: fadeIn 0.3s ease;
+    }
+    .error-card {
+        background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+        border-radius: 25px;
+        padding: 30px 40px;
+        text-align: center;
+        border: 2px solid #ff416c;
+        box-shadow: 0 0 50px rgba(255,65,108,0.5);
+        transform: scale(0.9);
+        animation: popIn 0.3s ease forwards;
+        max-width: 400px;
+        margin: 20px;
+    }
+    .error-card .error-icon {
+        font-size: 60px;
+        margin-bottom: 15px;
+        animation: shake 0.5s ease;
+    }
+    .error-card .error-title {
+        color: #ff416c;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .error-card .error-message {
+        color: white;
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+    .error-card .error-button {
+        background: linear-gradient(145deg, #ff416c, #ff4b2b);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .error-card .error-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(255,65,108,0.5);
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes popIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+</style>
+</head>
+<body>
+
+<!-- شاشة تسجيل الدخول -->
+<div id="authScreen" class="auth-screen">
+    <div class="auth-box">
+        <h2>🔐 تسجيل الدخول</h2>
+        <div id="loginForm">
+            <input type="email" id="loginEmail" placeholder="البريد الإلكتروني">
+            <input type="password" id="loginPassword" placeholder="كلمة المرور">
+            <button onclick="handleLogin()" class="btn-login">تسجيل دخول</button>
+            <button onclick="showRegisterForm()" class="btn-register">إنشاء حساب جديد</button>
+        </div>
+        <div id="registerForm" style="display: none;">
+            <input type="email" id="regEmail" placeholder="البريد الإلكتروني">
+            <input type="password" id="regPassword" placeholder="كلمة المرور">
+            <input type="text" id="regUsername" placeholder="اسم المستخدم">
+            <button onclick="handleRegister()" class="btn-login">إنشاء حساب</button>
+            <button onclick="showLoginForm()" class="btn-register">العودة لتسجيل الدخول</button>
+        </div>
+        <div id="authMessage" class="auth-message"></div>
+    </div>
+</div>
+
+<button id="logoutBtn" class="logout-btn" onclick="handleLogout()">🚪 تسجيل خروج</button>
+<div id="starsIndicator" class="stars-indicator" onclick="openStore()">⭐ <span id="starsAmount">0</span></div>
+<button id="storeBtn" class="store-btn" onclick="openStore()">⭐ المتجر</button>
+
+<div id="storeScreen" class="store-screen">
+    <div class="store-box">
+        <button class="close-store-btn" onclick="closeStore()">✖</button>
+        <h2 style="color: gold; margin-bottom: 20px;">⭐ المتجر ⭐</h2>
+        <div class="stars-balance">
+            ⭐ رصيد النجوم: <span id="storeStarsAmount">0</span>
+        </div>
+        <div style="margin: 15px 0;">
+            <button onclick="watchAdForStars()" style="background:linear-gradient(145deg,#f7971e,#ffd200);color:black;padding:10px 20px;border:none;border-radius:10px;cursor:pointer;font-weight:bold;">🎬 مشاهدة إعلان +1 نجمة</button>
+        </div>
+        <hr style="border-color:gold;margin:15px 0;">
+        <h3 style="color: gold; margin: 15px 0;">🔓 الفئات المتاحة للشراء</h3>
+        <div id="storeCategoriesList"></div>
+        <button class="close-store-bottom" onclick="closeStore()">إغلاق</button>
+    </div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<div id="playerNames">
+    <h1>أدخل أسماء اللاعبين</h1>
+    <input id="player1" placeholder="اسم اللاعب الأول">
+    <input id="player2" placeholder="اسم اللاعب الثاني">
+    <button onclick="startPlayers()">ابدأ</button>
+</div>
+
+<div id="container" class="container" style="display:none;">
+    <h2>اختر حتى 6 فئات</h2>
+    <button id="changePlayersBtn" onclick="changePlayers()">تغيير أسماء اللاعبين</button>
+    <!-- جميع البطاقات -->
+    <div class="card" data-name="حيوانات" data-img="https://i.pinimg.com/736x/92/c2/71/92c271257c8b7910aa479dd03b1e5605.jpg">
+        <img src="https://i.pinimg.com/736x/92/c2/71/92c271257c8b7910aa479dd03b1e5605.jpg">
+        <label>حيوانات</label>
+    </div>
+    <div class="card" data-name="نباتات" data-img="https://i.pinimg.com/736x/35/5b/bb/355bbbda47f5927e49b5407cdb0610fd.jpg">
+        <img src="https://i.pinimg.com/736x/35/5b/bb/355bbbda47f5927e49b5407cdb0610fd.jpg">
+        <label>نباتات</label>
+    </div>
+    <div class="card" data-name="جغرافيا" data-img="https://i.pinimg.com/736x/49/62/cb/4962cb730fe0eaf9e611b4c5c5ee11dd.jpg">
+        <img src="https://i.pinimg.com/736x/49/62/cb/4962cb730fe0eaf9e611b4c5c5ee11dd.jpg">
+        <label>جغرافيا</label>
+    </div>
+    <div class="card" data-name="كرة قدم" data-img="https://i.pinimg.com/736x/86/fe/44/86fe443c2535279d16c52687fe0ba87c.jpg">
+        <img src="https://i.pinimg.com/736x/86/fe/44/86fe443c2535279d16c52687fe0ba87c.jpg">
+        <label>كرة قدم</label>
+    </div>
+    <div class="card" data-name="دوري ابطال اوروبا" data-img="https://i.pinimg.com/736x/20/53/ff/2053ff6a2a36065eadd4f7f9bdaab385.jpg">
+        <img src="https://i.pinimg.com/736x/20/53/ff/2053ff6a2a36065eadd4f7f9bdaab385.jpg">
+        <label>دوري ابطال اوروبا</label>
+    </div>
+    <div class="card" data-name="الدوري الاسباني" data-img="https://i.pinimg.com/736x/98/e2/35/98e235bfce4e96284e2285ba7978e41a.jpg">
+        <img src="https://i.pinimg.com/736x/98/e2/35/98e235bfce4e96284e2285ba7978e41a.jpg">
+        <label>الدوري الاسباني</label>
+    </div>
+    <div class="card" data-name="الدوري الانجليزي" data-img="https://i.pinimg.com/736x/b5/c9/3b/b5c93b5efffbea3cf61503b33b1191e3.jpg">
+        <img src="https://i.pinimg.com/736x/b5/c9/3b/b5c93b5efffbea3cf61503b33b1191e3.jpg">
+        <label>الدوري الانجليزي</label>
+    </div>
+    <div class="card" data-name="الدوري الايطالي" data-img="https://i.pinimg.com/736x/30/64/36/3064366928090fbaa2e3d8bd460f057c.jpg">
+        <img src="https://i.pinimg.com/736x/30/64/36/3064366928090fbaa2e3d8bd460f057c.jpg">
+        <label>الدوري الايطالي</label>
+    </div>
+    <div class="card" data-name="الدوري الالماني" data-img="https://i.pinimg.com/736x/48/39/06/483906030a23cfeff14b0463bbf61086.jpg">
+        <img src="https://i.pinimg.com/736x/48/39/06/483906030a23cfeff14b0463bbf61086.jpg">
+        <label>الدوري الالماني</label>
+    </div>
+    <div class="card" data-name="الدوري الفرنسي" data-img="https://i.pinimg.com/736x/ba/ef/94/baef94d8e971ed5f371807a38e729326.jpg">
+        <img src="https://i.pinimg.com/736x/ba/ef/94/baef94d8e971ed5f371807a38e729326.jpg">
+        <label>الدوري الفرنسي</label>
+    </div>
+    <div class="card" data-name="الكلاسيكو" data-img="https://i.pinimg.com/1200x/d9/76/28/d976281b8d0eb0005be8a66427dc1d2a.jpg">
+        <img src="https://i.pinimg.com/1200x/d9/76/28/d976281b8d0eb0005be8a66427dc1d2a.jpg">
+        <label>الكلاسيكو</label>
+    </div>
+    <div class="card" data-name="كاس العالم" data-img="https://i.pinimg.com/736x/8b/e1/29/8be1296925ff26df4fdd51b71a31bb02.jpg">
+        <img src="https://i.pinimg.com/736x/8b/e1/29/8be1296925ff26df4fdd51b71a31bb02.jpg">
+        <label>كاس العالم</label>
+    </div>
+    <div class="card" data-name="قران" data-img="https://i.pinimg.com/736x/1a/af/63/1aaf63c214bad4e8039b3d80b8e4d4d7.jpg">
+        <img src="https://i.pinimg.com/736x/1a/af/63/1aaf63c214bad4e8039b3d80b8e4d4d7.jpg">
+        <label>قران</label>
+    </div>
+    <div class="card" data-name="اسلامي" data-img="https://i.pinimg.com/736x/31/25/5a/31255ab770dda7acd95cefc43c0ae59e.jpg">
+        <img src="https://i.pinimg.com/736x/31/25/5a/31255ab770dda7acd95cefc43c0ae59e.jpg">
+        <label>اسلامي</label>
+    </div>
+    <div class="card" data-name="الصحابة" data-img="https://i.pinimg.com/736x/99/de/66/99de665c179256c959c1e0ea6b4e2cd5.jpg">
+        <img src="https://i.pinimg.com/736x/99/de/66/99de665c179256c959c1e0ea6b4e2cd5.jpg">
+        <label>الصحابة</label>
+    </div>
+    <div class="card" data-name="دول وعواصم" data-img="https://i.pinimg.com/736x/85/85/fd/8585fd64928e77f47ac6b8170e5da667.jpg">
+        <img src="https://i.pinimg.com/736x/85/85/fd/8585fd64928e77f47ac6b8170e5da667.jpg">
+        <label>دول وعواصم</label>
+    </div>
+    <div class="card" data-name="اعلام" data-img="https://i.pinimg.com/736x/06/0c/ef/060cef02485d4d78ac286fa4e595be91.jpg">
+        <img src="https://i.pinimg.com/736x/06/0c/ef/060cef02485d4d78ac286fa4e595be91.jpg">
+        <label>اعلام</label>
+    </div>
+    <div class="card" data-name="حروف" data-img="https://i.pinimg.com/736x/2b/84/cd/2b84cd4b08ca53725bef2376207506e5.jpg">
+        <img src="https://i.pinimg.com/736x/2b/84/cd/2b84cd4b08ca53725bef2376207506e5.jpg">
+        <label>حروف</label>
+    </div>
+    <div class="card" data-name="تحدي الصور" data-img="https://i.pinimg.com/1200x/bd/f0/76/bdf0766c4a4c1884cb9140a61d1bd27e.jpg">
+        <img src="https://i.pinimg.com/1200x/bd/f0/76/bdf0766c4a4c1884cb9140a61d1bd27e.jpg">
+        <label>تحدي الصور</label>
+    </div>
+    <div class="card" data-name="معلومات عامة" data-img="https://i.pinimg.com/736x/75/16/6f/75166fcc5510bfc4018703da115f01c8.jpg">
+        <img src="https://i.pinimg.com/736x/75/16/6f/75166fcc5510bfc4018703da115f01c8.jpg">
+        <label>معلومات عامة</label>
+    </div>
+    <div class="card" data-name="الغاز" data-img="https://i.pinimg.com/736x/9a/d0/cd/9ad0cd320161c8fda926bf14259a082f.jpg">
+        <img src="https://i.pinimg.com/736x/9a/d0/cd/9ad0cd320161c8fda926bf14259a082f.jpg">
+        <label>الغاز</label>
+    </div>
+    <div class="card" data-name="game of throns" data-img="https://i.pinimg.com/736x/7a/c6/04/7ac604540c47120f0a5008278e56651e.jpg">
+        <img src="https://i.pinimg.com/736x/7a/c6/04/7ac604540c47120f0a5008278e56651e.jpg">
+        <label>game of throns</label>
+    </div>
+    <div class="card" data-name="Breaking Bad" data-img="https://i.pinimg.com/736x/80/1a/ce/801ace76cef53811f1fbdb5d18ecd500.jpg">
+        <img src="https://i.pinimg.com/736x/80/1a/ce/801ace76cef53811f1fbdb5d18ecd500.jpg">
+        <label>Breaking Bad</label>
+    </div>
+    <div class="card" data-name="باب الحارة" data-img="https://i.pinimg.com/1200x/3d/c0/30/3dc0304858875a048bdb7ff66c237273.jpg">
+        <img src="https://i.pinimg.com/1200x/3d/c0/30/3dc0304858875a048bdb7ff66c237273.jpg">
+        <label>باب الحارة</label>
+    </div>
+    <div class="card" data-name="ون بيس" data-img="https://i.pinimg.com/1200x/d0/81/39/d08139600d77ed80728bd342c16b6712.jpg">
+        <img src="https://i.pinimg.com/1200x/d0/81/39/d08139600d77ed80728bd342c16b6712.jpg">
+        <label>ون بيس</label>
+    </div>
+    <div class="card" data-name="ناروتو" data-img="https://i.pinimg.com/736x/43/d6/7b/43d67b0ac2bed4de021646eb3ead2028.jpg">
+        <img src="https://i.pinimg.com/736x/43/d6/7b/43d67b0ac2bed4de021646eb3ead2028.jpg">
+        <label>ناروتو</label>
+    </div>
+    <div class="card" data-name="بليتش" data-img="https://i.pinimg.com/736x/8b/3e/9c/8b3e9c7953d6cdc568b288bdf25b4f10.jpg">
+        <img src="https://i.pinimg.com/736x/8b/3e/9c/8b3e9c7953d6cdc568b288bdf25b4f10.jpg">
+        <label>بليتش</label>
+    </div>
+    <div class="card" data-name="هجوم العمالقة" data-img="https://i.pinimg.com/736x/d6/db/56/d6db56701eb303d9dd3cddab3afb4701.jpg">
+        <img src="https://i.pinimg.com/736x/d6/db/56/d6db56701eb303d9dd3cddab3afb4701.jpg">
+        <label>هجوم العمالقة</label>
+    </div>
+    <div class="card" data-name="دراغون بول" data-img="https://i.pinimg.com/736x/bd/ce/ad/bdceadeeab5646f1b96da700501ee7d9.jpg">
+        <img src="https://i.pinimg.com/736x/bd/ce/ad/bdceadeeab5646f1b96da700501ee7d9.jpg">
+        <label>دراغون بول</label>
+    </div>
+    <div class="card" data-name="هنتر" data-img="https://i.pinimg.com/736x/9f/61/fe/9f61fe7d1c1078ba645cfa401d011d82.jpg">
+        <img src="https://i.pinimg.com/736x/9f/61/fe/9f61fe7d1c1078ba645cfa401d011d82.jpg">
+        <label>هنتر</label>
+    </div>
+    <button id="nextBtn" onclick="startGame()">التالي</button>
+</div>
+
+<div id="scoreboard">
+    <div class="player" id="player1Box">
+        <div id="player1Score"></div>
+        <div class="lifelines">
+            <span class="life" onclick="useDouble(0,this)">✖️</span>
+            <span class="life" onclick="useTwo(0,this)">2️⃣</span>
+        </div>
+    </div>
+    <div class="player" id="player2Box">
+        <div id="player2Score"></div>
+        <div class="lifelines">
+            <span class="life" onclick="useDouble(1,this)">✖️</span>
+            <span class="life" onclick="useTwo(1,this)">2️⃣</span>
+        </div>
+    </div>
+</div>
+
+<div id="callPopup" class="popup" style="display: none;">
+    <h2>📞 اختر نوع المساعدة</h2>
+    <button onclick="closeCallPopup()">✖</button>
+    <button onclick="startCall()">اتصال بصديق</button>
+    <button onclick="showOptions()">4 خيارات</button>
+</div>
+
+<div id="timerPopup" class="popup" style="display: none;">
+    <button id="closeTimer" onclick="closeTimer()">✖</button>
+    <div class="timer-circle" id="timer">45</div>
+</div>
+
+<div id="gameScreen">
+    <button id="backBtn" onclick="confirmBack()">⬅ رجوع للفئات</button>
+    <h2 id="gameTurn"></h2>
+    <div id="gameContainer"></div>
+</div>
+
+<div id="optionsPopup" class="popup">
+    <button id="closeOptions" onclick="closeOptions()">✖</button>
+    <div id="optionsContent"></div>
+</div>
+
+<div id="questionScreen"></div>
+<div id="pointsPopup"></div>
+
+<div id="winScreen">
+    <h1 id="winnerText"></h1>
+    <button onclick="location.reload()">إعادة اللعب</button>
+</div>
+
+<div id="confirmPopup">
+    <p>هل أنت متأكد من الرجوع؟ سيتم اعادة تعيين النقاط.</p>
+    <button onclick="confirmYes()">نعم</button>
+    <button onclick="confirmNo()">لا</button>
+</div>
+
+<div id="adConfirmPopup">
+    <p>🎬 هل أنهيت مشاهدة الإعلان؟</p>
+    <button onclick="confirmAdWatched()">نعم، أضف النجمة</button>
+    <button onclick="closeAdConfirm()">إلغاء</button>
+</div>
+
+<script>
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCPDCKLQg7lFZLjUyksMkGTW9Ks5TtrujY",
+  authDomain: "senjem-30c12.firebaseapp.com",
+  projectId: "senjem-30c12",
+  storageBucket: "senjem-30c12.firebasestorage.app",
+  messagingSenderId: "418688533834",
+  appId: "1:418688533834:web:e7219d4d1be3a69f472db3",
+  measurementId: "G-CLB37BG4MQ"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// ========== تعريف المتغيرات العامة ==========
+const doubleSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
+let lifelinesUsed = [
+    {double:false, call:false, two:false},
+    {double:false, call:false, two:false}
+];
+
+let doubleActive = false;
+let timerUsed = [false, false];
+let playerNames=[], playerScores=[0,0], currentPlayerIndex=0, selectedCategories=[];
+let inQuestion = false;
+let totalQuestions=0, answered=0;
+const correctSound=new Audio("https://www.soundjay.com/buttons/sounds/button-4.mp3");
+let doubleUsedThisTurn = false;
+let optionsUsed = [false, false];
+let currentUser = null;
+let userStars = 0;
+let purchasedCategories = [];
+
+// ========== دوال مساعدة ==========
+function showNotification(msg, isSuccess = true) {
+    const notif = document.getElementById("notification");
+    notif.innerHTML = msg;
+    notif.style.display = "block";
+    notif.style.background = isSuccess ? "rgba(0,0,0,0.9)" : "rgba(255,0,0,0.9)";
+    setTimeout(() => {
+        notif.style.display = "none";
+    }, 2500);
+}
+
+// دالة عرض رسالة الخطأ المميزة في وسط الشاشة
+function showError(message) {
+    // إزالة أي رسالة خطأ موجودة
+    const existingOverlay = document.querySelector('.error-overlay');
+    if(existingOverlay) existingOverlay.remove();
+    
+    // إنشاء الـ overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'error-overlay';
+    
+    // إنشاء بطاقة الخطأ
+    overlay.innerHTML = `
+        <div class="error-card">
+            <div class="error-icon">⚠️</div>
+            <div class="error-title">تنبيه</div>
+            <div class="error-message">${message}</div>
+            <button class="error-button" onclick="this.closest('.error-overlay').remove()">حسناً</button>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // إخفاء تلقائي بعد 3 ثواني
+    setTimeout(() => {
+        if(overlay && overlay.parentNode) {
+            overlay.style.animation = 'fadeIn 0.3s ease reverse';
+            setTimeout(() => {
+                if(overlay && overlay.parentNode) overlay.remove();
+            }, 300);
+        }
+    }, 3000);
+}
+
+function updateStarsDisplay() {
+    document.getElementById("starsAmount").innerText = userStars;
+    document.getElementById("storeStarsAmount").innerText = userStars;
+}
+
+function getFirstSixCategories() {
+    const allCards = document.querySelectorAll('.card');
+    const firstSixNames = [];
+    for(let i=0; i<Math.min(6, allCards.length); i++) {
+        firstSixNames.push(allCards[i].dataset.name);
+    }
+    return firstSixNames;
+}
+
+async function saveGameData() {
+    if (!currentUser) return;
+    try {
+        await db.collection("users").doc(currentUser.uid).set({
+            stars: userStars,
+            purchasedCategories: purchasedCategories,
+            playerNames: playerNames,
+            playerScores: playerScores,
+            selectedCategories: selectedCategories,
+            currentPlayerIndex: currentPlayerIndex,
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+    } catch (error) {
+        console.error("Error saving data:", error);
+    }
+}
+
+async function loadGameData() {
+    if (!currentUser) return;
+    try {
+        const doc = await db.collection("users").doc(currentUser.uid).get();
+        if (doc.exists) {
+            const data = doc.data();
+            userStars = data.stars || 0;
+            purchasedCategories = data.purchasedCategories || getFirstSixCategories();
+            playerNames = data.playerNames || ["", ""];
+            playerScores = data.playerScores || [0, 0];
+            selectedCategories = data.selectedCategories || [];
+            currentPlayerIndex = data.currentPlayerIndex || 0;
+            updateScoreboard();
+        } else {
+            // مستخدم جديد - أول مرة يسجل دخول
+            userStars = 100;
+            purchasedCategories = getFirstSixCategories();
+            await db.collection("users").doc(currentUser.uid).set({
+                stars: userStars,
+                purchasedCategories: purchasedCategories,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+        updateStarsDisplay();
+        updateCategorySelectionUI();
+    } catch (error) {
+        console.error("Error loading data:", error);
+        userStars = 0;
+        purchasedCategories = getFirstSixCategories();
+        updateStarsDisplay();
+        updateCategorySelectionUI();
+    }
+}
+
+// ========== دوال المصادقة ==========
+async function handleLogin() {
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    const messageDiv = document.getElementById("authMessage");
+    
+    if (!email || !password) {
+        messageDiv.innerText = "⚠️ الرجاء إدخال البريد الإلكتروني وكلمة المرور";
+        return;
+    }
+    
+    try {
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        currentUser = userCredential.user;
+        await loadGameData();
+        
+        messageDiv.innerText = "✅ تم تسجيل الدخول بنجاح!";
+        
+        setTimeout(() => {
+            document.getElementById("authScreen").style.display = "none";
+            document.getElementById("logoutBtn").style.display = "block";
+            document.getElementById("starsIndicator").style.display = "block";
+            document.getElementById("storeBtn").style.display = "block";
+            document.getElementById("playerNames").style.display = "flex";
+        }, 500);
+    } catch (error) {
+        console.error("Login error:", error);
+        messageDiv.innerText = "⚠️ خطأ في تسجيل الدخول: " + error.message;
+    }
+}
+
+async function handleRegister() {
+    const email = document.getElementById("regEmail").value;
+    const password = document.getElementById("regPassword").value;
+    const username = document.getElementById("regUsername").value;
+    const messageDiv = document.getElementById("authMessage");
+    
+    if (!email || !password || !username) {
+        messageDiv.innerText = "⚠️ الرجاء ملء جميع الحقول";
+        return;
+    }
+    
+    if (password.length < 6) {
+        messageDiv.innerText = "⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل";
+        return;
+    }
+    
+    try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        currentUser = userCredential.user;
+        
+        // للمستخدم الجديد: 100 نجمة فقط عند إنشاء الحساب لأول مرة
+        userStars = 100;
+        purchasedCategories = getFirstSixCategories();
+        
+        await db.collection("users").doc(currentUser.uid).set({
+            username: username,
+            email: email,
+            stars: userStars,
+            purchasedCategories: purchasedCategories,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        updateStarsDisplay();
+        
+        messageDiv.innerText = "✅ تم إنشاء الحساب بنجاح! تم إضافة 100 نجمة وأول 6 فئات مفتوحة";
+        
+        setTimeout(() => {
+            document.getElementById("authScreen").style.display = "none";
+            document.getElementById("logoutBtn").style.display = "block";
+            document.getElementById("starsIndicator").style.display = "block";
+            document.getElementById("storeBtn").style.display = "block";
+            document.getElementById("playerNames").style.display = "flex";
+        }, 500);
+    } catch (error) {
+        console.error("Register error:", error);
+        messageDiv.innerText = "⚠️ خطأ في إنشاء الحساب: " + error.message;
+    }
+}
+
+async function handleLogout() {
+    try {
+        await saveGameData();
+        await auth.signOut();
+        currentUser = null;
+        playerNames = [];
+        playerScores = [0, 0];
+        selectedCategories = [];
+        userStars = 0;
+        purchasedCategories = [];
+        
+        document.getElementById("authScreen").style.display = "flex";
+        document.getElementById("logoutBtn").style.display = "none";
+        document.getElementById("starsIndicator").style.display = "none";
+        document.getElementById("storeBtn").style.display = "none";
+        document.getElementById("playerNames").style.display = "flex";
+        document.getElementById("container").style.display = "none";
+        document.getElementById("gameScreen").style.display = "none";
+        document.getElementById("scoreboard").style.display = "none";
+        
+        document.getElementById("loginEmail").value = "";
+        document.getElementById("loginPassword").value = "";
+        document.getElementById("regEmail").value = "";
+        document.getElementById("regPassword").value = "";
+        document.getElementById("regUsername").value = "";
+        
+        showNotification("تم تسجيل الخروج بنجاح");
+    } catch (error) {
+        console.error("Logout error:", error);
+    }
+}
+
+function showRegisterForm() {
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("registerForm").style.display = "block";
+    document.getElementById("authMessage").innerText = "";
+}
+
+function showLoginForm() {
+    document.getElementById("registerForm").style.display = "none";
+    document.getElementById("loginForm").style.display = "block";
+    document.getElementById("authMessage").innerText = "";
+}
+
+// ========== دوال المتجر والإعلانات ==========
+function openStore() {
+    document.getElementById("storeScreen").style.display = "flex";
+    loadStoreCategories();
+}
+
+function closeStore() {
+    document.getElementById("storeScreen").style.display = "none";
+}
+
+function loadStoreCategories() {
+    const container = document.getElementById("storeCategoriesList");
+    if (!container) return;
+    container.innerHTML = "";
+    
+    const allCategories = [];
+    document.querySelectorAll('.card').forEach(card => {
+        const name = card.dataset.name;
+        const img = card.dataset.img;
+        if (name && !allCategories.find(c => c.name === name)) {
+            allCategories.push({ name, img, price: 100 });
+        }
+    });
+    
+    allCategories.forEach(cat => {
+        const isPurchased = purchasedCategories.includes(cat.name);
+        const div = document.createElement("div");
+        div.className = "category-item";
+        div.innerHTML = `
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="${cat.img}" onerror="this.src='https://via.placeholder.com/40'">
+                <span>${cat.name}</span>
+            </div>
+            <div>
+                ${isPurchased ? 
+                    '<span style="color:green;">✓ مملوكة</span>' : 
+                    `<button onclick="purchaseCategory('${cat.name}', '${cat.img}')">شراء بـ ${cat.price} ⭐</button>`
+                }
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+async function purchaseCategory(categoryName) {
+    if (!currentUser) {
+        showNotification("⚠️ الرجاء تسجيل الدخول أولاً", false);
+        return;
+    }
+    if (purchasedCategories.includes(categoryName)) {
+        showNotification("ℹ️ هذه الفئة تم شراؤها مسبقاً");
+        return;
+    }
+    if (userStars < 100) {
+        showNotification("⚠️ رصيدك لا يكفي! تحتاج 100 نجمة", false);
+        return;
+    }
+    if (confirm(`شراء فئة "${categoryName}" مقابل 100 نجمة؟`)) {
+        userStars -= 100;
+        purchasedCategories.push(categoryName);
+        updateStarsDisplay();
+        await saveGameData();
+        showNotification(`✅ تم شراء فئة "${categoryName}" بنجاح!`);
+        updateCategorySelectionUI();
+        if (document.getElementById("gameScreen").style.display === "block") {
+            updateCategoriesLockStatus();
+        }
+        loadStoreCategories();
+    }
+}
+
+function watchAdForStars() {
+    if (!currentUser) {
+        showNotification("⚠️ الرجاء تسجيل الدخول أولاً", false);
+        return;
+    }
+    const adUrl = "https://www.profitablecpmratenetwork.com/uga1cwcs6v?key=6225595ce736280f773bf52fdce64d80";
+    window.open(adUrl, '_blank');
+    document.getElementById("adConfirmPopup").style.display = "block";
+}
+
+async function confirmAdWatched() {
+    userStars += 1;
+    updateStarsDisplay();
+    await saveGameData();
+    showNotification("✅ تم إضافة نجمة واحدة! شكراً لمشاهدة الإعلان");
+    closeAdConfirm();
+    if (document.getElementById("storeScreen").style.display === "flex") {
+        loadStoreCategories();
+    }
+}
+
+function closeAdConfirm() {
+    document.getElementById("adConfirmPopup").style.display = "none";
+}
+
+function updateCategorySelectionUI() {
+    document.querySelectorAll('.card').forEach(card => {
+        const categoryName = card.dataset.name;
+        if (purchasedCategories.includes(categoryName)) {
+            card.style.opacity = "1";
+            card.style.filter = "none";
+            const lockIcon = card.querySelector('.lock-icon');
+            if (lockIcon) lockIcon.remove();
+            card.onclick = () => {
+                if (card.classList.contains("selected")) {
+                    card.classList.remove("selected");
+                    selectedCategories = selectedCategories.filter(c => c.name !== categoryName);
+                } else {
+                    if (selectedCategories.length >= 6) {
+                        showError("يمكنك اختيار 6 فئات فقط");
+                        return;
+                    }
+                    card.classList.add("selected");
+                    selectedCategories.push({ name: categoryName, img: card.dataset.img });
+                }
+            };
+        } else {
+            card.style.opacity = "0.6";
+            card.style.filter = "grayscale(0.5)";
+            card.style.position = "relative";
+            let lockIcon = card.querySelector('.lock-icon');
+            if (!lockIcon) {
+                lockIcon = document.createElement('div');
+                lockIcon.className = 'lock-icon';
+                lockIcon.innerHTML = '🔒';
+                lockIcon.style.position = 'absolute';
+                lockIcon.style.top = '50%';
+                lockIcon.style.left = '50%';
+                lockIcon.style.transform = 'translate(-50%, -50%)';
+                lockIcon.style.fontSize = '40px';
+                lockIcon.style.background = 'rgba(0,0,0,0.7)';
+                lockIcon.style.padding = '10px';
+                lockIcon.style.borderRadius = '50%';
+                lockIcon.style.pointerEvents = 'none';
+                card.appendChild(lockIcon);
+            }
+            card.onclick = () => {
+                showNotification(`🔒 فئة "${categoryName}" مقفلة! قم بشرائها من المتجر بـ 100 نجمة`, false);
+            };
+        }
+    });
+}
+
+function updateCategoriesLockStatus() {
+    const gameRows = document.querySelectorAll('.game-row');
+    gameRows.forEach(row => {
+        const categoryName = row.querySelector('.category-name')?.innerText;
+        if (categoryName && !purchasedCategories.includes(categoryName)) {
+            row.classList.add('locked');
+        } else {
+            row.classList.remove('locked');
+        }
+    });
+}
+
+// ========== دوال اللعبة ==========
+function startPlayers(){
+    let p1=document.getElementById("player1").value.trim();
+    let p2=document.getElementById("player2").value.trim();
+    if(!p1||!p2) {
+        showError("الرجاء إدخال اسمي اللاعبين");
+        return;
+    }
+    playerNames=[p1,p2];
+    document.getElementById("playerNames").style.display="none";
+    document.getElementById("container").style.display="flex";
+}
+
+function changePlayers(){
+    document.getElementById("container").style.display="none";
+    playerNames.length=0;
+    playerScores=[0,0];
+    document.getElementById("playerNames").style.display="flex";
+}
+
+function confirmBack(){
+    document.getElementById("confirmPopup").style.display="block";
+}
+
+function confirmYes(){
+    document.getElementById("confirmPopup").style.display="none";
+    playerScores = [0,0];
+    answered = 0;
+    currentPlayerIndex = 0;
+    selectedCategories = [];
+    document.getElementById("scoreboard").style.display = "none";
+    document.getElementById("player1Score").innerText = "";
+    document.getElementById("player2Score").innerText = "";
+    document.getElementById("gameContainer").innerHTML = "";
+    document.getElementById("gameScreen").style.display = "none";
+    const cards = document.querySelectorAll(".card");
+    cards.forEach(card => card.classList.remove("selected"));
+    doubleActive = false;
+    optionsUsed = [false, false];
+    document.getElementById("container").style.display = "flex";
+}
+
+function confirmNo(){
+    document.getElementById("confirmPopup").style.display="none";
+}
+
+// دالة startGame المعدلة مع التحقق من اختيار الفئات
+function startGame(){
+    // التحقق من وجود فئات مختارة
+    if(!selectedCategories.length){
+        showError("⚠️ الرجاء اختيار فئة واحدة على الأقل قبل بدء اللعبة");
+        return;
+    }
+    
+    inQuestion = true;
+    lifelinesUsed = [
+        {double:false, call:false, two:false},
+        {double:false, call:false, two:false}
+    ];
+    timerUsed = [false, false];
+    doubleActive = false;
+    doubleUsedThisTurn = false;
+    optionsUsed = [false, false];
+    document.querySelectorAll(".life").forEach(btn => {
+        btn.classList.remove("used");
+    });
+    
+    document.getElementById("container").style.display="none";
+    document.getElementById("gameScreen").style.display="block";
+    document.getElementById("scoreboard").style.display="flex";
+    updateScoreboard();
+    updateTurn();
+
+    document.getElementById("gameContainer").innerHTML=""; 
+    totalQuestions=0; 
+    answered=0;
+
+    selectedCategories.forEach(cat=>{
+        let box=document.createElement("div");
+        box.className="game-row";
+        box.innerHTML=`
+            <img src="${cat.img}">
+            <div class="category-name">${cat.name}</div>
+            <div class="points-left">
+                <button onclick="showQuestion('${cat.name}',100,this,'left')">100</button>
+                <button onclick="showQuestion('${cat.name}',200,this,'left')">200</button>
+                <button onclick="showQuestion('${cat.name}',300,this,'left')">300</button>
+            </div>
+            <div class="points-right">
+                <button onclick="showQuestion('${cat.name}',100,this,'right')">100</button>
+                <button onclick="showQuestion('${cat.name}',200,this,'right')">200</button>
+                <button onclick="showQuestion('${cat.name}',300,this,'right')">300</button>
+            </div>`;
+        document.getElementById("gameContainer").appendChild(box);
+        totalQuestions += 6;
+    });
+    updateCategoriesLockStatus();
+}
+
+function updateTurn(){
+    document.getElementById("gameTurn").innerText="الدور: "+playerNames[currentPlayerIndex];
+}
+
+// الأسئلة (مختصرة للعرض)
+const questions = {
+    "حيوانات": {
+        100: [{ q: "ما هو الحيوان الذي يسمى سفينة الصحراء؟", a: "الجمل", options: ["الفيل", "الجمل", "الحصان", "الأسد"] }],
+        200: [{ q: "ما هو أسرع حيوان بري؟", a: "الفهد", options: ["الأسد", "الفهد", "الغزال", "الحصان"] }],
+        300: [{ q: "ما هو الحيوان الذي ينام وعيناه مفتوحتان؟", a: "السمك", options: ["الأرنب", "السمك", "البومة", "الدلفين"] }]
+    },
+    "نباتات": {
+        100: [{ q: "ما هو لون أوراق الشجر في الربيع؟", a: "أخضر", options: ["أخضر", "أصفر", "أحمر", "بني"] }],
+        200: [{ q: "ما اسم العملية التي تصنع بها النباتات غذاءها؟", a: "البناء الضوئي", options: ["التنفس", "البناء الضوئي", "النتح", "الامتصاص"] }],
+        300: [{ q: "ما هو أكبر زهرة في العالم؟", a: "الرافليسيا", options: ["دوار الشمس", "الرافليسيا", "الزنبق", "الأوركيد"] }]
+    }
+    // يمكن إضافة باقي الفئات هنا
+};
+
+let currentQuestion = null;
+
+function showQuestion(category, point, btn, side){
+    if(!questions[category] || !questions[category][point]) {
+        showError("عذراً، لا توجد أسئلة لهذه الفئة حالياً");
+        return;
+    }
+    
+    doubleUsedThisTurn = true; 
+    if(btn.classList.contains("used")) return;
+    btn.classList.add("used");
+
+    let qList = questions[category][point];
+    let q = qList[Math.floor(Math.random()*qList.length)];
+    currentQuestion = q;
+
+    document.getElementById("questionScreen").style.display="block";
+    document.getElementById("gameScreen").style.display="none";
+
+    let questionHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="flex: 1; text-align: center;">${q.q}</h2>
+            <button onclick="useCallInQuestion()" style="background: linear-gradient(145deg,#00c6ff,#0072ff); color: white; padding: 8px 15px; border-radius: 50px;">📞</button>
+        </div>
+        <div class="answer-buttons">
+            <button class="btn-current" onclick="addPoints(${point},true)">${playerNames[currentPlayerIndex]}</button>
+            <button class="btn-other" onclick="addPoints(${point},false)">${playerNames[1-currentPlayerIndex]}</button>
+            <button class="btn-none" onclick="noOne()">لم يجب أحد</button>
+            <button class="btn-show" onclick='showAnswer("${q.a}")'>إظهار الإجابة</button>
+        </div>
+        <div id="answer"></div>
+    `;
+    document.getElementById("questionScreen").innerHTML = questionHTML;
+}
+
+function useCallInQuestion(){
+    document.getElementById("callPopup").style.display = "block";
+    document.getElementById("callPopup").innerHTML = `
+        <button onclick="closeCallPopup()" style="position:absolute;top:5px;right:5px;background:red;color:white;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;">✖</button>
+        <h2>📞 اختر</h2>
+        <button onclick="startCall()">اتصال بصديق</button>
+        <button onclick="showOptions()">4 خيارات</button>
+    `;
+}
+
+function closeCallPopup(){
+    document.getElementById("callPopup").style.display = "none";
+}
+
+function startCall() {
+    if (timerUsed[currentPlayerIndex]) return;
+    timerUsed[currentPlayerIndex] = true;
+    let popup = document.getElementById("timerPopup");
+    popup.style.display = "block";
+    let time = 45;
+    document.getElementById("timer").innerText = time;
+    let interval = setInterval(()=>{
+        time--;
+        document.getElementById("timer").innerText = time;
+        if(time <= 0){
+            clearInterval(interval);
+            popup.style.display = "none";
+        }
+    },1000);
+    window.currentTimer = interval;
+}
+
+function closeTimer(){
+    clearInterval(window.currentTimer);
+    document.getElementById("timerPopup").style.display = "none";
+}
+
+function showOptions(){
+    if(optionsUsed[currentPlayerIndex]) {
+        showError("لقد استخدمت خاصية الـ 4 خيارات مسبقاً!");
+        return;
+    }
+    if(!currentQuestion || !currentQuestion.options) {
+        showError("لا توجد خيارات متاحة لهذا السؤال");
+        return;
+    }
+    
+    optionsUsed[currentPlayerIndex] = true;
+    document.getElementById("callPopup").style.display = "none";
+    let opts = currentQuestion.options;
+    let container = document.getElementById("optionsContent");
+    container.innerHTML = "";
+    const colors = ["#E91E63", "#2196F3", "#FF9800", "#4CAF50"];
+
+    opts.forEach((opt, index)=>{
+        let btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.style.background = colors[index];
+        btn.style.color = "white";
+        btn.style.margin = "10px";
+        btn.style.padding = "12px 20px";
+        btn.style.border = "none";
+        btn.style.borderRadius = "15px";
+        btn.style.fontSize = "16px";
+        btn.style.fontWeight = "bold";
+        btn.style.cursor = "pointer";
+        btn.style.width = "220px";
+        btn.style.display = "block";
+        btn.style.boxShadow = "0 5px 15px rgba(0,0,0,.5)";
+        btn.disabled = true;
+        container.appendChild(btn);
+    });
+    document.getElementById("optionsPopup").style.display = "block";
+}
+
+function closeOptions(){
+    document.getElementById("optionsPopup").style.display = "none";
+}
+
+function useDouble(player, el){
+    if(player !== currentPlayerIndex){
+        showError("ليس دورك!");
+        return;
+    }
+    if(lifelinesUsed[player].double) return;
+    if(doubleUsedThisTurn){
+        showError("⚠️ لا يمكن استخدام الدبل بعد اختيار السؤال!");
+        return;
+    }
+    lifelinesUsed[player].double = true;
+    doubleActive = true;
+    el.classList.add("used");
+    doubleSound.currentTime = 0;
+    doubleSound.play().catch(()=>{});
+    showDoubleEffect();
+}
+
+function showDoubleEffect(){
+    const effect = document.createElement("div");
+    effect.innerText = "⚡ DOUBLE!";
+    effect.style.position = "fixed";
+    effect.style.top = "40%";
+    effect.style.left = "50%";
+    effect.style.transform = "translate(-50%,-50%) scale(0.5)";
+    effect.style.fontSize = "50px";
+    effect.style.color = "yellow";
+    effect.style.textShadow = "0 0 20px yellow";
+    effect.style.zIndex = "9999";
+    document.body.appendChild(effect);
+    setTimeout(()=>{
+        effect.style.transform = "translate(-50%,-50%) scale(1.5)";
+    },50);
+    setTimeout(()=>{
+        effect.remove();
+    },1000);
+}
+
+function useTwo(player, el){
+    if(player !== currentPlayerIndex){
+        showError("ليس دورك!");
+        return;
+    }
+    if(lifelinesUsed[player].two) return;
+    lifelinesUsed[player].two = true;
+    el.classList.add("used");
+    showNotification("يمكنك إعطاء إجابتين!");
+}
+
+function noOne(){
+    document.getElementById("questionScreen").style.display="none";
+    document.getElementById("gameScreen").style.display="block";
+    currentPlayerIndex=1-currentPlayerIndex;
+    doubleUsedThisTurn = false; 
+    updateTurn();
+}
+
+function addPoints(point, isCurrent){
+    correctSound.play();
+    let idx = isCurrent ? currentPlayerIndex : 1 - currentPlayerIndex;
+    let finalPoints = doubleActive ? point * 2 : point;
+    playerScores[idx] += finalPoints;
+    showPoints(point, doubleActive);
+    doubleActive = false;
+    document.getElementById("questionScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
+    currentPlayerIndex = 1 - currentPlayerIndex;
+    doubleUsedThisTurn = false;
+    updateTurn();
+    updateScoreboard();
+    checkWinner();
+}
+
+function showPoints(p, isDouble){
+    const pointsPopup = document.getElementById("pointsPopup");
+    pointsPopup.innerText = isDouble ? `+${p} (×2)` : `+${p}`;
+    pointsPopup.style.display = "block";
+    if(isDouble){
+        pointsPopup.style.color = "yellow";
+        pointsPopup.style.fontSize = "50px";
+        pointsPopup.style.textShadow = "0 0 20px yellow";
+    } else {
+        pointsPopup.style.color = "lime";
+        pointsPopup.style.fontSize = "40px";
+        pointsPopup.style.textShadow = "0 0 10px lime";
+    }
+    pointsPopup.style.transform = "translate(-50%,-50%) scale(0.5)";
+    pointsPopup.style.opacity = 0;
+    setTimeout(()=>{
+        pointsPopup.style.transition = "all 0.5s ease";
+        pointsPopup.style.transform = "translate(-50%,-50%) scale(1.2)";
+        pointsPopup.style.opacity = 1;
+    }, 50);
+    setTimeout(()=>{
+        pointsPopup.style.transform = "translate(-50%,-50%) scale(1)";
+        pointsPopup.style.opacity = 0;
+    }, 1000);
+}
+
+function showAnswer(a){
+    document.getElementById("answer").innerHTML = `
+        <div class="answer-box">
+            <div class="answer-text">${a}</div>
+        </div>
+    `;
+}
+
+function updateScoreboard(){
+    document.getElementById("player1Score").innerText=playerNames[0]+": "+playerScores[0];
+    document.getElementById("player2Score").innerText=playerNames[1]+": "+playerScores[1];
+}
+
+function checkWinner(){
+    let answeredCount = 0;
+    document.querySelectorAll("#gameContainer .points-left button.used, #gameContainer .points-right button.used").forEach(btn => {
+        answeredCount++;
+    });
+    let total = selectedCategories.length * 6;
+    if(answeredCount >= total){
+        let winner = playerScores[0] > playerScores[1] ? playerNames[0] :
+                     playerScores[0] < playerScores[1] ? playerNames[1] : "تعادل";
+        const winScreen = document.getElementById("winScreen");
+        const winnerText = document.getElementById("winnerText");
+        winnerText.innerText = `🎉 الفائز: ${winner} 🎉`;
+        winScreen.style.display = "flex";
+    }
+}
+
+// التحقق من حالة تسجيل الدخول
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        currentUser = user;
+        await loadGameData();
+        document.getElementById("authScreen").style.display = "none";
+        document.getElementById("logoutBtn").style.display = "block";
+        document.getElementById("starsIndicator").style.display = "block";
+        document.getElementById("storeBtn").style.display = "block";
+        document.getElementById("playerNames").style.display = "flex";
+    } else {
+        document.getElementById("authScreen").style.display = "flex";
+        document.getElementById("logoutBtn").style.display = "none";
+        document.getElementById("starsIndicator").style.display = "none";
+        document.getElementById("storeBtn").style.display = "none";
+        document.getElementById("playerNames").style.display = "flex";
+        document.getElementById("container").style.display = "none";
+        document.getElementById("gameScreen").style.display = "none";
+        document.getElementById("scoreboard").style.display = "none";
+    }
+});
+
+// دوال الهاتف
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+function checkOrientation() {
+    if(isMobile() && window.innerHeight > window.innerWidth) {
+        let msg = document.createElement("div");
+        msg.id = "orientationMsg";
+        msg.innerHTML = "🔄 الرجاء وضع الهاتف بالعرض (أفقي) لتجربة ممتازة 🔄";
+        msg.style.position = "fixed";
+        msg.style.bottom = "20px";
+        msg.style.left = "50%";
+        msg.style.transform = "translateX(-50%)";
+        msg.style.background = "linear-gradient(145deg,#00c6ff,#0072ff)";
+        msg.style.color = "white";
+        msg.style.padding = "12px 20px";
+        msg.style.borderRadius = "25px";
+        msg.style.fontSize = "14px";
+        msg.style.fontWeight = "bold";
+        msg.style.textAlign = "center";
+        msg.style.zIndex = "9999";
+        msg.style.boxShadow = "0 0 15px rgba(0,0,0,0.3)";
+        msg.style.border = "1px solid gold";
+        document.body.appendChild(msg);
+        setTimeout(() => {
+            if(msg) msg.remove();
+        }, 10000);
+    }
+}
+
+const nextBtn = document.getElementById("nextBtn");
+if(nextBtn) {
+    nextBtn.addEventListener("click", function() {
+        setTimeout(() => {
+            checkOrientation();
+        }, 100);
+    });
+}
+
+window.addEventListener("resize", function() {
+    if(isMobile() && window.innerHeight > window.innerWidth) {
+        let existingMsg = document.getElementById("orientationMsg");
+        if(!existingMsg) {
+            checkOrientation();
+        }
+    } else {
+        let existingMsg = document.getElementById("orientationMsg");
+        if(existingMsg) existingMsg.remove();
+    }
+});
+</script>
+</body>
+</html>
