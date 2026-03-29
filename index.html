@@ -680,7 +680,7 @@
 </style>
 </head>
 <body>
-<!-- فحص مانع الإعلانات - يبقى حتى إغلاقه -->
+<!-- فحص مانع الإعلانات - يختفي مرة واحدة فقط -->
 <div id="adblockWarning" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 20000; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; font-family: Arial, sans-serif;">
     <div style="background: linear-gradient(145deg, #1a1a2e, #16213e); padding: 40px; border-radius: 30px; max-width: 400px; margin: 20px; border: 2px solid #ff416c; box-shadow: 0 0 50px rgba(255,65,108,0.5);">
         <div style="font-size: 80px; margin-bottom: 20px;">⚠️</div>
@@ -688,9 +688,9 @@
         <p style="color: white; font-size: 18px; line-height: 1.6; margin-bottom: 25px;">
             لا يمكنك استخدام الموقع مع تفعيل مانع الإعلانات.<br><br>
             <strong style="color: #ffaa00;">🔴 يرجى تعطيل مانع الإعلانات (AdBlock)</strong><br>
-            ثم اضغط على الزر أدناه لإعادة التحقق.
+            ثم اضغط على الزر أدناه.
         </p>
-        <button onclick="checkAgain()" style="background: linear-gradient(145deg, #00c6ff, #0072ff); color: white; border: none; padding: 12px 35px; font-size: 18px; border-radius: 50px; cursor: pointer; font-weight: bold; margin: 10px 0; transition: 0.3s;">
+        <button onclick="checkAdBlockAgain()" style="background: linear-gradient(145deg, #00c6ff, #0072ff); color: white; border: none; padding: 12px 35px; font-size: 18px; border-radius: 50px; cursor: pointer; font-weight: bold; margin: 10px 0; transition: 0.3s;">
             🔄 تحقق مرة أخرى
         </button>
         <p style="color: #aaa; font-size: 12px; margin-top: 20px;">
@@ -700,106 +700,101 @@
 </div>
 
 <script>
-// فحص مانع الإعلانات - يبقى ظاهر حتى يتم إلغاؤه
+// فحص مانع الإعلانات - يختفي نهائياً بعد تعطيله
 (function checkAdBlocker() {
-    let isChecking = true;
+    let adBlockDetected = true; // نفترض وجود مانع إعلانات في البداية
+    let warningHidden = false; // منع إعادة الظهور بعد الإخفاء
     const warningDiv = document.getElementById('adblockWarning');
     
     // منع التمرير خلف التحذير
     document.body.style.overflow = 'hidden';
     
-    // دالة إخفاء التحذير
-    function hideWarning() {
-        if (warningDiv) {
+    // دالة إخفاء التحذير بشكل نهائي
+    function hideWarningPermanently() {
+        if (warningDiv && !warningHidden) {
             warningDiv.style.display = 'none';
             document.body.style.overflow = 'auto';
-            isChecking = false;
+            warningHidden = true;
         }
     }
     
-    // دالة فحص وجود مانع الإعلانات
-    function detectAdBlocker() {
-        // طريقة 1: إنشاء عنصر اختبار
-        const testAd = document.createElement('div');
-        testAd.className = 'adsbox ad advertisement';
-        testAd.style.position = 'absolute';
-        testAd.style.top = '-100px';
-        testAd.style.left = '-100px';
-        testAd.style.width = '1px';
-        testAd.style.height = '1px';
-        document.body.appendChild(testAd);
-        
-        // طريقة 2: محاولة تحميل صورة اختبار
-        const imgTest = new Image();
-        let blockedByAdBlocker = false;
-        
-        imgTest.onload = function() {
-            // الصورة تم تحميلها بنجاح
+    // دالة فحص وجود مانع الإعلانات (ترجع true إذا كان موجود، false إذا معطل)
+    function isAdBlockActive() {
+        return new Promise((resolve) => {
+            // طريقة 1: عنصر اختبار
+            const testAd = document.createElement('div');
+            testAd.className = 'adsbox ad advertisement';
+            testAd.style.position = 'absolute';
+            testAd.style.top = '-100px';
+            testAd.style.left = '-100px';
+            testAd.style.width = '1px';
+            testAd.style.height = '1px';
+            document.body.appendChild(testAd);
+            
+            // طريقة 2: فحص الصورة
+            const imgTest = new Image();
+            let imgBlocked = false;
+            
+            imgTest.onload = function() {
+                imgBlocked = false;
+            };
+            
+            imgTest.onerror = function() {
+                imgBlocked = true;
+            };
+            
+            imgTest.src = 'https://www.google.com/adsense/static/adsense_logo.png?' + Date.now();
+            
             setTimeout(() => {
-                if (!blockedByAdBlocker && testAd.offsetHeight !== 0 && testAd.style.display !== 'none') {
-                    // لا يوجد مانع إعلانات
-                    hideWarning();
-                }
+                const elementBlocked = (testAd.offsetHeight === 0 || testAd.style.display === 'none');
+                const isBlocked = elementBlocked || imgBlocked;
                 testAd.remove();
-            }, 100);
-        };
-        
-        imgTest.onerror = function() {
-            // الصورة فشلت في التحميل - غالباً بسبب مانع الإعلانات
-            blockedByAdBlocker = true;
-            // نبقى التحذير ظاهر
-            if (warningDiv) warningDiv.style.display = 'flex';
-            testAd.remove();
-        };
-        
-        // استخدام رابط صورة من جوجل - غالباً ما يتم حظره من مانعات الإعلانات
-        imgTest.src = 'https://www.google.com/adsense/static/adsense_logo.png';
-        
-        // فحص إضافي بعد 1 ثانية
-        setTimeout(() => {
-            if (!blockedByAdBlocker && warningDiv && warningDiv.style.display !== 'none') {
-                // فحص نهائي
-                const finalTest = document.createElement('div');
-                finalTest.innerHTML = '&nbsp;';
-                finalTest.className = 'ad-unit';
-                finalTest.style.position = 'absolute';
-                finalTest.style.top = '-200px';
-                finalTest.style.left = '-200px';
-                finalTest.style.width = '10px';
-                finalTest.style.height = '10px';
-                document.body.appendChild(finalTest);
-                
-                setTimeout(() => {
-                    if (finalTest.offsetHeight === 0 || finalTest.style.display === 'none') {
-                        // مانع إعلانات موجود
-                        if (warningDiv) warningDiv.style.display = 'flex';
-                    } else {
-                        // لا يوجد مانع إعلانات
-                        hideWarning();
-                    }
-                    finalTest.remove();
-                }, 100);
-            }
-        }, 1000);
+                resolve(isBlocked);
+            }, 150);
+        });
     }
     
-    // دالة إعادة الفحص (عند الضغط على الزر)
-    window.checkAgain = function() {
-        if (warningDiv) {
-            warningDiv.style.display = 'flex';
+    // دالة الفحص الرئيسية (تنفذ مرة واحدة فقط)
+    async function performCheck() {
+        if (warningHidden) return; // إذا خفي التحذير خلاص نوقف
+        
+        const blocked = await isAdBlockActive();
+        
+        if (!blocked) {
+            // تم تعطيل مانع الإعلانات
+            hideWarningPermanently();
+        } else {
+            // مانع الإعلانات لا يزال موجود
+            if (warningDiv) warningDiv.style.display = 'flex';
         }
-        detectAdBlocker();
+    }
+    
+    // الفحص الأول
+    performCheck();
+    
+    // زر إعادة الفحص (بدون تكرار)
+    window.checkAdBlockAgain = async function() {
+        if (warningHidden) return;
+        
+        // تغيير نص الزر لإظهار أن الفحص جارٍ
+        const btn = event.target;
+        const originalText = btn.innerText;
+        btn.innerText = '⏳ جاري الفحص...';
+        btn.disabled = true;
+        
+        const blocked = await isAdBlockActive();
+        
+        if (!blocked) {
+            hideWarningPermanently();
+        } else {
+            btn.innerText = originalText;
+            btn.disabled = false;
+            // نبه المستخدم أن المانع لا يزال موجود
+            alert('⚠️ مانع الإعلانات لا يزال نشطاً! يرجى تعطيله ثم الضغط على الزر مرة أخرى.');
+        }
     };
     
-    // بدء الفحص فوراً
-    detectAdBlocker();
-    
-    // فحص دوري كل 3 ثواني (في حال تم إغلاق المانع بدون تحديث)
-    setInterval(() => {
-        if (warningDiv && warningDiv.style.display !== 'none') {
-            detectAdBlocker();
-        }
-    }, 3000);
+    // لا توجد فحوصات دورية - فقط مرة واحدة وعند الضغط على الزر
 })();
 </script>
 <!-- شاشة تسجيل الدخول -->
