@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لعبة التحدي</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #101820;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #1a1a2e;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #16213e;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+    .section h2 {
+      margin-bottom: 10px;
+      font-size: 22px;
+      color: #aad4ff;
+    }
+    .options, .subTopicItemContainer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .option, .subTopicItem {
+      padding: 10px 20px;
+      background-color: #0f3460;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: 0.3s;
+    }
+    .option:hover, .subTopicItem:hover {
+      background-color: #1a508b;
+    }
+    .option.selected, .subTopicItem.selected {
+      border-color: #00adb5;
+      background-color: #00334e;
+    }
+    .button {
+      margin-top: 20px;
+      padding: 10px 30px;
+      background-color: #00adb5;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #007f89;
+    }
+    #subTopicModal {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    #subTopicContent {
+      background-color: #1b1b2f;
+      padding: 30px;
+      border-radius: 12px;
+      width: 60%;
+      max-width: 600px;
+    }
+    .sideList {
+      position: fixed;
+      top: 100px;
+      left: 20px;
+      background-color: #1f4068;
+      padding: 15px;
+      border-radius: 10px;
+      max-height: 70vh;
+      overflow-y: auto;
+      color: #fff;
+    }
+    #loginScreen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #0d1b2a;
+    }
+    #loginBox {
+      background-color: #1b263b;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    #loginBox input {
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loginScreen">
+    <div id="loginBox">
+      <h2>تسجيل الدخول</h2>
+      <input type="text" id="username" placeholder="الاسم" />
+      <button class="button" onclick="login()">دخول</button>
+    </div>
+  </div>
+
+  <header style="display:none" id="mainHeader">
+    <h1>لعبة التحدي</h1>
+  </header>
+  <div class="container" style="display:none" id="mainContainer">
+    <div class="section" id="gamesSection">
+      <h2>اختر الألعاب</h2>
+      <div class="options" id="gameOptions">
+        <div class="option">ماذا تعرف</div>
+        <div class="option">المزاد</div>
+        <div class="option">الجرس</div>
+        <div class="option">من أنا</div>
+      </div>
+      <button class="button" onclick="showTopics()">التالي</button>
+    </div>
+    <div class="section" id="topicsSection" style="display:none">
+      <h2>اختر المواضيع</h2>
+      <div class="options" id="topics">
+        <div class="option" onclick="openSubTopic('الأنمي')">الأنمي</div>
+        <div class="option" onclick="openSubTopic('كرة القدم')">كرة القدم</div>
+        <div class="option" onclick="openSubTopic('معلومات عامة')">معلومات عامة</div>
+        <div class="option" onclick="openSubTopic('أفلام ومسلسلات')">أفلام ومسلسلات</div>
+      </div>
+    </div>
+  </div>
+  <div class="sideList hidden" id="selectedTopicsList">
+    <h3>المختار:</h3>
+    <ul id="selectedItems"></ul>
+  </div>
+  <div id="subTopicModal">
+    <div id="subTopicContent">
+      <h3 id="subTopicTitle">الموضوع الفرعي</h3>
+      <div class="subTopicItemContainer" id="subTopicList"></div>
+      <button class="button" onclick="closeSubTopicModal()">إغلاق</button>
+    </div>
+  </div>
+
+  <script>
+    function login() {
+      const username = document.getElementById('username').value.trim();
+      if (username) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainHeader').style.display = 'block';
+        document.getElementById('mainContainer').style.display = 'block';
+      }
+    }
+
+    const subTopicsData = {
+      'الأنمي': ['ون بيس', 'دراغون بول', 'هنتر', 'بليتش'],
+      'كرة القدم': ['برشلونة', 'ريال مدريد', 'مانشستر يونايتد', 'منتخبات كأس العالم'],
+      'معلومات عامة': ['جغرافيا', 'تاريخ', 'علوم', 'أدب'],
+      'أفلام ومسلسلات': ['مارفل', 'دي سي', 'مسلسلات نتفليكس', 'أفلام كلاسيكية']
+    };
+    const selectedSubTopics = {};
+
+    function showTopics() {
+      document.getElementById('gamesSection').style.display = 'none';
+      document.getElementById('topicsSection').style.display = 'block';
+    }
+
+    function openSubTopic(topic) {
+      const modal = document.getElementById('subTopicModal');
+      const title = document.getElementById('subTopicTitle');
+      const list = document.getElementById('subTopicList');
+      title.textContent = `مواضيع فرعية: ${topic}`;
+      list.innerHTML = '';
+      const selected = selectedSubTopics[topic] || new Set();
+      subTopicsData[topic].forEach(sub => {
+        const div = document.createElement('div');
+        div.className = 'subTopicItem';
+        div.textContent = sub;
+        if (selected.has(sub)) div.classList.add('selected');
+        div.onclick = () => {
+          if (selected.has(sub)) {
+            selected.delete(sub);
+            div.classList.remove('selected');
+          } else {
+            selected.add(sub);
+            div.classList.add('selected');
+          }
+          selectedSubTopics[topic] = selected;
+          renderSelectedSubTopics();
+        };
+        list.appendChild(div);
+      });
+      modal.style.display = 'flex';
+    }
+
+    function closeSubTopicModal() {
+      document.getElementById('subTopicModal').style.display = 'none';
+    }
+
+    function renderSelectedSubTopics() {
+      const list = document.getElementById('selectedItems');
+      const sideList = document.getElementById('selectedTopicsList');
+      list.innerHTML = '';
+      let hasItems = false;
+      for (const topic in selectedSubTopics) {
+        const set = selectedSubTopics[topic];
+        if (set.size > 0) {
+          hasItems = true;
+          const title = document.createElement('li');
+          title.textContent = `موضوع: ${topic}`;
+          title.style.fontWeight = 'bold';
+          title.style.color = '#aad4ff';
+          list.appendChild(title);
+          set.forEach(item => {
+            const sub = document.createElement('li');
+            sub.textContent = `- ${item}`;
+            list.appendChild(sub);
+          });
+        }
+      }
+      if (hasItems) sideList.classList.remove('hidden');
+      else sideList.classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
