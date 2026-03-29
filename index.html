@@ -53,6 +53,143 @@
         background:linear-gradient(145deg,#1e1e1e,#333);
         box-shadow:0 0 15px rgba(0,0,0,.6);
     }
+    /* تصميم مربع الإبداع الأسطوري */
+.credit-box {
+    position: relative;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    padding: 5px;
+    background: linear-gradient(135deg, #ffd89b, #c7e9fb);
+    border-radius: 60px;
+    animation: borderGlow 3s ease-in-out infinite;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.credit-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 216, 155, 0.8);
+}
+
+.credit-content {
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    padding: 12px 28px;
+    border-radius: 55px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 2;
+    border: 1px solid rgba(255, 216, 155, 0.5);
+}
+
+.credit-icon {
+    font-size: 20px;
+    display: inline-block;
+    animation: iconPulse 1.5s ease-in-out infinite;
+}
+
+.credit-text {
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #ffd89b, #c7e9fb, #ffd89b);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 1px;
+    animation: textShine 3s linear infinite;
+    text-shadow: 0 0 10px rgba(255, 216, 155, 0.5);
+}
+
+.credit-glow {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, #ffd89b, #c7e9fb, #ffd89b);
+    border-radius: 60px;
+    opacity: 0.5;
+    z-index: 0;
+    filter: blur(8px);
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* الرسوم المتحركة */
+@keyframes borderGlow {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 216, 155, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(255, 216, 155, 0.8), 0 0 5px rgba(199, 233, 251, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(255, 216, 155, 0.3);
+    }
+}
+
+@keyframes textShine {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes iconPulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+@keyframes glowPulse {
+    0% {
+        opacity: 0.3;
+        filter: blur(5px);
+    }
+    50% {
+        opacity: 0.8;
+        filter: blur(12px);
+    }
+    100% {
+        opacity: 0.3;
+        filter: blur(5px);
+    }
+}
+
+/* تأثير خاص للهواتف */
+@media (max-width: 768px) {
+    .credit-content {
+        padding: 8px 20px;
+    }
+    .credit-text {
+        font-size: 12px;
+    }
+    .credit-icon {
+        font-size: 16px;
+    }
+    .credit-box {
+        margin-top: 30px;
+    }
+}
     #gameTurn{
         font-size:22px;
         color:#00ffd5;
@@ -805,6 +942,14 @@ startChecking();
     <input id="player1" placeholder="اسم اللاعب الأول">
     <input id="player2" placeholder="اسم اللاعب الثاني">
     <button onclick="startPlayers()">ابدأ</button>
+    <div id="creditBox" class="credit-box">
+    <div class="credit-content">
+        <span class="credit-icon">⚡</span>
+        <span class="credit-text">created by Abdalrhman Alsharif</span>
+        <span class="credit-icon">✨</span>
+    </div>
+    <div class="credit-glow"></div>
+</div>
 </div>
 
 <div id="container" class="container" style="display:none;">
