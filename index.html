@@ -1329,57 +1329,90 @@ function closeSendStarsPopup() {
     document.getElementById("sendStarsPopup").style.display = "none";
 }
 
-async function sendStars(receiverId, amount) {
-    const senderId = auth.currentUser.uid;
-    const amountToSend = parseInt(amount);
-
+async function sendStars() {
+    const recipientEmail = document.getElementById("recipientEmail").value.trim();
+    const amount = parseInt(document.getElementById("starsAmountToSend").value);
+    const senderName = document.getElementById("senderName").value.trim() || currentUser.displayName || currentUser.email.split('@')[0];
+    const message = document.getElementById("sendMessage").value.trim();
+    const messageDiv = document.getElementById("sendStarsMessage");
+    
+    if (!recipientEmail) {
+        messageDiv.innerHTML = "⚠️ الرجاء إدخال البريد الإلكتروني للمستلم";
+        return;
+    }
+    
+    if (recipientEmail === currentUser.email) {
+        messageDiv.innerHTML = "⚠️ لا يمكنك إرسال نجوم لنفسك!";
+        return;
+    }
+    
+    if (!amount || amount <= 0) {
+        messageDiv.innerHTML = "⚠️ الرجاء إدخال عدد صحيح من النجوم (1 أو أكثر)";
+        return;
+    }
+    
+    if (amount > userStars) {
+        messageDiv.innerHTML = `⚠️ رصيدك لا يكفي! لديك ${userStars} نجمة فقط`;
+        return;
+    }
+    
+    messageDiv.innerHTML = "⏳ جاري الإرسال...";
+    
     try {
-        // 1. جلب بيانات الراسل للتأكد من النجوم (أو إذا كان أدمن)
-        const senderDoc = await db.collection('users').doc(senderId).get();
-        const senderData = senderDoc.data();
-        const isAdmin = senderData.isAdmin || false;
-        const senderStars = senderData.stars || 0;
-
-        // 2. التحقق من الرصيد إذا لم يكن أدمن
-        if (!isAdmin && senderStars < amountToSend) {
-            alert("❌ ليس لديك نجوم كافية للإرسال!");
+        const usersRef = db.collection("users");
+        const querySnapshot = await usersRef.where("email", "==", recipientEmail).get();
+        
+        if (querySnapshot.empty) {
+            messageDiv.innerHTML = "❌ لا يوجد مستخدم بهذا البريد الإلكتروني";
             return;
         }
-
-        const batch = db.batch();
-
-        // 3. خصم النجوم من الراسل (إلا إذا كان أدمن فلا ينقص رصيده)
-        if (!isAdmin) {
-            const senderRef = db.collection('users').doc(senderId);
-            batch.update(senderRef, {
-                stars: firebase.firestore.FieldValue.increment(-amountToSend)
-            });
-        }
-
-        // 4. إضافة النجوم للمستقبل
-        const receiverRef = db.collection('users').doc(receiverId);
-        batch.update(receiverRef, {
-            stars: firebase.firestore.FieldValue.increment(amountToSend)
-        });
-
-        // 5. إضافة إشعار للمستقبل
-        const notificationRef = db.collection('notifications').doc();
-        batch.set(notificationRef, {
-            receiverId: receiverId,
-            senderName: senderData.username || "شخص ما",
-            amount: amountToSend,
-            type: "stars",
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        // تنفيذ كل العمليات معاً لضمان عدم حدوث خطأ جزئي
-        await batch.commit();
         
-        alert(`✅ تم إرسال ${amountToSend} نجوم بنجاح!`);
-
+        const recipientDoc = querySnapshot.docs[0];
+        const recipientData = recipientDoc.data();
+        const currentRecipientStars = recipientData.stars || 0;
+        const newRecipientStars = currentRecipientStars + amount;
+        const newSenderStars = userStars - amount;
+        
+        // تحديث رصيد المرسل
+        await db.collection("users").doc(currentUser.uid).update({
+            stars: newSenderStars,
+            lastStarsUpdate: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // تحديث رصيد المستلم
+        await recipientDoc.ref.update({
+            stars: newRecipientStars,
+            lastStarsUpdate: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // تسجيل العملية مع إضافة حقل viewed
+        const transactionData = {
+            from: currentUser.email,
+            fromName: senderName,
+            to: recipientEmail,
+            amount: amount,
+            message: message || "لا يوجد رسالة",
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            viewed: false
+        };
+        
+        await db.collection("starsTransactions").add(transactionData);
+        
+        // تحديث رصيد المرسل محلياً
+        userStars = newSenderStars;
+        updateStarsDisplay();
+        
+        messageDiv.innerHTML = `✅ تم إرسال ${amount} نجمة إلى ${recipientEmail} بنجاح!`;
+        messageDiv.style.color = "#00ff88";
+        
+        showNotification(`✨ تم إرسال ${amount} نجمة إلى ${recipientEmail} بنجاح!`);
+        
+        setTimeout(() => closeSendStarsPopup(), 2000);
+        
     } catch (error) {
-        console.error("Error sending stars: ", error);
-        alert("❌ حدث خطأ أثناء الإرسال: " + error.message);
+        console.error("Error sending stars:", error);
+        messageDiv.innerHTML = "❌ حدث خطأ أثناء الإرسال: " + error.message;
+        messageDiv.style.color = "#ff416c";
     }
 }
 // ========== دوال إرسال النجوم للأدمن ==========
