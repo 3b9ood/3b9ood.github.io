@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>تواصل معنا</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+
+body {
+    font-family: 'Cairo', sans-serif;
+    margin: 0;
+    background: linear-gradient(160deg, #070b14, #0d1526);
+    color: #f0f4ff;
+    direction: rtl;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(0,229,255,0.08), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(255,210,80,0.08), transparent 40%);
+    z-index: -1;
+}
+
+.container {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 30px;
+    background: rgba(17,24,39,0.85);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 0 30px rgba(0,229,255,0.1);
+    text-align: center;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #ffd24a, #00e5ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+p {
+    line-height: 1.8;
+    color: #cbd5e1;
+}
+
+.email-box {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.3);
+    font-weight: bold;
+    color: #00e5ff;
+}
+
+.floating-back {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #00e5ff, #0099b8);
+    color: black;
+    padding: 10px 15px;
+    border-radius: 50%;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0,229,255,0.5);
+    transition: 0.3s;
+}
+
+.floating-back:hover {
+    transform: scale(1.1);
+}
+</style>
+
+</head>
+<body>
+
+
+
+<div class="container">
+
+<h1>تواصل معنا</h1>
+
+<p>
+إذا كان لديك أي استفسار أو اقتراح، يمكنك التواصل معنا عبر  صفحتنا على الانستغرام:
+</p>
+
+<div class="email-box">
+  <a href="https://www.instagram.com/username" target="_blank">تابعنا على إنستغرام</a>
+</div>
+
+<p>
+سنقوم بالرد عليك في أقرب وقت ممكن.
+</p>
+
+</div>
+
+</body>
+</html>
