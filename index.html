@@ -8486,6 +8486,62 @@
             updateCategoriesLockStatus();
         }
 
+        function showSubRequiredPopup() {
+            // إزالة أي popup قديم
+            const existing = document.getElementById('subRequiredPopup');
+            if (existing) existing.remove();
+
+            const overlay = document.createElement('div');
+            overlay.id = 'subRequiredPopup';
+            overlay.style.cssText = `
+                position:fixed; inset:0; background:rgba(7,11,20,0.92);
+                z-index:19999; display:flex; align-items:center;
+                justify-content:center; backdrop-filter:blur(10px);
+                animation:fadeInBg .2s ease;
+            `;
+            overlay.innerHTML = `
+                <div style="
+                    background:linear-gradient(145deg,#0d1526,#111827);
+                    border:1px solid rgba(255,210,80,0.4);
+                    border-radius:28px; padding:36px 30px;
+                    max-width:340px; width:92%; text-align:center;
+                    box-shadow:0 0 60px rgba(255,210,80,0.1), 0 20px 60px rgba(0,0,0,0.6);
+                    animation:popIn .25s cubic-bezier(.34,1.56,.64,1);
+                ">
+                    <div style="font-size:58px; margin-bottom:12px;">🎮🔒</div>
+                    <div style="font-family:Cairo,sans-serif; font-size:20px; font-weight:900;
+                        color:#ffd24a; margin-bottom:10px;">اللعب أونلاين للمشتركين فقط</div>
+                    <div style="font-family:Cairo,sans-serif; font-size:14px; color:var(--text-2);
+                        line-height:1.7; margin-bottom:20px;">
+                        للعب أونلاين مع أصدقائك يجب أن يكون لديك<br>
+                        <strong style="color:var(--text-1);">اشتراك فعّال</strong> في سين جيم الغلابة
+                    </div>
+                    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                        <button onclick="document.getElementById('subRequiredPopup').remove(); openSubInfo();"
+                            style="background:linear-gradient(135deg,#7c1fa8,#b044e0);
+                            color:white; border:none; border-radius:50px;
+                            padding:12px 24px; font-family:Cairo,sans-serif;
+                            font-size:14px; font-weight:700; cursor:pointer;
+                            box-shadow:0 4px 16px rgba(176,68,224,0.4);">
+                            💎 اشترك الآن
+                        </button>
+                        <button onclick="document.getElementById('subRequiredPopup').remove();"
+                            style="background:rgba(255,255,255,0.07); color:var(--text-2);
+                            border:1px solid rgba(255,255,255,0.12); border-radius:50px;
+                            padding:12px 20px; font-family:Cairo,sans-serif;
+                            font-size:14px; cursor:pointer;">
+                            إغلاق
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            // إغلاق عند الضغط خارج الصندوق
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.remove();
+            });
+        }
+
         function getSubExpiry() {
             if (!subscriptionData || !subscriptionData.expiresAt) return null;
             return subscriptionData.expiresAt.toDate();
@@ -8777,6 +8833,12 @@
         // ── إنشاء غرفة ──
         async function handleCreateRoom() {
             if (!currentUser) { showError("⚠️ يجب تسجيل الدخول أولاً للعب أونلاين!"); return; }
+            // تحقق من الاشتراك
+            const subExp = getSubExpiry();
+            if (!subExp || subExp <= new Date()) {
+                showSubRequiredPopup();
+                return;
+            }
             const code = generateRoomCode();
             currentRoomCode = code;
             onlineRole = 'host';
@@ -8803,6 +8865,12 @@
             const code = (document.getElementById('roomCodeInput').value || '').trim().toUpperCase();
             if (!code || code.length !== 6) { showError("⚠️ أدخل كوداً صحيحاً من 6 خانات"); return; }
             if (!currentUser) { showError("⚠️ يجب تسجيل الدخول أولاً للعب أونلاين!"); return; }
+            // تحقق من الاشتراك
+            const subExp = getSubExpiry();
+            if (!subExp || subExp <= new Date()) {
+                showSubRequiredPopup();
+                return;
+            }
             try {
                 const snap = await db.collection('onlineRooms').doc(code).get();
                 if (!snap.exists) { showError("❌ لا توجد غرفة بهذا الكود!"); return; }
