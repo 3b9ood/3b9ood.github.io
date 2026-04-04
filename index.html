@@ -8280,29 +8280,36 @@
             if (!selectedPlan || !currentUser) return;
             const btn = document.getElementById('subConfirmBtn');
             btn.disabled = true;
-            btn.innerText = '⏳ جاري الإرسال...';
+            btn.innerText = '⏳ جاري التفعيل...';
 
             try {
                 const prices = { 1: '1$', 6: '5$', 12: '9$' };
+                const now = new Date();
+                const expiry = new Date(now);
+                expiry.setMonth(expiry.getMonth() + selectedPlan);
 
-                // ✅ نكتب طلب الاشتراك فقط - الأدمن يوافق عليه لاحقاً (adminVerified: false)
-                // لا يُفعَّل الاشتراك تلقائياً قبل التحقق من الدفع
-                await db.collection('subscriptionRequests').add({
+                // تفعيل الاشتراك فوراً في مجموعة subscriptions
+                await db.collection('subscriptions').doc(currentUser.uid).set({
                     uid: currentUser.uid,
                     email: currentUser.email,
                     plan: selectedPlan,
                     price: prices[selectedPlan],
-                    requestedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    status: 'pending'
+                    startedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    expiresAt: expiry,
+                    status: 'active'
                 });
+
+                // حفظ في localStorage
+                localStorage.setItem('subExpiry_' + currentUser.uid, expiry.toISOString());
 
                 closeSubPlans();
                 document.getElementById('subInfoOverlay').style.display = 'none';
-                showNotification(`📩 تم إرسال طلب الاشتراك! سيتم تفعيله بعد التحقق من الدفع. تواصل مع الإدارة لإتمام العملية.`);
+                showNotification(`✅ تم تفعيل اشتراكك لمدة ${selectedPlan} شهر بنجاح!`);
+                await checkSubscription(currentUser.uid);
 
             } catch (e) {
                 btn.disabled = false;
-                btn.innerText = 'اشترك الآن';
+                btn.innerText = '✅ اشترك الآن';
                 document.getElementById('subPlanMsg').innerText = '❌ خطأ: ' + e.message;
             }
         }
@@ -8672,6 +8679,10 @@
 
             ['callBtn0', 'callBtn1', 'optBtn0', 'optBtn1', 'twoBtn0', 'twoBtn1', 'twoAnsBtn0', 'twoAnsBtn1'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.classList.remove('used');
+            });
+            // إخفاء زر السؤالين في الأونلاين
+            ['twoBtn0', 'twoBtn1'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.style.display = 'none';
             });
             document.querySelectorAll('.life').forEach(b => b.classList.remove('used'));
 
@@ -9167,7 +9178,7 @@
                 popup.innerHTML = `
                 <div style="background:linear-gradient(145deg,#0d1526,#111827);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:28px;max-width:480px;width:94%;max-height:85vh;overflow-y:auto;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-                        <div style="font-family:Cairo,sans-serif;font-size:18px;font-weight:900;color:#ffd24a;">💎 طلبات الاشتراك</div>
+                        <div style="font-family:Cairo,sans-serif;font-size:18px;font-weight:900;color:#ffd24a;">💎 المشتركين</div>
                         <button onclick="closeSubRequestsPopup()" style="background:rgba(255,255,255,.08);border:none;color:var(--text-2);cursor:pointer;font-size:18px;border-radius:50%;width:32px;height:32px;">✕</button>
                     </div>
                     <div id="subRequestsList"><div style="color:var(--text-2);text-align:center;padding:20px;">⏳ جاري التحميل...</div></div>
@@ -9187,28 +9198,31 @@
             const list = document.getElementById('subRequestsList');
             if (!list) return;
             try {
-                const snap = await db.collection('subscriptionRequests')
-                    .where('status', '==', 'pending')
-                    .orderBy('requestedAt', 'desc')
-                    .limit(30)
+                const snap = await db.collection('subscriptions')
+                    .orderBy('startedAt', 'desc')
+                    .limit(50)
                     .get();
                 if (snap.empty) {
-                    list.innerHTML = '<div style="color:var(--text-2);text-align:center;padding:20px;">✅ لا توجد طلبات معلقة</div>';
+                    list.innerHTML = '<div style="color:var(--text-2);text-align:center;padding:20px;">📭 لا يوجد مشتركون حتى الآن</div>';
                     return;
                 }
                 list.innerHTML = '';
                 snap.forEach(doc => {
                     const d = doc.data();
-                    const date = d.requestedAt ? new Date(d.requestedAt.toDate()).toLocaleDateString('ar-EG') : '—';
+                    const startDate = d.startedAt ? new Date(d.startedAt.toDate()).toLocaleDateString('ar-EG') : '—';
+                    const endDate = d.expiresAt ? new Date(d.expiresAt.toDate()).toLocaleDateString('ar-EG') : '—';
+                    const now = new Date();
+                    const isActive = d.expiresAt && new Date(d.expiresAt.toDate()) > now;
+                    const statusColor = isActive ? '#00e676' : '#ff4757';
+                    const statusText = isActive ? '✅ فعّال' : '❌ منتهي';
                     const div = document.createElement('div');
                     div.style.cssText = 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin:10px 0;';
                     div.innerHTML = `
-                        <div style="font-family:Cairo,sans-serif;font-size:14px;font-weight:700;color:var(--text-1);margin-bottom:6px;">📧 ${d.email}</div>
-                        <div style="font-family:Cairo,sans-serif;font-size:13px;color:var(--text-2);margin-bottom:10px;">📦 الخطة: ${d.plan} شهر | 💰 ${d.price} | 📅 ${date}</div>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                            <button onclick="approveSubRequest('${doc.id}','${d.uid}',${d.plan})" style="flex:1;padding:9px 14px;background:linear-gradient(135deg,#00b894,#00e676);color:#001a0e;border:none;border-radius:20px;font-family:Cairo,sans-serif;font-weight:700;font-size:13px;cursor:pointer;">✅ موافقة وتفعيل</button>
-                            <button onclick="rejectSubRequest('${doc.id}')" style="flex:1;padding:9px 14px;background:rgba(255,71,87,.15);color:#ff4757;border:1px solid rgba(255,71,87,.3);border-radius:20px;font-family:Cairo,sans-serif;font-weight:700;font-size:13px;cursor:pointer;">❌ رفض</button>
-                        </div>`;
+                        <div style="font-family:Cairo,sans-serif;font-size:14px;font-weight:700;color:var(--text-1);margin-bottom:6px;">📧 ${d.email || '—'}</div>
+                        <div style="font-family:Cairo,sans-serif;font-size:13px;color:var(--text-2);margin-bottom:4px;">📦 الخطة: ${d.plan} شهر | 💰 ${d.price || '—'}</div>
+                        <div style="font-family:Cairo,sans-serif;font-size:13px;color:var(--text-2);margin-bottom:4px;">📅 بداية الاشتراك: ${startDate}</div>
+                        <div style="font-family:Cairo,sans-serif;font-size:13px;color:var(--text-2);margin-bottom:6px;">🔚 نهاية الاشتراك: ${endDate}</div>
+                        <div style="font-family:Cairo,sans-serif;font-size:13px;font-weight:700;color:${statusColor};">${statusText}</div>`;
                     list.appendChild(div);
                 });
             } catch (e) {
@@ -9282,7 +9296,7 @@
     <div class="sub-overlay" id="subInfoOverlay">
         <div class="sub-box">
             <div class="sub-title">💎 مميزات الاشتراك</div>
-            <div style="background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.2);border-radius:10px;padding:10px 14px;margin:8px 0;font-family:Cairo,sans-serif;font-size:13px;color:var(--text-2);text-align:center;">بعد إرسال الطلب، تواصل مع الإدارة لإتمام الدفع وتفعيل اشتراكك</div>
+            <div style="background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.2);border-radius:10px;padding:10px 14px;margin:8px 0;font-family:Cairo,sans-serif;font-size:13px;color:var(--text-2);text-align:center;">اشترك الآن وسيتم تفعيل حسابك فوراً!</div>
             <div class="sub-feature"><span class="sub-feature-icon">🔓</span><span>تفتح لك <strong>جميع الفئات</strong>
                     بعدد لا نهائي من اللعب</span></div>
             <div class="sub-feature"><span class="sub-feature-icon">✨</span><span>أي فئة جديدة تُضاف للعبة تُفتح لك
@@ -9321,7 +9335,7 @@
                 <div class="plan-desc">أفضل سعر — وفّر 3$ على الاشتراك الشهري</div>
             </div>
 
-            <button class="sub-confirm-btn" id="subConfirmBtn" disabled onclick="confirmSubscription()">📩 إرسال طلب الاشتراك</button>
+            <button class="sub-confirm-btn" id="subConfirmBtn" disabled onclick="confirmSubscription()">✅ اشترك الآن</button>
             <div style="margin-top:12px; display:flex; gap:10px; justify-content:center;">
                 <button class="sub-btn-close" onclick="closeSubPlans()">↩ رجوع</button>
             </div>
