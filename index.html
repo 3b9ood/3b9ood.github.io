@@ -2629,7 +2629,7 @@
             to   { opacity: 1; transform: translateY(0); }
         }
 
-           @keyframes dotPulse {
+            @keyframes dotPulse {
             0%, 100% {
                 opacity: .3;
                 transform: scale(1);
@@ -7937,6 +7937,13 @@
                 SND_WIN.play();
                 document.getElementById("winScreen").style.display = "flex";
                 playSound(SND_WIN, 0.7);
+                // ✅ FIX 3: مزامنة نتيجة الفوز للضيف عبر Firebase
+                if (isOnlineMode && currentRoomCode) {
+                    db.collection('onlineRooms').doc(currentRoomCode).update({
+                        'gameState.winner': winner,
+                        'gameState.gameOver': true
+                    }).catch(e => console.warn('winner sync err', e));
+                }
             }
         }
 
@@ -8609,16 +8616,6 @@
                         card.style.pointerEvents = 'none';
                         card.style.opacity = '.65';
                     }
-                    // إظهار أزرار الغرفة في شاشة اختيار الفئات
-                    const closeRoomBtn = document.getElementById('closeRoomBtn');
-                    const leaveRoomBtn = document.getElementById('leaveRoomBtn');
-                    if (onlineRole === 'host') {
-                        if (closeRoomBtn) closeRoomBtn.style.display = 'inline-block';
-                        if (leaveRoomBtn) leaveRoomBtn.style.display = 'none';
-                    } else {
-                        if (closeRoomBtn) closeRoomBtn.style.display = 'none';
-                        if (leaveRoomBtn) leaveRoomBtn.style.display = 'inline-block';
-                    }
                 }
             });
 
@@ -8672,14 +8669,7 @@
             optionsUsed = [false, false]; doubleActive = false; doubleUsedThisTurn = false;
             twoQuestionsMode = false; twoQuestionsSelected = []; usedQuestionIndices = {};
             inQuestion = true; lastSyncedQTimestamp = null;
-            // في بداية دالة initOnlineGame، بعد تعيين playerNames
-            if (onlineRole === 'host') {
-                if (closeRoomBtn) closeRoomBtn.style.display = 'inline-block';
-                if (leaveRoomBtn) leaveRoomBtn.style.display = 'none';
-            } else {
-                if (closeRoomBtn) closeRoomBtn.style.display = 'none';
-                if (leaveRoomBtn) leaveRoomBtn.style.display = 'inline-block';
-            }
+
             ['callBtn0', 'callBtn1', 'optBtn0', 'optBtn1', 'twoBtn0', 'twoBtn1', 'twoAnsBtn0', 'twoAnsBtn1'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.classList.remove('used');
             });
@@ -8698,12 +8688,12 @@
             const leaveRoomBtn = document.getElementById('leaveRoomBtn');
             if (onlineRole === 'host') {
                 if (backBtn) backBtn.style.display = '';   // المضيف يرى زر الرجوع للفئات
-                if (closeRoomBtn) closeRoomBtn.style.display = '';
+                if (closeRoomBtn) closeRoomBtn.style.display = 'block'; // ✅ FIX 1
                 if (leaveRoomBtn) leaveRoomBtn.style.display = 'none';
             } else {
                 if (backBtn) backBtn.style.display = 'none'; // الضيف لا يرى زر الرجوع
                 if (closeRoomBtn) closeRoomBtn.style.display = 'none';
-                if (leaveRoomBtn) leaveRoomBtn.style.display = '';
+                if (leaveRoomBtn) leaveRoomBtn.style.display = 'block'; // ✅ FIX 1
             }
 
             // بناء شبكة اللعبة بأزرار أونلاين
@@ -8741,6 +8731,16 @@
             if (gs.lifelinesUsed) { lifelinesUsed = gs.lifelinesUsed; applyLifelinesUI(); }
 
             updateScoreboard(); updateTurn(); updateOnlineUI();
+
+            // ✅ FIX 3: تطبيق شاشة الفوز عند الضيف عند اكتمال اللعبة
+            if (gs.gameOver && gs.winner) {
+                const ws = document.getElementById('winScreen');
+                if (ws && ws.style.display !== 'flex') {
+                    document.getElementById("winnerText").innerText = `🎉 الفائز: ${gs.winner} 🎉`;
+                    ws.style.display = 'flex';
+                    SND_WIN.play();
+                }
+            }
 
             // تطبيق انيميشن النقاط والصوت للضيف (المضيف يراها محلياً)
             if (gs.pointsAnimation) {
@@ -9234,28 +9234,44 @@
         }
 
         // ── حقن مزامنة في دوال وسائل المساعدة الموجودة ──
+        // ✅ FIX 2: كل override يمنع اللاعب من استخدام وسائل الخصم في الأونلاين
         const _origUseDouble = useDouble;
         useDouble = function (player, el) {
+            if (isOnlineMode && player !== onlinePlayerIndex) {
+                showError('⚠️ لا يمكنك استخدام وسائل مساعدة الخصم!'); return;
+            }
             _origUseDouble(player, el);
             if (isOnlineMode) { lifelinesUsed[player].double = true; syncOnlineLifelines(); }
         };
         const _origUseTwoQ = useTwoQ;
         useTwoQ = function (player, el) {
+            if (isOnlineMode && player !== onlinePlayerIndex) {
+                showError('⚠️ لا يمكنك استخدام وسائل مساعدة الخصم!'); return;
+            }
             _origUseTwoQ(player, el);
             if (isOnlineMode) { syncOnlineLifelines(); }
         };
         const _origUseTwoAns = useTwoAns;
         useTwoAns = function (player, el) {
+            if (isOnlineMode && player !== onlinePlayerIndex) {
+                showError('⚠️ لا يمكنك استخدام وسائل مساعدة الخصم!'); return;
+            }
             _origUseTwoAns(player, el);
             if (isOnlineMode) { syncOnlineLifelines(); }
         };
         const _origUseCallPlayer = useCallPlayer;
         useCallPlayer = function (player, el) {
+            if (isOnlineMode && player !== onlinePlayerIndex) {
+                showError('⚠️ لا يمكنك استخدام وسائل مساعدة الخصم!'); return;
+            }
             _origUseCallPlayer(player, el);
             if (isOnlineMode) { lifelinesUsed[player].call = true; syncOnlineLifelines(); }
         };
         const _origUseOptionsPlayer = useOptionsPlayer;
         useOptionsPlayer = function (player, el) {
+            if (isOnlineMode && player !== onlinePlayerIndex) {
+                showError('⚠️ لا يمكنك استخدام وسائل مساعدة الخصم!'); return;
+            }
             _origUseOptionsPlayer(player, el);
             if (isOnlineMode) { optionsUsed[player] = true; syncOnlineLifelines(); }
         };
