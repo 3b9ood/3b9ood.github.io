@@ -8609,6 +8609,16 @@
                         card.style.pointerEvents = 'none';
                         card.style.opacity = '.65';
                     }
+                    // إظهار أزرار الغرفة في شاشة اختيار الفئات
+                    const closeRoomBtn = document.getElementById('closeRoomBtn');
+                    const leaveRoomBtn = document.getElementById('leaveRoomBtn');
+                    if (onlineRole === 'host') {
+                        if (closeRoomBtn) closeRoomBtn.style.display = 'inline-block';
+                        if (leaveRoomBtn) leaveRoomBtn.style.display = 'none';
+                    } else {
+                        if (closeRoomBtn) closeRoomBtn.style.display = 'none';
+                        if (leaveRoomBtn) leaveRoomBtn.style.display = 'inline-block';
+                    }
                 }
             });
 
@@ -8662,7 +8672,14 @@
             optionsUsed = [false, false]; doubleActive = false; doubleUsedThisTurn = false;
             twoQuestionsMode = false; twoQuestionsSelected = []; usedQuestionIndices = {};
             inQuestion = true; lastSyncedQTimestamp = null;
-
+            // في بداية دالة initOnlineGame، بعد تعيين playerNames
+            if (onlineRole === 'host') {
+                if (closeRoomBtn) closeRoomBtn.style.display = 'inline-block';
+                if (leaveRoomBtn) leaveRoomBtn.style.display = 'none';
+            } else {
+                if (closeRoomBtn) closeRoomBtn.style.display = 'none';
+                if (leaveRoomBtn) leaveRoomBtn.style.display = 'inline-block';
+            }
             ['callBtn0', 'callBtn1', 'optBtn0', 'optBtn1', 'twoBtn0', 'twoBtn1', 'twoAnsBtn0', 'twoAnsBtn1'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.classList.remove('used');
             });
