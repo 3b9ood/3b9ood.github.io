@@ -8457,15 +8457,16 @@
                     const d = doc.data();
                     const now = new Date();
                     const expiry = d.expiresAt ? d.expiresAt.toDate() : null;
-                    // ✅ الشرط: يجب أن يكون الاشتراك موثقاً من الأدمن (adminVerified: true) وغير منتهٍ
-                    if (expiry && expiry > now && d.adminVerified === true) {
+                    // الشرط: الاشتراك موجود وغير منتهٍ فقط
+                    if (expiry && expiry > now) {
                         subscriptionData = d;
                         applySubscription();
                     } else {
                         subscriptionData = null;
-                        // الاشتراك غير موثق أو منتهٍ - إعادة الفئات إلى ما تم شراؤه فعلاً فقط
+                        // الاشتراك منتهٍ - إعادة الفئات إلى ما تم شراؤه فعلاً
                         purchasedCategories = [...basePurchasedCategories];
                         updateCategorySelectionUI();
+                        updateCategoriesLockStatus();
                     }
                 } else {
                     // لا يوجد أي وثيقة اشتراك - المستخدم لم يشترك أبداً
@@ -8580,7 +8581,8 @@
                     price: prices[selectedPlan],
                     startedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     expiresAt: expiry,
-                    status: 'active'
+                    status: 'active',
+                    adminVerified: true
                 });
 
                 // حفظ في localStorage
@@ -8589,7 +8591,7 @@
                 closeSubPlans();
                 document.getElementById('subInfoOverlay').style.display = 'none';
                 showNotification(`✅ تم تفعيل اشتراكك لمدة ${selectedPlan} شهر بنجاح!`);
-                await checkSubscription(currentUser.uid);
+                await loadSubscription();
 
             } catch (e) {
                 btn.disabled = false;
