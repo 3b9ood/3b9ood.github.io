@@ -395,6 +395,20 @@
             font-weight: 700;
         }
 
+        /* ===== شارة الاشتراك في البروفايل ===== */
+        .profile-sub-badge {
+            background: linear-gradient(135deg, rgba(124,77,255,0.2), rgba(255,210,80,0.15));
+            border: 1px solid rgba(255,210,80,0.4);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gold);
+            text-align: center;
+            margin: 8px 0;
+        }
+
         /* ===== تعديل اسم المستخدم ===== */
         .edit-username-btn {
             background: none;
@@ -921,6 +935,62 @@
             cursor: not-allowed;
             transform: none !important;
             filter: none;
+        }
+
+        /* ===== زر الدبل المميز ===== */
+        .double-life {
+            background: linear-gradient(135deg, #7c1fa8, #b044e0) !important;
+            border: 1px solid rgba(176, 68, 224, 0.6) !important;
+            color: white !important;
+            display: inline-flex !important;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            padding: 5px 10px !important;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 3px 14px rgba(176, 68, 224, 0.45) !important;
+            min-width: 52px;
+        }
+        .double-life::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .double-life:hover {
+            background: linear-gradient(135deg, #9b27c7, #c860f0) !important;
+            box-shadow: 0 5px 20px rgba(176, 68, 224, 0.65) !important;
+            transform: translateY(-2px) !important;
+        }
+        .double-x2 {
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: #f5c6ff;
+            text-shadow: 0 0 8px rgba(255, 180, 255, 0.7);
+            line-height: 1;
+        }
+        .double-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.75);
+            letter-spacing: 0.5px;
+            line-height: 1;
+        }
+        .double-life.used .double-x2,
+        .double-life.used .double-label {
+            color: var(--text-3) !important;
+            text-shadow: none !important;
+        }
+        @keyframes doublePulse {
+            0%, 100% { box-shadow: 0 3px 14px rgba(176, 68, 224, 0.45) !important; }
+            50%       { box-shadow: 0 3px 22px rgba(176, 68, 224, 0.8), 0 0 0 3px rgba(176,68,224,0.15) !important; }
+        }
+        .double-life:not(.used) {
+            animation: doublePulse 2.5s ease-in-out infinite;
         }
 
         /* ===== TIMER IN SCOREBOARD ===== */
@@ -2877,19 +2947,184 @@
             font-size: 14px; font-weight: 700; text-align: center;
             padding: 0 16px;
         }
-</style>
+
+        /* ===== شاشة المقدمة ===== */
+        #splashScreen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .splash-left-panel,
+        .splash-right-panel {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: #000;
+            transition: transform 0.8s cubic-bezier(0.77, 0, 0.18, 1);
+            z-index: 2;
+        }
+        .splash-left-panel  { left: 0; }
+        .splash-right-panel { right: 0; }
+        .splash-left-panel.open  { transform: translateX(-100%); }
+        .splash-right-panel.open { transform: translateX(100%); }
+
+        .splash-logo-wrap {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: splashLogoIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        @keyframes splashLogoIn {
+            from { transform: scale(0.3); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+        .splash-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #0d1526, #111827);
+            border: 3px solid rgba(255, 210, 80, 0.6);
+            box-shadow:
+                0 0 0 6px rgba(255,210,80,0.1),
+                0 0 40px rgba(255,210,80,0.3),
+                0 0 80px rgba(0,229,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .splash-circle::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, rgba(255,210,80,0.08), transparent 70%);
+        }
+        .splash-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px;
+        }
+        .splash-icon-scope {
+            font-size: 52px;
+            filter: drop-shadow(0 0 10px rgba(255,210,80,0.6));
+            transform: scaleX(-1); /* الشخص يواجه اليمين (نحو الداخل) */
+        }
+        .splash-divider {
+            width: 2px;
+            height: 60px;
+            background: linear-gradient(to bottom, transparent, rgba(255,210,80,0.5), transparent);
+            margin: 0 4px;
+        }
+        .splash-letter-jim {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            font-size: 68px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd24a, #00e5ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1;
+            text-shadow: none;
+            filter: drop-shadow(0 0 12px rgba(0,229,255,0.4));
+        }
+        .splash-site-name {
+            position: absolute;
+            bottom: -36px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 2px;
+        }
+        /* حلقة نبض حول الشعار */
+        @keyframes splashRing {
+            0%   { transform: scale(1);   opacity: 0.6; }
+            100% { transform: scale(1.35); opacity: 0; }
+        }
+        .splash-ring {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,210,80,0.4);
+            animation: splashRing 1.5s ease-out infinite;
+            z-index: 1;
+        }
+        .splash-ring:nth-child(2) { animation-delay: 0.5s; }
+
+        </style>
 
 </head>
 
 <body>
+
+    <!-- ===== شاشة المقدمة ===== -->
+    <div id="splashScreen">
+        <!-- الأنماط المتوهجة في الخلفية -->
+        <div class="splash-ring"></div>
+        <div class="splash-ring" style="animation-delay:0.5s;width:210px;height:210px;border-color:rgba(0,229,255,0.25);"></div>
+
+        <!-- نصفا الشاشة اللذان ينقسمان -->
+        <div class="splash-left-panel"  id="splashLeft"></div>
+        <div class="splash-right-panel" id="splashRight"></div>
+
+        <!-- اللوقو الدائري -->
+        <div class="splash-logo-wrap">
+            <div class="splash-circle">
+                <div class="splash-inner">
+                    <!-- شخص يستخدم المنظار (يمين) -->
+                    <span class="splash-icon-scope">🔭</span>
+                    <div class="splash-divider"></div>
+                    <!-- حرف الجيم (يسار) -->
+                    <span class="splash-letter-jim">ج</span>
+                </div>
+            </div>
+            <div class="splash-site-name">سين جيم الغلابة</div>
+        </div>
+    </div>
+    <script>
+        // تشغيل الانقسام بعد ثانيتين
+        (function() {
+            setTimeout(function() {
+                var left  = document.getElementById('splashLeft');
+                var right = document.getElementById('splashRight');
+                var splash = document.getElementById('splashScreen');
+                if (left)  left.classList.add('open');
+                if (right) right.classList.add('open');
+                // إخفاء الشاشة بعد انتهاء الانتقال (0.8s)
+                setTimeout(function() {
+                    if (splash) {
+                        splash.style.display = 'none';
+                    }
+                }, 850);
+            }, 2000);
+        })();
+    </script>
+
     <!-- فحص مانع الإعلانات -->
     <div id="adblockWarning"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 20000; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center;">
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 20000; display: none; justify-content: center; align-items: center; flex-direction: column; text-align: center;">
         <div
             style="background: linear-gradient(145deg, #1a1a2e, #16213e); padding: 40px; border-radius: 30px; max-width: 400px; margin: 20px; border: 2px solid #ff416c;">
             <div style="font-size: 80px; margin-bottom: 20px;">🚫</div>
             <h2 style="color: #ff416c; margin-bottom: 15px;">⚠️ مانع الإعلانات نشط!</h2>
-            <p style="color: white; font-size: 18px;">يرجى تعطيل مانع الإعلانات (AdBlock)</p>
+            <p style="color: white; font-size: 18px;">يرجى تعطيل مانع الإعلانات (AdBlock) للمتابعة</p>
+            <p style="color: #aaa; font-size: 14px; margin-top: 10px;">بعد التعطيل سيتم الدخول تلقائياً</p>
             <div
                 style="width: 50px; height: 50px; border: 3px solid #00c6ff; border-top-color: transparent; border-radius: 50%; margin: 20px auto; animation: spin 1s linear infinite;">
             </div>
@@ -2897,13 +3132,10 @@
     </div>
     <style>
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
     </style>
     <script>
-        document.body.style.overflow = 'hidden';
         function isAdBlockActive() {
             return new Promise((resolve) => {
                 const testAd = document.createElement('div');
@@ -2919,26 +3151,32 @@
                     const isBlocked = (testAd.offsetHeight === 0 || testAd.style.display === 'none');
                     testAd.remove();
                     resolve(isBlocked);
-                }, 100);
+                }, 150);
             });
         }
-        let checkInterval;
-        async function startChecking() {
+        // يفحص في الخلفية، ويظهر التحذير فقط إذا وُجد مانع إعلانات
+        async function startAdBlockChecking() {
             const warningDiv = document.getElementById('adblockWarning');
-            checkInterval = setInterval(async () => {
+            const check = async () => {
                 const blocked = await isAdBlockActive();
-                if (!blocked) {
-                    clearInterval(checkInterval);
+                if (blocked) {
                     if (warningDiv) {
-                        warningDiv.style.display = 'none';
-                        document.body.style.overflow = 'auto';
+                        warningDiv.style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
                     }
                 } else {
-                    if (warningDiv) warningDiv.style.display = 'flex';
+                    if (warningDiv) {
+                        warningDiv.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }
                 }
-            }, 1000);
+            };
+            // فحص أولي بعد تحميل الصفحة
+            setTimeout(check, 500);
+            // فحص دوري كل 5 ثواني
+            setInterval(check, 5000);
         }
-        startChecking();
+        startAdBlockChecking();
     </script>
 
     <!-- شاشة تسجيل الدخول -->
@@ -3346,7 +3584,10 @@
         <div class="player" id="player1Box" style="text-align:center;">
             <div id="player1Score"></div>
             <div class="lifelines">
-                <span class="life" onclick="useDouble(0,this)">✖️</span>
+                <span class="life double-life" onclick="useDouble(0,this)" title="مضاعفة النقاط">
+                    <span class="double-x2">×2</span>
+                    <span class="double-label">دبل</span>
+                </span>
                 <span class="life" id="twoBtn0" onclick="playSound(SND_LIFELINE,0.5);useTwoQ(0,this)">🃏 سؤالين</span>
                 <span class="life" id="twoAnsBtn0" onclick="playSound(SND_LIFELINE,0.5);useTwoAns(0,this)">2️⃣
                     إجابتين</span>
@@ -3364,7 +3605,10 @@
         <div class="player" id="player2Box" style="text-align:center;">
             <div id="player2Score"></div>
             <div class="lifelines">
-                <span class="life" onclick="useDouble(1,this)">✖️</span>
+                <span class="life double-life" onclick="useDouble(1,this)" title="مضاعفة النقاط">
+                    <span class="double-x2">×2</span>
+                    <span class="double-label">دبل</span>
+                </span>
                 <span class="life" id="twoBtn1" onclick="playSound(SND_LIFELINE,0.5);useTwoQ(1,this)">🃏 سؤالين</span>
                 <span class="life" id="twoAnsBtn1" onclick="playSound(SND_LIFELINE,0.5);useTwoAns(1,this)">2️⃣
                     إجابتين</span>
@@ -7827,11 +8071,28 @@
             document.getElementById('profileJoinDate').innerText = joinDate;
 
             const subInfo = document.getElementById('profileSubInfo');
-            const exp = getSubExpiry();  // احذف هذا السطر إذا لم يكن لديك نظام اشتراك
-            if (exp && exp > new Date()) {
-                subInfo.innerHTML = `<div class="profile-sub-badge">💎 اشتراك فعّال حتى ${formatDate(exp)}</div>`;
+            const exp = getSubExpiry();
+            const now = new Date();
+            if (exp && exp > now) {
+                // حساب الأيام المتبقية
+                const diffMs = exp - now;
+                const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                subInfo.innerHTML = `
+                    <div style="background:linear-gradient(135deg,rgba(124,77,255,0.15),rgba(255,210,80,0.1));border:1px solid rgba(255,210,80,0.3);border-radius:14px;padding:12px 14px;margin:8px 0;text-align:center;">
+                        <div style="font-size:13px;color:var(--gold);font-weight:900;font-family:Cairo,sans-serif;margin-bottom:5px;">💎 اشتراك فعّال</div>
+                        <div style="font-size:12px;color:var(--text-2);font-family:Cairo,sans-serif;margin-bottom:4px;">📅 ينتهي في: <strong style="color:var(--text-1);">${formatDate(exp)}</strong></div>
+                        <div style="font-size:12px;color:${diffDays <= 7 ? '#ff4757' : '#00e676'};font-family:Cairo,sans-serif;font-weight:700;">⏳ متبقي ${diffDays} يوم${diffDays === 1 ? '' : diffDays <= 10 ? '' : 'اً'}</div>
+                    </div>`;
+            } else if (exp && exp <= now) {
+                subInfo.innerHTML = `
+                    <div style="background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.25);border-radius:14px;padding:10px 14px;margin:8px 0;text-align:center;">
+                        <div style="font-size:12px;color:#ff4757;font-weight:700;font-family:Cairo,sans-serif;">❌ الاشتراك منتهٍ منذ ${formatDate(exp)}</div>
+                    </div>`;
             } else {
-                subInfo.innerHTML = '';
+                subInfo.innerHTML = `
+                    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px 14px;margin:8px 0;text-align:center;">
+                        <div style="font-size:12px;color:var(--text-2);font-family:Cairo,sans-serif;">لا يوجد اشتراك فعّال</div>
+                    </div>`;
             }
 
             document.getElementById('profileOverlay').style.display = 'flex';
@@ -8279,6 +8540,29 @@
         async function confirmSubscription() {
             if (!selectedPlan || !currentUser) return;
             const btn = document.getElementById('subConfirmBtn');
+            const msgDiv = document.getElementById('subPlanMsg');
+
+            // ── التحقق: هل المستخدم مشترك بالفعل؟ ──
+            const activeExp = getSubExpiry();
+            if (activeExp && activeExp > new Date()) {
+                // أظهر رسالة تنبيه أن الاشتراك سيُحتسب من اليوم
+                const formattedExp = formatDate(activeExp);
+                msgDiv.innerHTML = `<div style="background:rgba(255,210,80,0.1);border:1px solid rgba(255,210,80,0.35);border-radius:10px;padding:10px 12px;font-family:Cairo,sans-serif;font-size:13px;color:var(--gold);line-height:1.6;">
+                    ⚠️ أنت مشترك حالياً حتى <strong>${formattedExp}</strong><br>
+                    سيتم احتساب الاشتراك الجديد <strong>من هذا اليوم</strong> وسيُستبدل الاشتراك الحالي.<br>
+                    <span style="color:var(--text-2);font-size:12px;">هل تريد المتابعة؟</span>
+                </div>`;
+                // إضافة زر تأكيد ثانٍ
+                btn.innerText = '⚠️ تأكيد الاستبدال';
+                btn.disabled = false;
+                btn.onclick = () => _doConfirmSubscription();
+                return;
+            }
+            await _doConfirmSubscription();
+        }
+
+        async function _doConfirmSubscription() {
+            const btn = document.getElementById('subConfirmBtn');
             btn.disabled = true;
             btn.innerText = '⏳ جاري التفعيل...';
 
@@ -8312,6 +8596,8 @@
                 btn.innerText = '✅ اشترك الآن';
                 document.getElementById('subPlanMsg').innerText = '❌ خطأ: ' + e.message;
             }
+            // إعادة زر الاشتراك لحالته الأصلية
+            btn.onclick = () => confirmSubscription();
         }
 
         // ✅ دالة للأدمن: تفعيل اشتراك مستخدم معين بعد التحقق من دفعه
