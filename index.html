@@ -4504,7 +4504,7 @@
         function updateCategorySelectionUI() {
             document.querySelectorAll('.card').forEach(card => {
                 const categoryName = card.dataset.name;
-                if (purchasedCategories.includes(categoryName)) {
+                if (isOnlineMode || purchasedCategories.includes(categoryName)) {
                     card.style.opacity = "1"; card.style.filter = "none";
                     const lockIcon = card.querySelector('.lock-icon');
                     if (lockIcon) lockIcon.remove();
@@ -8954,52 +8954,41 @@
 
         // ── شاشة اختيار الفئات أونلاين ──
         function showOnlineCategoryScreen(data) {
-            const hCats = data.host.purchasedCategories || [];
-            const gCats = data.guest.purchasedCategories || [];
-            const shared = hCats.filter(c => gCats.includes(c));
             playerNames = [data.host.name, data.guest.name];
 
             document.getElementById('playerNames').style.display = 'none';
             const cont = document.getElementById('container');
             cont.style.display = 'flex';
 
-            // إشعار الفئات المشتركة
+            // إخفاء إشعار الفئات المشتركة إذا كان موجوداً
             let notice = document.querySelector('.shared-cats-notice');
-            if (!notice) {
-                notice = document.createElement('div');
-                notice.className = 'shared-cats-notice';
-                cont.insertBefore(notice, cont.firstChild);
-            }
-            notice.innerHTML = `⚠️ <strong>تنبيه:</strong> فقط الفئات المشتركة والمفتوحة لدى الطرفين ستظهر.<br>الفئات المتاحة: <strong>${shared.length}</strong> فئة`;
+            if (notice) notice.style.display = 'none';
 
-            // إعداد الكروت
+            // إعداد الكروت — كل الفئات مفتوحة في الأونلاين
             document.querySelectorAll('.card').forEach(card => {
                 const n = card.dataset.name;
-                if (!shared.includes(n)) {
-                    card.style.display = 'none';
+                card.style.display = '';
+                card.style.opacity = '1';
+                card.style.filter = 'none';
+                const lk = card.querySelector('.lock-icon');
+                if (lk) lk.remove();
+                card.classList.remove('locked');
+                if (onlineRole === 'host') {
+                    card.onclick = () => {
+                        if (card.classList.contains('selected')) {
+                            card.classList.remove('selected');
+                            selectedCategories = selectedCategories.filter(c => c.name !== n);
+                            playSound(SND_SELECT, .4);
+                        } else {
+                            if (selectedCategories.length >= 6) { showError("يمكنك اختيار 6 فئات فقط"); return; }
+                            card.classList.add('selected');
+                            selectedCategories.push({ name: n, img: card.dataset.img });
+                            playSound(SND_SELECT, .5);
+                        }
+                    };
                 } else {
-                    card.style.display = '';
-                    card.style.opacity = '1';
-                    card.style.filter = 'none';
-                    const lk = card.querySelector('.lock-icon');
-                    if (lk) lk.remove();
-                    if (onlineRole === 'host') {
-                        card.onclick = () => {
-                            if (card.classList.contains('selected')) {
-                                card.classList.remove('selected');
-                                selectedCategories = selectedCategories.filter(c => c.name !== n);
-                                playSound(SND_SELECT, .4);
-                            } else {
-                                if (selectedCategories.length >= 6) { showError("يمكنك اختيار 6 فئات فقط"); return; }
-                                card.classList.add('selected');
-                                selectedCategories.push({ name: n, img: card.dataset.img });
-                                playSound(SND_SELECT, .5);
-                            }
-                        };
-                    } else {
-                        card.style.pointerEvents = 'none';
-                        card.style.opacity = '.65';
-                    }
+                    card.style.pointerEvents = 'none';
+                    card.style.opacity = '.65';
                 }
             });
 
