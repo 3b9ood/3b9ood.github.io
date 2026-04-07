@@ -4425,10 +4425,26 @@
         async function navigateToGame(gameKey) {
             const targetUrl = await resolveExistingGameUrl(CROSS_GAME_CANDIDATES[gameKey] || []);
             if (targetUrl) {
+                if (gameKey === "thalathin") {
+                    try {
+                        sessionStorage.setItem("game_selector_return", "1");
+                    } catch (e) { }
+                    const finalUrl = new URL(targetUrl, window.location.href);
+                    finalUrl.searchParams.set("from", "selector");
+                    window.location.href = finalUrl.toString();
+                    return;
+                }
                 window.location.href = targetUrl;
                 return;
             }
             showNotification("تعذر العثور على ملف اللعبة. تأكد أن الملفين مرفوعان داخل نفس المستودع.", false);
+        }
+
+        function setSenjymControlsVisible(isVisible) {
+            const displayValue = isVisible ? "flex" : "none";
+            const userMenuToggle = document.getElementById("userMenuToggle");
+            if (userMenuToggle) userMenuToggle.style.display = displayValue;
+            if (!isVisible) hideUserMenu();
         }
 
         function showGameSelectionScreen() {
@@ -4442,6 +4458,7 @@
             const winScreen = document.getElementById("winScreen");
             if (questionScreen) questionScreen.style.display = "none";
             if (winScreen) winScreen.style.display = "none";
+            setSenjymControlsVisible(false);
         }
 
         function openSelectedGame(gameKey) {
@@ -4449,6 +4466,7 @@
                 playSenjymSplash(function() {
                     document.getElementById("gameChoiceScreen").style.display = "none";
                     document.getElementById("playerNames").style.display = "flex";
+                    setSenjymControlsVisible(!!currentUser);
                 });
                 return;
             }
@@ -8825,7 +8843,7 @@
                 if (!allowed) return;
                 await loadGameData();
                 showGameSelectionScreen();
-                showUserMenu(); updateAdminUI(); updateMenuStars();
+                updateAdminUI(); updateMenuStars();
             } else {
                 currentUser = null;
                 document.getElementById("authScreen").style.display = "flex";
