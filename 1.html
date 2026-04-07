@@ -360,7 +360,8 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
 .fab-btn-ad { background: rgba(46,204,140,0.12); color: #7ef5c8; }
 .fab-btn-sub { background: rgba(255,214,110,0.12); color: var(--gold); }
 .fab-btn-subs { background: rgba(124,77,255,0.12); color: #c0a0ff; }
-.fab-btn-logout { background: rgba(255,63,95,0.12); color: #ff8aaa; }
+.fab-btn-logout { background: rgba(255,63,95,0.12); color: #ff8aaa; display: none; }
+#fabMenuDropdown .fab-divider:last-of-type { display: none; }
 
 /* ===== POINTS INDICATOR (TOP LEFT) ===== */
 #pointsIndicator {
@@ -476,10 +477,7 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(255,214,110,0.18), transparent 35%),
-    radial-gradient(circle at 80% 78%, rgba(255,95,32,0.2), transparent 33%),
-    rgba(7, 4, 18, 0.96);
+  background: #000;
   opacity: 0;
   pointer-events: none;
   transition: opacity .35s ease;
@@ -517,7 +515,10 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 42px 0;
   text-align: center;
 }
 .game-intro-title {
@@ -534,11 +535,7 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
   color: var(--white);
   text-shadow: 0 0 34px rgba(255,95,40,0.32);
 }
-.game-intro-subtitle {
-  font-size: 14px;
-  color: var(--muted);
-  letter-spacing: .08em;
-}
+.game-intro-subtitle { display: none; }
 @keyframes challengePulse {
   0%, 100% { transform: scale(1); opacity: .55; }
   50% { transform: scale(1.04); opacity: 1; }
@@ -1330,7 +1327,7 @@ function defaultState() {
     gameCategories: {}, questionCounts, scores: {}, currentGameIndex: 0,
     currentQuestionIndex: 0, currentGameQueue: [], lifeStatus: {},
     lastFinishedGame: "", categoryEditGame: "",
-    auctionState: { started: false, owner: "", timer: 30, bids: {} }
+    auctionState: { started: false, owner: "", timer: 30, bids: {}, selectionLocked: false }
   };
 }
 function loadState() {
@@ -1371,6 +1368,68 @@ function showNotice(msg) {
 // ===== HELPERS =====
 function getCurrentGame(state) { return state.selectedGames[state.currentGameIndex] || null; }
 function ensurePlayersExist(state) { if (!state.players || state.players.length < 2) { goTo("welcome"); return false; } return true; }
+function resetScores(state) {
+  state.scores = {};
+  state.players.forEach((player) => { state.scores[player] = 0; });
+}
+function resetKnowLifeStatus(state) {
+  state.players.forEach((player) => {
+    state.lifeStatus[player] = { misses: [false, false, false], bonuses: [false] };
+  });
+}
+function getQuestionKey(round) {
+  if (!round) return "";
+  return [round.category, round.group, round.question].join("||");
+}
+function collectGameQuestions(state, game) {
+  const gameCategories = state.gameCategories[game] || state.selectedCategories;
+  const mode = game === "ماذا تعرف" ? "know" : game === "المزاد" ? "auction" : game === "السرعة" ? "speed" : "whoami";
+  const allQuestions = [];
+
+  Object.values(gameCategories).flat().forEach((sub) => {
+    const catKey = Object.keys(quizBank).find((k) => quizBank[k][sub]);
+    if (!catKey) return;
+    (quizBank[catKey][sub] || []).forEach((q) => {
+      allQuestions.push({ ...q, category: catKey, group: sub, mode });
+    });
+  });
+
+  return allQuestions;
+}
+function replaceCurrentQuestion(state) {
+  const game = getCurrentGame(state);
+  const currentRound = state.currentGameQueue[state.currentQuestionIndex];
+  if (!game || !currentRound) return false;
+
+  const usedKeys = new Set(
+    state.currentGameQueue
+      .filter((_, idx) => idx !== state.currentQuestionIndex)
+      .map(getQuestionKey)
+  );
+  const candidates = collectGameQuestions(state, game).filter((round) => {
+    const key = getQuestionKey(round);
+    return key !== getQuestionKey(currentRound) && !usedKeys.has(key);
+  });
+
+  if (!candidates.length) return false;
+
+  const nextRound = candidates[Math.floor(Math.random() * candidates.length)];
+  state.currentGameQueue[state.currentQuestionIndex] = nextRound;
+
+  if (nextRound.mode === "know") resetKnowLifeStatus(state);
+  if (nextRound.mode === "auction") {
+    state.auctionState = { started: false, owner: "", timer: 30, bids: {}, selectionLocked: false };
+  }
+
+  saveState(state);
+  return true;
+}
+function getAuctionPoints(bidValue) {
+  const value = Number(bidValue) || 0;
+  if (value < 20) return 1;
+  if (value <= 30) return 2;
+  return Math.floor((value - 1) / 10);
+}
 
 // ===== CONFETTI =====
 function launchConfetti() {
@@ -1430,7 +1489,7 @@ function setupWelcomeView() {
     if (!n1 || !n2) { showNotice("أدخل اسمَي اللاعبين أولاً."); return; }
     if (n1 === n2) { showNotice("أسماء اللاعبين يجب أن تكون مختلفة."); return; }
     state.players = [n1, n2];
-    state.scores = { [n1]: 0, [n2]: 0 };
+    resetScores(state);
     state.selectedGames = [];
     state.gameCategories = {};
     state.currentGameIndex = 0;
@@ -1645,10 +1704,8 @@ function buildCurrentGameQueue(state) {
   state.currentQuestionIndex = 0;
 
   state.lifeStatus = {};
-  state.players.forEach((p) => {
-    state.lifeStatus[p] = { misses: [false, false, false], bonuses: [false, false, false] };
-  });
-  state.auctionState = { started: false, owner: "", timer: 30, bids: {} };
+  resetKnowLifeStatus(state);
+  state.auctionState = { started: false, owner: "", timer: 30, bids: {}, selectionLocked: false };
 }
 
 // ===== QUIZ VIEW =====
@@ -1673,7 +1730,7 @@ function setupQuizView() {
     const mode = round ? round.mode : null;
 
     state.players.forEach((player) => {
-      const ls = state.lifeStatus[player] || { misses: [false,false,false], bonuses: [false,false,false] };
+      const ls = state.lifeStatus[player] || { misses: [false,false,false], bonuses: [false] };
       if (!state.lifeStatus[player]) state.lifeStatus[player] = ls;
       const card = document.createElement("div");
       card.className = "player-card category-card";
@@ -1683,13 +1740,19 @@ function setupQuizView() {
       if (mode === "know") {
         // 3 red miss dots + 1 blue dot per player
         controlsHtml = `<div class="life-row" style="gap:10px;flex-wrap:wrap;margin-top:6px;">
-          ${ls.misses.map((used, i) => `<button class="life-dot miss${used ? " used" : ""}" data-player="${player}" data-type="miss" data-idx="${i}" style="width:44px;height:44px;font-size:1.1rem;">${used ? "✕" : "○"}</button>`).join("")}
-          <button class="life-dot bonus${ls.bonuses[0] ? " white-bonus" : ""}" data-player="${player}" data-type="bonus" data-idx="0" style="width:44px;height:44px;font-size:1.1rem;">${ls.bonuses[0] ? "●" : "○"}</button>
+          ${ls.misses.map((used, i) => `<button class="life-dot miss${used ? " used" : ""}" data-player="${player}" data-type="miss" data-idx="${i}" style="width:52px;height:52px;font-size:.82rem;">خطأ</button>`).join("")}
+          <button class="life-dot bonus${ls.bonuses[0] ? " used" : ""}" data-player="${player}" data-type="bonus" data-idx="0" style="width:52px;height:52px;font-size:.82rem;">باس</button>
         </div>`;
       } else if (mode === "auction") {
         const aState = state.auctionState;
         if (!aState.started) {
-          controlsHtml = `<div style="margin-top:10px;text-align:center;">
+          const bidValue = aState.bids[player] || 0;
+          controlsHtml = `<div class="auction-bid-box" style="margin-top:10px;text-align:center;">
+            <div class="counter-wrap auction-counter-wrap">
+              <button class="counter-btn" data-action="auction-bid" data-player="${player}" data-dir="-1">-</button>
+              <span class="counter-value auction-counter-value" id="bid-${player}">${bidValue}</span>
+              <button class="counter-btn" data-action="auction-bid" data-player="${player}" data-dir="1">+</button>
+            </div>
             <button class="primary-btn" style="padding:10px 20px;font-size:0.92rem;" data-action="auction-select" data-player="${player}">اختر</button>
           </div>`;
         } else if (aState.owner === player) {
@@ -1740,6 +1803,9 @@ function setupQuizView() {
           };
         }
       } else if (mode === "auction") {
+        card.querySelectorAll("[data-action='auction-bid']").forEach((btn) => {
+          btn.onclick = () => adjustBid(btn.dataset.player, parseInt(btn.dataset.dir, 10));
+        });
         const selectBtn = card.querySelector("[data-action='auction-select']");
         if (selectBtn) {
           selectBtn.onclick = () => startAuction(selectBtn.dataset.player);
@@ -1748,10 +1814,14 @@ function setupQuizView() {
         if (correctBtn) {
           correctBtn.onclick = () => {
             clearInterval(auctionTimer); auctionTimer = null;
-            state.scores[player] = (state.scores[player] || 0) + 1;
+            const bidValue = state.auctionState.bids[player] || 0;
+            const gained = getAuctionPoints(bidValue);
+            state.scores[player] = (state.scores[player] || 0) + gained;
             state.auctionState.started = false;
+            state.auctionState.owner = "";
+            state.auctionState.selectionLocked = false;
             saveState(state);
-            moveToNextPhase(`✓ أجاب <span class="highlight">${player}</span> صحيحًا، النقطة له!`);
+            moveToNextPhase(`✓ أجاب <span class="highlight">${player}</span> صحيحًا، وحصل على <span class="highlight">${gained}</span> نقطة.`);
           };
         }
         const wrongBtn = card.querySelector("[data-action='auction-wrong']");
@@ -1761,8 +1831,10 @@ function setupQuizView() {
             const other = state.players.find(p => p !== player);
             state.scores[other] = (state.scores[other] || 0) + 1;
             state.auctionState.started = false;
+            state.auctionState.owner = "";
+            state.auctionState.selectionLocked = false;
             saveState(state);
-            moveToNextPhase(`✕ أخطأ <span class="highlight">${player}</span>، النقطة تذهب إلى <span class="highlight">${other}</span>!`);
+            moveToNextPhase(`✕ أخطأ <span class="highlight">${player}</span>، والنقطة ذهبت إلى <span class="highlight">${other}</span>.`);
           };
         }
       } else if (mode === "speed" || mode === "whoami") {
@@ -1788,10 +1860,16 @@ function setupQuizView() {
   function moveToNextPhase(msg) {
     state.currentQuestionIndex++;
     if (msg) resultBanner.innerHTML = msg;
+    const nextRound = state.currentGameQueue[state.currentQuestionIndex];
+    if (nextRound && nextRound.mode === "know") resetKnowLifeStatus(state);
+    if (nextRound && nextRound.mode === "auction") {
+      state.auctionState = { started: false, owner: "", timer: 30, bids: {}, selectionLocked: false };
+    }
     saveState(state);
     if (state.currentQuestionIndex >= state.currentGameQueue.length) {
       renderFinishedState();
     } else {
+      renderPlayersBoard();
       renderQuestion();
     }
   }
@@ -1820,9 +1898,21 @@ function setupQuizView() {
   }
 
   function startAuction(player) {
+    const selectedBid = state.auctionState.bids[player] || 0;
+    const highestBid = Math.max(...state.players.map((name) => state.auctionState.bids[name] || 0));
+    const highestOwners = state.players.filter((name) => (state.auctionState.bids[name] || 0) === highestBid);
+    if (highestOwners.length > 1) {
+      showNotice("لازم كل لاعب يكون له رقم مختلف، واختَر اللاعب صاحب الرقم الأعلى فقط.");
+      return;
+    }
+    if (selectedBid < highestBid) {
+      showNotice("لا يمكن اختيار هذا اللاعب لأن هناك لاعبًا آخر يملك عددًا أعلى.");
+      return;
+    }
     state.auctionState.started = true;
     state.auctionState.owner = player;
     state.auctionState.timer = 30;
+    state.auctionState.selectionLocked = true;
     saveState(state);
     renderPlayersBoard();
     renderQuestion();
@@ -1844,6 +1934,8 @@ function setupQuizView() {
       if (state.auctionState.timer <= 0) {
         clearInterval(auctionTimer); auctionTimer = null;
         state.auctionState.started = false;
+        state.auctionState.owner = "";
+        state.auctionState.selectionLocked = false;
         saveState(state);
         moveToNextPhase(`انتهى وقت المزاد! بدون نقطة.`);
       }
@@ -1856,6 +1948,7 @@ function setupQuizView() {
     currentGameTitle.textContent = getCurrentGame(state);
     currentCategoryPill.textContent = `${round.category} - ${round.group}`;
     currentRoundPill.textContent = `السؤال ${state.currentQuestionIndex + 1} من ${state.currentGameQueue.length}`;
+    winnerScreen.classList.add("hidden");
     finishAnswersBtn.style.display = "inline-flex";
     changeQuestionBtn.style.display = "inline-flex";
 
@@ -1881,7 +1974,12 @@ function setupQuizView() {
       finishAnswersBtn.style.display = "none";
       changeQuestionBtn.textContent = "تغيير السؤال";
       changeQuestionBtn.style.display = "inline-flex";
-      renderScrollableAnswers(round.answers);
+      if (state.auctionState.started) {
+        renderScrollableAnswers(round.answers);
+      } else {
+        answersGrid.className = "answers-grid";
+        answersGrid.innerHTML = `<div class="auction-start-box">اختر اللاعب صاحب أعلى عدد أولاً لإظهار الأجوبة وبدء العداد.</div>`;
+      }
       if (state.auctionState.started) {
         const t = state.auctionState.timer;
         const offset = 440 - (t / 30) * 440;
@@ -1904,9 +2002,10 @@ function setupQuizView() {
               صاحب المزاد: <span class="highlight">${state.auctionState.owner}</span>
             </div>
           </div>`);
-        resultBanner.innerHTML = `استخدم ✓ أو ✕ في بطاقة <span class="highlight">${state.auctionState.owner}</span> لتحديد النتيجة.`;
+        const bidValue = state.auctionState.bids[state.auctionState.owner] || 0;
+        resultBanner.innerHTML = `استخدم ✓ أو ✕ في بطاقة <span class="highlight">${state.auctionState.owner}</span> لتحديد النتيجة. العدد الحالي: <span class="highlight">${bidValue}</span>.`;
       } else {
-        resultBanner.textContent = "اضغط على 'اختر' تحت اسم اللاعب الذي يجيب لبدء الوقت.";
+        resultBanner.textContent = "اضغط على 'اختر' تحت اسم اللاعب صاحب أعلى عدد لبدء الوقت.";
       }
       return;
     }
@@ -1918,7 +2017,8 @@ function setupQuizView() {
     resultBanner.textContent = "اضغط ✓ تحت اسم اللاعب الذي عرف الإجابة لإعطائه النقطة.";
   }
 
-  window.adjustBid = (player, dir) => {
+  const adjustBid = (player, dir) => {
+    if (state.auctionState.started || state.auctionState.selectionLocked) return;
     if (!state.auctionState.bids) state.auctionState.bids = {};
     state.auctionState.bids[player] = Math.max(0, (state.auctionState.bids[player] || 0) + dir);
     saveState(state);
@@ -1941,9 +2041,28 @@ function setupQuizView() {
     }
   };
 
-  changeQuestionBtn.onclick = () => moveToNextPhase("تم تغيير السؤال بدون احتساب نقاط.");
+  changeQuestionBtn.onclick = () => {
+    clearInterval(auctionTimer);
+    auctionTimer = null;
+    if (!replaceCurrentQuestion(state)) {
+      showNotice("لا يوجد سؤال بديل متاح لهذه اللعبة.");
+      return;
+    }
+    resultBanner.innerHTML = "تم تغيير السؤال بدون احتسابه من عداد الأسئلة.";
+    renderPlayersBoard();
+    renderQuestion();
+  };
   document.getElementById("restartGameBtn").onclick = () => { restartSession(state); goTo("welcome"); };
-  document.getElementById("backFromQuizBtn").onclick = () => goTo("categories");
+  document.getElementById("backFromQuizBtn").onclick = () => {
+    clearInterval(auctionTimer);
+    auctionTimer = null;
+    resetScores(state);
+    state.currentGameIndex = 0;
+    state.currentQuestionIndex = 0;
+    state.auctionState = { started: false, owner: "", timer: 30, bids: {}, selectionLocked: false };
+    saveState(state);
+    goTo("categories");
+  };
 
   renderPlayersBoard();
   renderQuestion();
@@ -2024,10 +2143,10 @@ if (challengeIntro) {
     challengeIntro.style.display = "none";
   } else {
     requestAnimationFrame(() => challengeIntro.classList.add("active"));
-    setTimeout(() => challengeIntro.classList.remove("active"), 1700);
+    setTimeout(() => challengeIntro.classList.remove("active"), 2000);
     setTimeout(() => {
       challengeIntro.style.display = "none";
-    }, 2100);
+    }, 2400);
   }
 }
 
