@@ -1946,10 +1946,10 @@ const challengeIntro = document.getElementById("challengeIntro");
 
 if (challengeIntro) {
   requestAnimationFrame(() => challengeIntro.classList.add("active"));
-  setTimeout(() => challengeIntro.classList.remove("active"), 1850);
+  setTimeout(() => challengeIntro.classList.remove("active"), 450);
   setTimeout(() => {
     challengeIntro.style.display = "none";
-  }, 2250);
+  }, 750);
 }
 
 goTo(initialView);
