@@ -1438,7 +1438,15 @@ function setupWelcomeView() {
   };
 
   if (chooseAnotherGameBtn) {
-    chooseAnotherGameBtn.onclick = () => navigateToExternalGame("selector");
+    chooseAnotherGameBtn.onclick = () => {
+      const params = new URLSearchParams(window.location.search);
+      const cameFromSelector = params.get("from") === "selector";
+      if (cameFromSelector && window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+      navigateToExternalGame("selector");
+    };
   }
 }
 
@@ -1943,13 +1951,18 @@ function renderView(view) {
 
 const initialView = validViews.includes(window.location.hash.replace("#", "")) ? window.location.hash.replace("#", "") : "welcome";
 const challengeIntro = document.getElementById("challengeIntro");
+const openedFromSelector = new URLSearchParams(window.location.search).get("from") === "selector";
 
 if (challengeIntro) {
-  requestAnimationFrame(() => challengeIntro.classList.add("active"));
-  setTimeout(() => challengeIntro.classList.remove("active"), 450);
-  setTimeout(() => {
+  if (openedFromSelector) {
     challengeIntro.style.display = "none";
-  }, 750);
+  } else {
+    requestAnimationFrame(() => challengeIntro.classList.add("active"));
+    setTimeout(() => challengeIntro.classList.remove("active"), 450);
+    setTimeout(() => {
+      challengeIntro.style.display = "none";
+    }, 750);
+  }
 }
 
 goTo(initialView);
