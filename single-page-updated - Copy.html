@@ -52,7 +52,6 @@ body {
   color: var(--text);
   overflow-x: hidden;
 }
-body.intro-active { overflow: hidden; }
 
 .background-glow { position: fixed; border-radius: 50%; filter: blur(140px); z-index: 0; pointer-events: none; }
 .glow-one { width: 520px; height: 520px; background: radial-gradient(circle, rgba(255, 95, 40, 0.18), transparent 70%); top: -8%; right: -10%; animation: floatGlow 9s ease-in-out infinite; }
@@ -482,10 +481,15 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
-  transition: opacity .35s ease;
+  animation: introHoldFade 2.4s forwards;
 }
-.game-intro-overlay.is-hiding { opacity: 0; pointer-events: none; }
+.game-intro-overlay.skip-intro,
 .game-intro-overlay.hidden { display: none; visibility: hidden; }
+@keyframes introHoldFade {
+  0% { opacity: 1; visibility: visible; pointer-events: auto; }
+  82% { opacity: 1; visibility: visible; pointer-events: auto; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
 .game-intro-logo {
   width: min(260px, 72vw);
   aspect-ratio: 1;
@@ -2143,16 +2147,7 @@ const openedFromSelector = new URLSearchParams(window.location.search).get("from
 
 if (challengeIntro) {
   if (openedFromSelector) {
-    challengeIntro.classList.add("hidden");
-  } else {
-    document.body.classList.add("intro-active");
-    setTimeout(() => {
-      challengeIntro.classList.add("is-hiding");
-    }, 2000);
-    setTimeout(() => {
-      challengeIntro.classList.add("hidden");
-      document.body.classList.remove("intro-active");
-    }, 2400);
+    challengeIntro.classList.add("skip-intro");
   }
 }
 
