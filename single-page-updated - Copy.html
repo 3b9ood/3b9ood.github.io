@@ -611,7 +611,7 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
           </div>
         </div>
         <button class="primary-btn align-start" id="startSetupBtn">ابدأ اللعب</button>
-        <button class="ghost-btn align-start" id="openSenjymBtn" type="button">افتح لعبة سين جيم</button>
+        <button class="ghost-btn align-start" id="chooseAnotherGameBtn" type="button">اختيار لعبة أخرى</button>
       </section>
     </section>
 
@@ -1407,7 +1407,7 @@ function showWinnerOverlay(state) {
 function setupWelcomeView() {
   const state = loadState();
   const startBtn = document.getElementById("startSetupBtn");
-  const openSenjymBtn = document.getElementById("openSenjymBtn");
+  const chooseAnotherGameBtn = document.getElementById("chooseAnotherGameBtn");
   const p1 = document.getElementById("playerOne");
   const p2 = document.getElementById("playerTwo");
   if (state.players[0]) p1.value = state.players[0];
@@ -1426,8 +1426,8 @@ function setupWelcomeView() {
     goTo("games");
   };
 
-  if (openSenjymBtn) {
-    openSenjymBtn.onclick = () => navigateToExternalGame("senjym");
+  if (chooseAnotherGameBtn) {
+    chooseAnotherGameBtn.onclick = () => navigateToExternalGame("senjym");
   }
 }
 
