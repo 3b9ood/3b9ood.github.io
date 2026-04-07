@@ -816,6 +816,17 @@ const USERS_COLLECTION = "users";
 const LEGACY_THALATHIN_COLLECTION = "users_thalain";
 const SUBSCRIPTIONS_COLLECTION = "subscriptions_thalathin";
 const CROSS_GAME_CANDIDATES = {
+  selector: [
+    "./index.html",
+    "../index.html",
+    "../../index.html",
+    "../Ø³ÙŠÙ† Ø¬ÙŠÙ…/index.html",
+    "../%D8%B3%D9%8A%D9%86%20%D8%AC%D9%8A%D9%85/index.html",
+    "../Ø³ÙŠÙ† Ø¬ÙŠÙ…/site_v10.html",
+    "../%D8%B3%D9%8A%D9%86%20%D8%AC%D9%8A%D9%85/site_v10.html",
+    "../site_v10.html",
+    "./site_v10.html"
+  ],
   senjym: [
     "../سين جيم/site_v10.html",
     "../%D8%B3%D9%8A%D9%86%20%D8%AC%D9%8A%D9%85/site_v10.html",
@@ -1427,7 +1438,7 @@ function setupWelcomeView() {
   };
 
   if (chooseAnotherGameBtn) {
-    chooseAnotherGameBtn.onclick = () => navigateToExternalGame("senjym");
+    chooseAnotherGameBtn.onclick = () => navigateToExternalGame("selector");
   }
 }
 
