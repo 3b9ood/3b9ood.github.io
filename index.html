@@ -3793,6 +3793,7 @@
         }
 
         const ADMIN_EMAILS = ["3bedelshareif@gmail.com"];
+        const SUBSCRIPTIONS_COLLECTION = "subscriptions_senjym";
 
         function isCurrentUserAdmin() {
             if (!currentUser) return false;
@@ -8588,7 +8589,7 @@
         async function loadSubscription() {
             if (!currentUser) return;
             try {
-                const doc = await db.collection('subscriptions').doc(currentUser.uid).get();
+                const doc = await db.collection(SUBSCRIPTIONS_COLLECTION).doc(currentUser.uid).get();
                 if (doc.exists) {
                     const d = doc.data();
                     const now = new Date();
@@ -8765,8 +8766,8 @@
                 const expiry = new Date(now);
                 expiry.setMonth(expiry.getMonth() + selectedPlan);
 
-                // تفعيل الاشتراك فوراً في مجموعة subscriptions
-                await db.collection('subscriptions').doc(currentUser.uid).set({
+                // تفعيل اشتراك سين جيم فقط
+                await db.collection(SUBSCRIPTIONS_COLLECTION).doc(currentUser.uid).set({
                     uid: currentUser.uid,
                     email: currentUser.email,
                     plan: selectedPlan,
@@ -8802,7 +8803,7 @@
                 const expiry = new Date(now);
                 expiry.setMonth(expiry.getMonth() + planMonths);
                 const prices = { 1: '1$', 6: '5$', 12: '9$' };
-                await db.collection('subscriptions').doc(userUid).set({
+                await db.collection(SUBSCRIPTIONS_COLLECTION).doc(userUid).set({
                     uid: userUid,
                     plan: planMonths,
                     price: prices[planMonths] || (planMonths + ' أشهر'),
@@ -9679,7 +9680,7 @@
             const list = document.getElementById('subRequestsList');
             if (!list) return;
             try {
-                const snap = await db.collection('subscriptions')
+                const snap = await db.collection(SUBSCRIPTIONS_COLLECTION)
                     .orderBy('startedAt', 'desc')
                     .limit(50)
                     .get();
