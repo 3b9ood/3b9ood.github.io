@@ -173,6 +173,7 @@ label, .question-label { display: block; color: var(--gold); font-weight: 800; f
 .life-dot.miss.used { background: var(--red); color: #fff; border-color: var(--red); box-shadow: 0 0 18px var(--red-glow); }
 .life-dot.bonus { background: rgba(82,170,255,0.18); color: var(--blue); border-color: rgba(82,170,255,0.28); }
 .life-dot.bonus.used { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 0 18px rgba(82,170,255,0.35); }
+.life-dot.bonus.white-bonus { background: #ffffff; color: #333; border-color: rgba(82,170,255,0.5); box-shadow: 0 0 14px rgba(82,170,255,0.2); }
 .pass-dot { width: 72px; border-radius: 999px; font-size: 0.88rem; }
 .speed-winner-btn, .whoami-btn { width: 42px; height: 42px; border: 0; border-radius: 50%; padding: 0; background: linear-gradient(135deg, rgba(46,204,140,0.28), rgba(46,204,140,0.18)); color: #fff; font-weight: 900; cursor: pointer; font-size: 1.25rem; transition: all 0.22s; border: 1px solid rgba(46,204,140,0.38); display: inline-flex; align-items: center; justify-content: center; }
 .speed-winner-btn:hover, .whoami-btn:hover { transform: scale(1.15); box-shadow: 0 0 22px var(--green-glow); }
@@ -1438,14 +1439,11 @@ function setupWelcomeView() {
   };
 
   if (chooseAnotherGameBtn) {
-    chooseAnotherGameBtn.onclick = () => {
-      const params = new URLSearchParams(window.location.search);
-      const cameFromSelector = params.get("from") === "selector";
-      if (cameFromSelector && window.history.length > 1) {
-        window.history.back();
-        return;
-      }
-      navigateToExternalGame("selector");
+    chooseAnotherGameBtn.onclick = async () => {
+      const candidates = ["./site_v10.html", "../site_v10.html", "./index.html", "../index.html"];
+      const url = await resolveExistingGameUrl(candidates);
+      if (url) { window.location.href = url; }
+      else { showNotif('تعذر العثور على شاشة اختيار الألعاب.'); }
     };
   }
 }
@@ -1671,29 +1669,113 @@ function setupQuizView() {
 
   function renderPlayersBoard() {
     playersBoard.innerHTML = "";
+    const round = state.currentGameQueue[state.currentQuestionIndex];
+    const mode = round ? round.mode : null;
+
     state.players.forEach((player) => {
       const ls = state.lifeStatus[player] || { misses: [false,false,false], bonuses: [false,false,false] };
+      if (!state.lifeStatus[player]) state.lifeStatus[player] = ls;
       const card = document.createElement("div");
       card.className = "player-card category-card";
+
+      let controlsHtml = "";
+
+      if (mode === "know") {
+        // 3 red miss dots + 1 blue dot per player
+        controlsHtml = `<div class="life-row" style="gap:10px;flex-wrap:wrap;margin-top:6px;">
+          ${ls.misses.map((used, i) => `<button class="life-dot miss${used ? " used" : ""}" data-player="${player}" data-type="miss" data-idx="${i}" style="width:44px;height:44px;font-size:1.1rem;">${used ? "✕" : "○"}</button>`).join("")}
+          <button class="life-dot bonus${ls.bonuses[0] ? " white-bonus" : ""}" data-player="${player}" data-type="bonus" data-idx="0" style="width:44px;height:44px;font-size:1.1rem;">${ls.bonuses[0] ? "●" : "○"}</button>
+        </div>`;
+      } else if (mode === "auction") {
+        const aState = state.auctionState;
+        if (!aState.started) {
+          controlsHtml = `<div style="margin-top:10px;text-align:center;">
+            <button class="primary-btn" style="padding:10px 20px;font-size:0.92rem;" data-action="auction-select" data-player="${player}">اختر</button>
+          </div>`;
+        } else if (aState.owner === player) {
+          controlsHtml = `<div style="margin-top:12px;display:flex;gap:14px;justify-content:center;">
+            <button style="width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:rgba(46,204,140,0.2);color:var(--green);font-size:1.5rem;cursor:pointer;font-weight:900;transition:all .2s;" data-action="auction-correct" data-player="${player}">✓</button>
+            <button style="width:54px;height:54px;border-radius:50%;border:2px solid var(--red);background:rgba(255,63,95,0.2);color:var(--red);font-size:1.5rem;cursor:pointer;font-weight:900;transition:all .2s;" data-action="auction-wrong" data-player="${player}">✕</button>
+          </div>`;
+        }
+      } else if (mode === "speed" || mode === "whoami") {
+        controlsHtml = `<div style="margin-top:12px;display:flex;justify-content:center;">
+          <button style="width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:rgba(46,204,140,0.2);color:var(--green);font-size:1.5rem;cursor:pointer;font-weight:900;transition:all .2s;" data-action="winner" data-player="${player}">✓</button>
+        </div>`;
+      }
+
       card.innerHTML = `
         <div class="player-top">
           <span class="player-name">${player}</span>
           <span class="score-chip">النقطة: ${state.scores[player] || 0}</span>
         </div>
-        <div class="life-row">
-          ${ls.misses.map((used, i) => `<button class="life-dot miss${used?" used":""}" data-player="${player}" data-type="miss" data-idx="${i}">${used?"✕":"○"}</button>`).join("")}
-          ${ls.bonuses.map((used, i) => `<button class="life-dot bonus${used?" used":""}" data-player="${player}" data-type="bonus" data-idx="${i}">${used?"★":"☆"}</button>`).join("")}
-        </div>`;
-      card.querySelectorAll(".life-dot").forEach((dot) => {
-        dot.onclick = () => {
-          const p = dot.dataset.player, t = dot.dataset.type, idx = parseInt(dot.dataset.idx);
-          if (dot.classList.contains("locked")) return;
-          if (t === "miss") ls.misses[idx] = !ls.misses[idx];
-          else ls.bonuses[idx] = !ls.bonuses[idx];
-          saveState(state);
-          renderPlayersBoard();
-        };
-      });
+        ${controlsHtml}`;
+
+      // Event listeners
+      if (mode === "know") {
+        card.querySelectorAll("[data-type='miss']").forEach((dot) => {
+          dot.onclick = () => {
+            const idx = parseInt(dot.dataset.idx);
+            ls.misses[idx] = !ls.misses[idx];
+            state.lifeStatus[player] = ls;
+            saveState(state);
+            // Auto-end if all 3 misses
+            if (ls.misses.every(m => m)) {
+              const other = state.players.find(p => p !== player);
+              state.scores[other] = (state.scores[other] || 0) + 1;
+              saveState(state);
+              moveToNextPhase(`${player} أخطأ 3 مرات! النقطة تذهب تلقائيًا إلى <span class="highlight">${other}</span>.`);
+            } else {
+              renderPlayersBoard();
+            }
+          };
+        });
+        const bonusDot = card.querySelector("[data-type='bonus']");
+        if (bonusDot) {
+          bonusDot.onclick = () => {
+            ls.bonuses[0] = !ls.bonuses[0];
+            state.lifeStatus[player] = ls;
+            saveState(state);
+            renderPlayersBoard();
+          };
+        }
+      } else if (mode === "auction") {
+        const selectBtn = card.querySelector("[data-action='auction-select']");
+        if (selectBtn) {
+          selectBtn.onclick = () => startAuction(selectBtn.dataset.player);
+        }
+        const correctBtn = card.querySelector("[data-action='auction-correct']");
+        if (correctBtn) {
+          correctBtn.onclick = () => {
+            clearInterval(auctionTimer); auctionTimer = null;
+            state.scores[player] = (state.scores[player] || 0) + 1;
+            state.auctionState.started = false;
+            saveState(state);
+            moveToNextPhase(`✓ أجاب <span class="highlight">${player}</span> صحيحًا، النقطة له!`);
+          };
+        }
+        const wrongBtn = card.querySelector("[data-action='auction-wrong']");
+        if (wrongBtn) {
+          wrongBtn.onclick = () => {
+            clearInterval(auctionTimer); auctionTimer = null;
+            const other = state.players.find(p => p !== player);
+            state.scores[other] = (state.scores[other] || 0) + 1;
+            state.auctionState.started = false;
+            saveState(state);
+            moveToNextPhase(`✕ أخطأ <span class="highlight">${player}</span>، النقطة تذهب إلى <span class="highlight">${other}</span>!`);
+          };
+        }
+      } else if (mode === "speed" || mode === "whoami") {
+        const winBtn = card.querySelector("[data-action='winner']");
+        if (winBtn) {
+          winBtn.onclick = () => {
+            state.scores[player] = (state.scores[player] || 0) + 1;
+            saveState(state);
+            moveToNextPhase(`النقطة ذهبت إلى <span class="highlight">${player}</span>!`);
+          };
+        }
+      }
+
       playersBoard.appendChild(card);
     });
   }
@@ -1737,16 +1819,12 @@ function setupQuizView() {
     }
   }
 
-  function startAuction() {
-    const round = state.currentGameQueue[state.currentQuestionIndex];
-    const bids = state.auctionState.bids || {};
-    const maxBid = Math.max(...Object.values(bids), 0);
-    const owners = Object.entries(bids).filter(([,v]) => v === maxBid).map(([k]) => k);
-    if (owners.length !== 1) { showNotice("يجب أن يكون هناك لاعب واحد يملك أعلى مزاد!"); return; }
+  function startAuction(player) {
     state.auctionState.started = true;
-    state.auctionState.owner = owners[0];
+    state.auctionState.owner = player;
     state.auctionState.timer = 30;
     saveState(state);
+    renderPlayersBoard();
     renderQuestion();
     if (auctionTimer) clearInterval(auctionTimer);
     auctionTimer = setInterval(() => {
@@ -1765,7 +1843,9 @@ function setupQuizView() {
       }
       if (state.auctionState.timer <= 0) {
         clearInterval(auctionTimer); auctionTimer = null;
-        moveToNextPhase(`انتهى وقت المزاد! صاحبه: <span class="highlight">${state.auctionState.owner}</span>`);
+        state.auctionState.started = false;
+        saveState(state);
+        moveToNextPhase(`انتهى وقت المزاد! بدون نقطة.`);
       }
     }, 1000);
   }
@@ -1793,31 +1873,16 @@ function setupQuizView() {
       changeQuestionBtn.textContent = "تغيير السؤال";
       answersGrid.className = "answers-grid";
       answersGrid.innerHTML = `<div class="answer-reveal-card"><span class="mini-pill">الإجابة</span><strong>${round.answers[0]}</strong></div>`;
-      resultBanner.textContent = "اختر اللاعب الأسرع مباشرة، وستنتقل تلقائيًا للسؤال التالي.";
+      resultBanner.textContent = "اضغط ✓ تحت اسم اللاعب الأسرع لإعطائه النقطة والانتقال للسؤال التالي.";
       return;
     }
     if (round.mode === "auction") {
       questionText.textContent = round.question;
-      finishAnswersBtn.textContent = "ابدأ";
+      finishAnswersBtn.style.display = "none";
       changeQuestionBtn.textContent = "تغيير السؤال";
-      if (!state.auctionState.started) {
-        answersGrid.className = "answers-grid";
-        const bidsHtml = state.players.map((p) => {
-          const bid = state.auctionState.bids[p] || 0;
-          return `<div class="auction-bid-box">
-            <strong>${p}</strong>
-            <div class="counter-wrap auction-counter-wrap">
-              <button class="counter-btn" onclick="adjustBid('${p}',-1)">−</button>
-              <span class="auction-counter-value" id="bid-${p}">${bid}</span>
-              <button class="counter-btn" onclick="adjustBid('${p}',1)">+</button>
-            </div>
-          </div>`;
-        }).join("");
-        answersGrid.innerHTML = `<div class="auction-meta">${bidsHtml}</div>`;
-        resultBanner.textContent = "ارفع العداد تحت كل لاعب ثم اضغط ابدأ. يجب أن يكون هناك لاعب واحد فقط يملك أعلى رقم.";
-      } else {
-        finishAnswersBtn.style.display = "none";
-        renderScrollableAnswers(round.answers);
+      changeQuestionBtn.style.display = "inline-flex";
+      renderScrollableAnswers(round.answers);
+      if (state.auctionState.started) {
         const t = state.auctionState.timer;
         const offset = 440 - (t / 30) * 440;
         const fillCls = t <= 10 ? "timer-fill danger" : t <= 18 ? "timer-fill warning" : "timer-fill";
@@ -1839,7 +1904,9 @@ function setupQuizView() {
               صاحب المزاد: <span class="highlight">${state.auctionState.owner}</span>
             </div>
           </div>`);
-        resultBanner.innerHTML = `بعد المحاولة احسم نتيجة <span class="highlight">${state.auctionState.owner}</span> من بطاقته في الأعلى.`;
+        resultBanner.innerHTML = `استخدم ✓ أو ✕ في بطاقة <span class="highlight">${state.auctionState.owner}</span> لتحديد النتيجة.`;
+      } else {
+        resultBanner.textContent = "اضغط على 'اختر' تحت اسم اللاعب الذي يجيب لبدء الوقت.";
       }
       return;
     }
@@ -1848,7 +1915,7 @@ function setupQuizView() {
     finishAnswersBtn.style.display = "none";
     answersGrid.className = "answers-grid";
     answersGrid.innerHTML = `<div class="answer-reveal-card"><span class="mini-pill">الإجابة</span><strong>${round.answers[0]}</strong></div>`;
-    resultBanner.textContent = "اضغط على اللاعب الذي عرف الشخصية أولًا.";
+    resultBanner.textContent = "اضغط ✓ تحت اسم اللاعب الذي عرف الإجابة لإعطائه النقطة.";
   }
 
   window.adjustBid = (player, dir) => {
@@ -1864,15 +1931,14 @@ function setupQuizView() {
     if (!round) return;
     if (round.mode === "know") {
       const first = state.players[0], second = state.players[1];
-      const fm = state.lifeStatus[first].misses.filter(Boolean).length;
-      const sm = state.lifeStatus[second].misses.filter(Boolean).length;
-      if (fm < sm) { state.scores[first]++; moveToNextPhase(`انتهت الأجوبة، والنقطة ذهبت إلى <span class="highlight">${first}</span>.`); return; }
-      if (sm < fm) { state.scores[second]++; moveToNextPhase(`انتهت الأجوبة، والنقطة ذهبت إلى <span class="highlight">${second}</span>.`); return; }
-      state.scores[first]++; state.scores[second]++;
-      moveToNextPhase(`تعادل اللاعبان، لذلك حصل <span class="highlight">${first}</span> و <span class="highlight">${second}</span> على نقطة.`);
+      const fm = state.lifeStatus[first] ? state.lifeStatus[first].misses.filter(Boolean).length : 0;
+      const sm = state.lifeStatus[second] ? state.lifeStatus[second].misses.filter(Boolean).length : 0;
+      if (fm < sm) { state.scores[first] = (state.scores[first]||0)+1; moveToNextPhase(`انتهت الأجوبة، والنقطة ذهبت إلى <span class="highlight">${first}</span>.`); return; }
+      if (sm < fm) { state.scores[second] = (state.scores[second]||0)+1; moveToNextPhase(`انتهت الأجوبة، والنقطة ذهبت إلى <span class="highlight">${second}</span>.`); return; }
+      state.scores[first] = (state.scores[first]||0)+1; state.scores[second] = (state.scores[second]||0)+1;
+      moveToNextPhase(`تعادل اللاعبان، حصل كل منهما على نقطة.`);
       return;
     }
-    if (round.mode === "auction" && !state.auctionState.started) startAuction();
   };
 
   changeQuestionBtn.onclick = () => moveToNextPhase("تم تغيير السؤال بدون احتساب نقاط.");
@@ -1958,10 +2024,10 @@ if (challengeIntro) {
     challengeIntro.style.display = "none";
   } else {
     requestAnimationFrame(() => challengeIntro.classList.add("active"));
-    setTimeout(() => challengeIntro.classList.remove("active"), 450);
+    setTimeout(() => challengeIntro.classList.remove("active"), 1700);
     setTimeout(() => {
       challengeIntro.style.display = "none";
-    }, 750);
+    }, 2100);
   }
 }
 
