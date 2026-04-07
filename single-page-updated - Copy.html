@@ -814,17 +814,15 @@ const db = firebase.firestore();
 const ADMIN_EMAILS = ["3bedelshareif@gmail.com"];
 const USERS_COLLECTION = "users";
 const LEGACY_THALATHIN_COLLECTION = "users_thalain";
+const SUBSCRIPTIONS_COLLECTION = "subscriptions_thalathin";
 const CROSS_GAME_CANDIDATES = {
   senjym: [
     "../سين جيم/site_v10.html",
     "../%D8%B3%D9%8A%D9%86%20%D8%AC%D9%8A%D9%85/site_v10.html",
     "../site_v10.html",
-    "../index.html",
-    "./site_v10.html",
-    "./index.html"
+    "./site_v10.html"
   ],
   thalathin: [
-    "./single-page-updated - Copy.html#welcome",
     "./single-page-updated.html#welcome",
     "./single-page.html#welcome"
   ]
@@ -1038,7 +1036,7 @@ async function saveUserData() {
 async function loadSubscription() {
   if (!currentUser) return;
   try {
-    const doc = await db.collection('subscriptions').doc(currentUser.uid).get();
+    const doc = await db.collection(SUBSCRIPTIONS_COLLECTION).doc(currentUser.uid).get();
     subscriptionData = doc.exists ? doc.data() : null;
   } catch(e) { console.warn('loadSub err', e); }
 }
@@ -1232,7 +1230,7 @@ async function confirmSubscription() {
     const now = new Date();
     const expiry = new Date(now);
     expiry.setMonth(expiry.getMonth() + selectedPlan);
-    await db.collection('subscriptions').doc(currentUser.uid).set({
+    await db.collection(SUBSCRIPTIONS_COLLECTION).doc(currentUser.uid).set({
       uid: currentUser.uid, email: currentUser.email,
       plan: selectedPlan, price: prices[selectedPlan],
       startedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -1269,7 +1267,7 @@ async function loadSubsList() {
     return;
   }
   try {
-    const snap = await db.collection('subscriptions').orderBy('startedAt','desc').limit(50).get();
+    const snap = await db.collection(SUBSCRIPTIONS_COLLECTION).orderBy('startedAt','desc').limit(50).get();
     if (snap.empty) { list.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">📭 لا يوجد مشتركون حتى الآن</div>'; return; }
     list.innerHTML = '';
     snap.forEach(doc => {
