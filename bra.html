@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -1258,6 +1258,10 @@
 
     function askScreen() {
       const pair = state.q[state.qi];
+      if (!pair) {
+        show("decision");
+        return;
+      }
       const remaining = state.q.length - state.qi - 1;
 
       getById("roundLbl").textContent = `جولة الأسئلة ${state.round}`;
@@ -1986,11 +1990,16 @@
         return;
       }
 
+      getById("doneRole").classList.add("dis");
       state.rev += 1;
 
       if (state.rev >= state.roles.length) {
         makeQuestions();
-        askScreen();
+        if (state.q.length) {
+          askScreen();
+        } else {
+          show("decision");
+        }
         return;
       }
 
