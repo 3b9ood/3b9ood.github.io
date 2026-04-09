@@ -720,6 +720,7 @@
 
         <div class="row">
           <button class="sec" id="restart" type="button">لعبة جديدة</button>
+          <button class="gh" id="pickAnotherGame" type="button">اختيار لعبة أخرى</button>
         </div>
       </div>
     </section>
@@ -986,6 +987,7 @@
     const params = new URLSearchParams(location.search);
     const getById = (id) => document.getElementById(id);
     const screens = [...document.querySelectorAll(".screen")];
+    const THALATHIN_GAMES_FALLBACK = "../clode/1.html#games";
 
     function show(screenId) {
       screens.forEach((screen) => {
@@ -1006,6 +1008,36 @@
 
     function uid(prefix = "id") {
       return `${prefix}_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36).slice(-4)}`;
+    }
+
+    function playerLabel(player) {
+      return `اللاعب رقم ${player.id} - ${player.name}`;
+    }
+
+    function spyNames(list) {
+      return list.filter((item) => item.role === "spy").map((item) => item.name);
+    }
+
+    function resolveThalathinGamesUrl() {
+      try {
+        if (document.referrer) {
+          const refUrl = new URL(document.referrer);
+          if (/1\.html$/i.test(refUrl.pathname)) {
+            refUrl.hash = "games";
+            refUrl.searchParams.delete("room");
+            refUrl.searchParams.delete("player");
+            return refUrl.toString();
+          }
+        }
+      } catch {
+        // Ignore invalid referrer URLs and use the relative fallback below.
+      }
+
+      return new URL(THALATHIN_GAMES_FALLBACK, location.href).toString();
+    }
+
+    function goToThalathinGames() {
+      location.href = resolveThalathinGamesUrl();
     }
 
     function roomKey(roomId) {
@@ -1233,7 +1265,7 @@
         targets.push(targets.shift());
       }
 
-      state.q = askers.map((asker, index) => {
+      return askers.map((asker, index) => {
         let target = targets[index];
 
         if (target.id === asker.id) {
@@ -1245,8 +1277,10 @@
         return {
           askerId: asker.id,
           asker: asker.name,
+          askerNumber: asker.id,
           targetId: target.id,
-          target: target.name
+          target: target.name,
+          targetNumber: target.id
         };
       });
     }
@@ -1265,8 +1299,8 @@
       const remaining = state.q.length - state.qi - 1;
 
       getById("roundLbl").textContent = `جولة الأسئلة ${state.round}`;
-      getById("asker").textContent = pair.asker;
-      getById("target").textContent = `اسأل اللاعب ${pair.target}`;
+      getById("asker").textContent = playerLabel({ id: pair.askerNumber, name: pair.asker });
+      getById("target").textContent = `اسأل اللاعب رقم ${pair.targetNumber} - ${pair.target}`;
       getById("remain").textContent = remaining > 0
         ? `تبقى ${remaining} لاعبين لم يسألوا بعد.`
         : "أنت آخر لاعب في هذه الجولة.";
@@ -1370,7 +1404,7 @@
         finishGame(
           "فاز اللاعبون",
           "تم كشف كل الجواسيس وانتهت اللعبة.",
-          `الجواسيس كانوا: ${state.roles.filter((item) => item.role === "spy").map((item) => item.name).join(" - ")}`
+          `الجواسيس: ${spyNames(state.roles).join(" - ")}`
         );
         return;
       }
@@ -1379,7 +1413,7 @@
         finishGame(
           "انتهت جولات التصويت",
           "انتهى عدد جولات التصويت المسموح، وبقي جاسوس واحد أو أكثر داخل اللعبة.",
-          `الجواسيس المتبقون: ${state.active.filter((item) => item.role === "spy").map((item) => item.name).join(" - ")}`
+          `الجواسيس المتبقون: ${spyNames(state.active).join(" - ")}`
         );
         return;
       }
@@ -1388,7 +1422,7 @@
         finishGame(
           "فاز الجواسيس",
           "لم يعد هناك عدد كافٍ من اللاعبين العاديين.",
-          `الجواسيس: ${state.active.map((item) => item.name).join(" - ")}`
+          `الجواسيس: ${spyNames(state.active).join(" - ")}`
         );
         return;
       }
@@ -1397,7 +1431,7 @@
         finishGame(
           "انتهت اللعبة",
           `تم إخراج ${player.name} وهو الجاسوس الوحيد.`,
-          `الجاسوس هو: ${player.name}`
+          `الجاسوس: ${player.name}`
         );
         return;
       }
@@ -1534,7 +1568,7 @@
         room.final = {
           title: "فاز اللاعبون",
           desc: "تم كشف كل الجواسيس وانتهت اللعبة.",
-          word: `الجواسيس كانوا: ${Object.values(room.roles).filter((item) => item.role === "spy").map((item) => item.name).join(" - ")}`
+          word: `الجواسيس: ${Object.values(room.roles).filter((item) => item.role === "spy").map((item) => item.name).join(" - ")}`
         };
         room.phase = "final";
         return;
@@ -1564,7 +1598,7 @@
         room.final = {
           title: "انتهت اللعبة",
           desc: `تم إخراج ${outPlayer.name} وهو الجاسوس الوحيد.`,
-          word: `الجاسوس هو: ${outPlayer.name}`
+          word: `الجاسوس: ${outPlayer.name}`
         };
         room.phase = "final";
         return;
@@ -1683,9 +1717,9 @@
       const player = room.roles[pid];
 
       getById("playerQuestionRound").textContent = `جولة الأسئلة ${room.round}`;
-      getById("playerQuestionName").textContent = player.name;
-      getById("playerQuestionAsk").textContent = pair ? `اسأل اللاعب ${pair.target}` : "بانتظار الدور";
-      getById("playerQuestionFrom").textContent = incoming ? `أنت ستُسأل من اللاعب ${incoming.asker}` : "لا يوجد سؤال وارد الآن.";
+      getById("playerQuestionName").textContent = playerLabel(player);
+      getById("playerQuestionAsk").textContent = pair ? `اسأل اللاعب رقم ${pair.targetNumber} - ${pair.target}` : "بانتظار الدور";
+      getById("playerQuestionFrom").textContent = incoming ? `أنت ستُسأل من اللاعب رقم ${incoming.askerNumber} - ${incoming.asker}` : "لا يوجد سؤال وارد الآن.";
       show("playerQuestion");
     }
 
@@ -1776,7 +1810,7 @@
         room.questions.forEach((pair, index) => {
           const row = document.createElement("div");
           row.className = "playerCard";
-          row.innerHTML = `<div><strong>${index + 1}. ${pair.asker}</strong><div class="sub">يسأل ${pair.target}</div></div><div class="miniTag">سؤال</div>`;
+          row.innerHTML = `<div><strong>${index + 1}. اللاعب ${pair.askerNumber} - ${pair.asker}</strong><div class="sub">يسأل اللاعب ${pair.targetNumber} - ${pair.target}</div></div><div class="miniTag">سؤال</div>`;
           list.appendChild(row);
         });
 
@@ -2144,37 +2178,3 @@
       show("mode");
     }
 
-    getById("restart").onclick = () => {
-      if (state.roomId && !params.get("room")) {
-        clearRoom(state.roomId);
-      }
-      resetLocalState();
-    };
-
-    document.querySelectorAll("[data-back]").forEach((button) => {
-      button.onclick = () => show(button.dataset.back);
-    });
-
-    renderCats();
-    renderPlayers();
-    setupInfo();
-    getById("catNext").classList.add("dis");
-
-    auth.onAuthStateChanged(async (user) => {
-      currentUser = user || null;
-      await refreshBraAccess();
-      getById("categoryAccessNote").textContent = braSubscriptionUnlocked
-        ? "اشتراكك فعّال، وكل الفئات مفتوحة لك."
-        : "الملابس والأكلات مفتوحة مجانًا. باقي الفئات تحتاج اشتراكًا فعّالًا في سين جيم أو تحدي الثلاثين.";
-    });
-
-    if (params.get("room")) {
-      setTimeout(startAsPlayer, 300);
-    } else {
-      setTimeout(() => {
-        show("mode");
-      }, 2000);
-    }
-  </script>
-</body>
-</html>
