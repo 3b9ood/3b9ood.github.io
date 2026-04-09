@@ -877,11 +877,16 @@ const firebaseConfig = {
   apiKey: "AIzaSyCPDCKLQg7lFZLjUyksMkGTW9Ks5TtrujY",
   authDomain: "senjem-30c12.firebaseapp.com",
   projectId: "senjem-30c12",
-  storageBucket: "senjem-30c12.appspot.com",
-  messagingSenderId: "1059821434956",
-  appId: "1:1059821434956:web:abc123"
+  storageBucket: "senjem-30c12.firebasestorage.app",
+  messagingSenderId: "418688533834",
+  appId: "1:418688533834:web:e7219d4d1be3a69f472db3",
+  measurementId: "G-CLB37BG4MQ"
 };
-firebase.initializeApp(firebaseConfig);
+if (firebase.apps && firebase.apps.length) {
+  firebase.app();
+} else {
+  firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
 const db = firebase.firestore();
 const ADMIN_EMAILS = ["3bedelshareif@gmail.com"];
@@ -1642,6 +1647,7 @@ async function doLogin() {
   if (!email || !pass) { msg.textContent = '⚠️ أدخل البريد وكلمة المرور'; return; }
   msg.textContent = '⏳ جاري تسجيل الدخول...';
   try {
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     await auth.signInWithEmailAndPassword(email, pass);
     msg.textContent = '';
   } catch(e) {
@@ -1658,6 +1664,7 @@ async function doRegister() {
   if (pass.length < 6) { msg.textContent = '⚠️ كلمة المرور 6 أحرف على الأقل'; return; }
   msg.textContent = '⏳ جاري إنشاء الحساب...';
   try {
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     await auth.createUserWithEmailAndPassword(email, pass);
     msg.textContent = '';
     showNotif('✅ تم إنشاء حسابك بنجاح!');
@@ -2822,3 +2829,19 @@ const openedFromSelector = new URLSearchParams(window.location.search).get("from
 
 if (challengeIntro) {
   if (openedFromSelector) {
+    challengeIntro.classList.add("skip-intro");
+  }
+}
+
+goTo(initialView);
+
+try {
+  if (sessionStorage.getItem(GAME_SELECTOR_RETURN_KEY) === "1" && initialView === "welcome") {
+    sessionStorage.removeItem(GAME_SELECTOR_RETURN_KEY);
+    openGameHub();
+  }
+} catch (e) { }
+  </script>
+</body>
+</html>
+
