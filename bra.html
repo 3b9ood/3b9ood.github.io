@@ -1,0 +1,2171 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>برا السالفة الغلابة</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --bg: #0f1021;
+      --card: rgba(255, 255, 255, 0.12);
+      --line: rgba(255, 255, 255, 0.16);
+      --txt: #fff8ef;
+      --muted: #d7d0f0;
+      --acc: #ff9f6e;
+      --acc2: #ffd166;
+      --mint: #68e0cf;
+      --pink: #ff7eb6;
+      --violet: #7a77ff;
+      --rad: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(255, 209, 102, 0.22), transparent 28%),
+        radial-gradient(circle at right, rgba(122, 119, 255, 0.18), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(104, 224, 207, 0.18), transparent 28%),
+        linear-gradient(145deg, #111228, #1e1640 45%, #131327);
+      color: var(--txt);
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(10px);
+      opacity: 0.22;
+    }
+
+    body::before {
+      width: 260px;
+      height: 260px;
+      background: rgba(255, 126, 182, 0.22);
+      top: -80px;
+      right: -70px;
+    }
+
+    body::after {
+      width: 220px;
+      height: 220px;
+      background: rgba(104, 224, 207, 0.18);
+      bottom: -90px;
+      left: -60px;
+    }
+
+    .app {
+      width: min(980px, calc(100% - 28px));
+      margin: auto;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 0;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      animation: rise 0.35s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+      border: 1px solid var(--line);
+      border-radius: var(--rad);
+      padding: 26px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(14px);
+    }
+
+    .intro {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at top, rgba(255, 209, 102, 0.25), transparent 30%),
+        linear-gradient(135deg, #120f28, #24174c 55%, #0c1027);
+    }
+
+    .intro-stack {
+      display: grid;
+      gap: 18px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .logo {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 209, 102, 0.8);
+      display: grid;
+      place-items: center;
+      position: relative;
+      box-shadow: 0 0 0 12px rgba(255, 255, 255, 0.03), 0 0 55px rgba(255, 126, 182, 0.25);
+    }
+
+    .logo::before {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 50%;
+    }
+
+    .logo-word {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.7rem;
+      font-weight: 800;
+    }
+
+    .logo-word.right {
+      right: 26px;
+    }
+
+    .logo-word.left {
+      left: 22px;
+    }
+
+    .logo-subtitle {
+      color: var(--muted);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero {
+      text-align: center;
+      display: grid;
+      gap: 12px;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    .sub {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .row,
+    .actions,
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .row,
+    .actions {
+      justify-content: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 16px;
+      padding: 13px 18px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+    }
+
+    .pri {
+      background: linear-gradient(135deg, var(--acc), var(--acc2));
+      color: #16120d;
+      box-shadow: 0 10px 30px rgba(255, 159, 110, 0.32);
+    }
+
+    .sec {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--txt);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .gh {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .dis {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    .cardBtn {
+      flex: 1 1 240px;
+      min-height: 170px;
+      text-align: right;
+      padding: 24px;
+      background: linear-gradient(160deg, rgba(122, 119, 255, 0.22), rgba(255, 126, 182, 0.14) 55%, rgba(255, 255, 255, 0.08));
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .cats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 16px;
+    }
+
+    .cat {
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 14px;
+      text-align: center;
+      display: grid;
+      gap: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .cat.sel {
+      border-color: rgba(240, 197, 138, 0.95);
+      background: linear-gradient(145deg, rgba(255, 209, 102, 0.24), rgba(255, 126, 182, 0.22));
+      transform: translateY(-3px);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.18);
+    }
+
+    .cat.locked {
+      opacity: 0.72;
+      position: relative;
+    }
+
+    .cat.locked::after {
+      content: "🔒 للمشتركين";
+      font-size: 0.78rem;
+      color: var(--acc2);
+    }
+
+    .art {
+      aspect-ratio: 1;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 2.3rem;
+      background: linear-gradient(145deg, rgba(255, 209, 102, 0.28), rgba(104, 224, 207, 0.24) 55%, rgba(122, 119, 255, 0.18));
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .player,
+    .voteItem {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .player input {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--txt);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 0.98rem;
+      outline: none;
+    }
+
+    .rm {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(201, 108, 108, 0.12);
+      color: #ffb5b5;
+      font-size: 1.2rem;
+    }
+    .box,
+    .info {
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .ctrl {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .cbtn,
+    .count {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(122, 119, 255, 0.36), rgba(255, 126, 182, 0.34));
+      color: var(--txt);
+      font-weight: 800;
+    }
+
+    .num {
+      min-width: 44px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .center {
+      text-align: center;
+      display: grid;
+      gap: 18px;
+    }
+
+    .word {
+      min-height: 100px;
+      display: grid;
+      place-items: center;
+      font-size: clamp(1.5rem, 5vw, 2.4rem);
+      font-weight: 800;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08));
+      border: 1px solid var(--line);
+      padding: 18px;
+    }
+
+    .spy {
+      color: #ffd4de;
+    }
+
+    .cit {
+      color: #dffef6;
+    }
+
+    .pill {
+      width: fit-content;
+      margin: auto;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255, 209, 102, 0.22), rgba(122, 119, 255, 0.24));
+      color: #fff3c9;
+      font-weight: 700;
+    }
+
+    .note {
+      text-align: center;
+      padding: 12px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+    }
+
+    .timer {
+      font-size: clamp(2rem, 7vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .voteItem button {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      text-align: right;
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.16), rgba(122, 119, 255, 0.14));
+      color: var(--txt);
+      border: 1px solid var(--line);
+      padding: 14px 16px;
+    }
+
+    .hide {
+      display: none !important;
+    }
+
+    .gridTwo {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .playerCard {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+
+    .miniTag {
+      width: auto;
+      min-width: 70px;
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--txt);
+      font-weight: 800;
+    }
+
+    .nameInput,
+    .copyField {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--txt);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 0.98rem;
+      outline: none;
+    }
+
+    .copyField {
+      direction: ltr;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .noteBox,
+    .waitBox {
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px 18px;
+    }
+
+    .waitBox {
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    .qrWrap {
+      display: grid;
+      gap: 12px;
+      justify-items: center;
+    }
+
+    .qrBox {
+      width: min(260px, 100%);
+      aspect-ratio: 1;
+      padding: 10px;
+      background: white;
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .qrBox img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .smallList {
+      display: grid;
+      gap: 10px;
+      width: 100%;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app {
+        width: min(100% - 18px, 980px);
+      }
+
+      .panel {
+        padding: 20px;
+      }
+
+      .player,
+      .voteItem,
+      .playerCard,
+      .gridTwo {
+        grid-template-columns: 1fr;
+      }
+
+      .rm {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="screen active" id="intro">
+      <div class="intro">
+        <div class="intro-stack">
+          <div class="logo">
+            <span class="logo-word right">برا</span>
+            <span class="logo-word left">السالفة</span>
+          </div>
+          <div class="logo-subtitle">الغلابة</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="mode">
+      <div class="panel stack">
+        <div class="hero">
+          <h1>برا السالفة الغلابة</h1>
+          <p class="sub">اختار طريقة اللعب، وبعدها نبدأ الجولة بشكل مرتب وسريع.</p>
+        </div>
+
+        <div class="choices">
+          <button class="cardBtn" id="sameBtn" type="button">
+            <h2>ابدأ اللعب</h2>
+            <p class="sub">يمرّ الهاتف بين اللاعبين، وكل واحد يكشف دوره بسرية.</p>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="cats">
+      <div class="panel stack">
+        <div class="hero">
+          <h2>اختيار الفئة</h2>
+          <p class="sub">اختار فئة واحدة فقط، وبعدها ندخل على أسماء اللاعبين والجواسيس.</p>
+        </div>
+
+        <div class="cats" id="catGrid"></div>
+
+        <div class="note" id="categoryAccessNote">الملابس والأكلات مفتوحة مجانًا. باقي الفئات تحتاج اشتراكًا فعّالًا في سين جيم أو تحدي الثلاثين.</div>
+
+        <div class="actions">
+          <button class="gh" type="button" data-back="mode">رجوع</button>
+          <button class="pri dis" id="catNext" type="button">التالي</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="setup">
+      <div class="panel stack">
+        <div class="hero">
+          <h2>تجهيز اللاعبين</h2>
+          <p class="sub">الافتراضي 3 لاعبين، وتقدر تضيف أكثر. عدد الجواسيس لازم يكون أقل من عدد اللاعبين.</p>
+        </div>
+
+        <div class="list" id="players"></div>
+
+        <div class="row" style="justify-content: flex-start;">
+          <button class="sec" id="addPlayer" type="button">إضافة لاعب</button>
+        </div>
+
+        <div class="box">
+          <div>
+            <strong>عدد الجواسيس</strong>
+            <p class="sub">اختر العدد بالزائد والناقص.</p>
+          </div>
+
+          <div class="ctrl">
+            <button class="cbtn" id="spyMinus" type="button">-</button>
+            <div class="num" id="spyNum">1</div>
+            <button class="cbtn" id="spyPlus" type="button">+</button>
+          </div>
+        </div>
+        <div class="info">
+          <span>الفئة المختارة</span>
+          <strong id="selCat">-</strong>
+        </div>
+
+        <div class="note" id="setupNote">كل شيء جاهز تقريبًا.</div>
+
+        <div class="actions">
+          <button class="gh" type="button" data-back="cats">رجوع</button>
+          <button class="pri" id="startBtn" type="button">التالي</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="reveal">
+      <div class="panel center">
+        <div class="pill" id="revProg">1 / 3</div>
+        <h2 id="revTitle">مرر الهاتف إلى اللاعب</h2>
+        <p class="sub">اضغط اكشف حتى يعرف اللاعب دوره ثم اضغط تم.</p>
+        <div class="word" id="revWord">جاهز للكشف</div>
+
+        <div class="row">
+          <button class="sec" id="showRole" type="button">اكشف</button>
+          <button class="pri dis" id="doneRole" type="button">تم</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="ask">
+      <div class="panel center">
+        <div class="pill" id="roundLbl">جولة الأسئلة</div>
+        <h2 id="asker">اللاعب أحمد</h2>
+        <p class="sub">اسأل اللاعب التالي الظاهر أمامك. بعد الانتهاء اضغط تم.</p>
+        <div class="word" id="target">اسأل اللاعب سارة</div>
+        <div class="note" id="remain">تبقى 3 لاعبين لم يسألوا بعد.</div>
+
+        <div class="row">
+          <button class="pri" id="askDone" type="button">تم</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="decision">
+      <div class="panel stack">
+        <div class="hero">
+          <h2>اختر المرحلة التالية</h2>
+          <p class="sub">بعد انتهاء الأسئلة، إما تصويت مباشر أو استجواب لمدة دقيقة ونصف ثم تصويت.</p>
+        </div>
+
+        <div class="choices">
+          <button class="cardBtn" id="voteNow" type="button">
+            <h2>تصويت</h2>
+            <p class="sub">انتقال مباشر إلى صفحة التصويت.</p>
+          </button>
+
+          <button class="cardBtn sec" id="interrogate" type="button">
+            <h2>استجواب</h2>
+            <p class="sub">جلسة أسئلة مفتوحة لمدة دقيقة ونصف ثم تصويت تلقائي.</p>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="timer">
+      <div class="panel center">
+        <div class="pill">الاستجواب</div>
+        <h2>وقت الاستجواب المفتوح</h2>
+        <p class="sub">اسألوا بحرية حتى ينتهي العداد، وبعدها سنذهب مباشرة للتصويت.</p>
+        <div class="timer" id="timerVal">01:30</div>
+        <div class="row">
+          <button class="sec" id="goVoteNow" type="button">الذهاب إلى التصويت الآن</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="vote">
+      <div class="panel stack">
+        <div class="hero">
+          <h2>التصويت</h2>
+          <p class="sub">كل لاعب يصوّت مرة واحدة. بعد الضغط على اسم اللاعب يثبت الصوت مباشرة.</p>
+        </div>
+
+        <div class="list" id="voteList"></div>
+        <div class="note" id="votePrompt">اللاعب الأول صوّت</div>
+      </div>
+    </section>
+
+    <section class="screen" id="roundRes">
+      <div class="panel center">
+        <div class="pill">نتيجة التصويت</div>
+        <h2 id="resTitle">تم كشف لاعب</h2>
+        <p class="sub" id="resDesc"></p>
+        <div class="word" id="resWord"></div>
+        <div class="row" id="resActions"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="final">
+      <div class="panel center">
+        <div class="pill">نهاية اللعبة</div>
+        <h2 id="finalTitle">انتهت الجولة</h2>
+        <p class="sub" id="finalDesc"></p>
+        <div class="word" id="finalWord"></div>
+
+        <div class="row">
+          <button class="sec" id="restart" type="button">لعبة جديدة</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="multiLobby">
+      <div class="panel stack">
+        <div class="hero">
+          <h2>غرفة الأجهزة المتعددة</h2>
+          <p class="sub">امسح الـ QR أو افتح الرابط من جهاز اللاعب، ثم بعد دخول الجميع اختر عدد الجواسيس وابدأ.</p>
+        </div>
+
+        <div class="gridTwo">
+          <div class="noteBox qrWrap">
+            <div class="qrBox">
+              <img id="qrImage" alt="QR">
+            </div>
+            <div class="smallList">
+              <input class="copyField" id="joinLink" readonly>
+              <div class="actions">
+                <button class="sec" id="copyJoinLink" type="button">نسخ الرابط</button>
+                <a class="gh" id="openJoinLink" target="_blank" rel="noopener">فتح الرابط</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="box">
+              <div>
+                <strong>عدد الجواسيس</strong>
+                <p class="sub">سيتم اعتماد عدد جولات التصويت مثل وضع الجهاز الواحد.</p>
+              </div>
+
+              <div class="ctrl">
+                <button class="cbtn" id="multiSpyMinus" type="button">-</button>
+                <div class="num" id="multiSpyNum">1</div>
+                <button class="cbtn" id="multiSpyPlus" type="button">+</button>
+              </div>
+            </div>
+
+            <div class="info">
+              <span>الفئة المختارة</span>
+              <strong id="multiSelCat">-</strong>
+            </div>
+
+            <div class="note" id="multiLobbyNote">بانتظار اللاعبين.</div>
+            <div class="list" id="multiPlayersList"></div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="gh" id="multiCancel" type="button">إلغاء الغرفة</button>
+          <button class="pri dis" id="multiStart" type="button">التالي</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="multiHostQuestions">
+      <div class="panel stack">
+        <div class="hero">
+          <h2>تم توزيع الأدوار</h2>
+          <p class="sub">كل لاعب يرى كلمته على جهازه. هذه جولة الأسئلة الحالية قبل الاستجواب أو التصويت.</p>
+        </div>
+
+        <div class="pill" id="hostRoundLabel">جولة الأسئلة 1</div>
+        <div class="list" id="hostQuestionsList"></div>
+
+        <div class="actions">
+          <button class="pri" id="hostQuestionsNext" type="button">التالي</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="multiDecision">
+      <div class="panel stack">
+        <div class="hero">
+          <h2>اختر المرحلة التالية</h2>
+          <p class="sub">هذا الخيار يظهر في الجهاز الرئيسي فقط. اللاعبون الآخرون يرون شاشة انتظار أو المؤقت حسب اختيارك.</p>
+        </div>
+
+        <div class="choices">
+          <button class="cardBtn" id="multiVoteNow" type="button">
+            <h2>تصويت</h2>
+            <p class="sub">ابدأ التصويت مباشرة على جميع الأجهزة.</p>
+          </button>
+
+          <button class="cardBtn sec" id="multiInterrogate" type="button">
+            <h2>استجواب</h2>
+            <p class="sub">عرض المؤقت على أجهزة اللاعبين، مع بقاء التحكم هنا فقط.</p>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="multiTimerHost">
+      <div class="panel center">
+        <div class="pill">استجواب جماعي</div>
+        <h2>المؤقت ظاهر الآن عند جميع اللاعبين</h2>
+        <p class="sub">خيار الانتقال إلى التصويت يبقى في الجهاز الرئيسي فقط.</p>
+        <div class="timer" id="multiTimerVal">01:30</div>
+        <div class="row">
+          <button class="pri" id="multiGoVoteNow" type="button">الذهاب إلى التصويت</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="multiVoteHost">
+      <div class="panel stack">
+        <div class="hero">
+          <h2>التصويت جارٍ الآن</h2>
+          <p class="sub">كل لاعب يصوّت من جهازه. اسم المصوّت لا يظهر للآخرين، والجهاز الرئيسي يتابع التقدم فقط.</p>
+        </div>
+
+        <div class="note" id="multiVoteProgress">بانتظار الأصوات.</div>
+        <div class="list" id="multiVoteSummary"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="multiRoundResult">
+      <div class="panel center">
+        <div class="pill">نتيجة التصويت</div>
+        <h2 id="multiResTitle">تم كشف لاعب</h2>
+        <p class="sub" id="multiResDesc"></p>
+        <div class="word" id="multiResWord"></div>
+        <div class="row" id="multiResActions"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="playerJoin">
+      <div class="panel center">
+        <div class="pill">الانضمام للغرفة</div>
+        <h2>أدخل اسمك</h2>
+        <p class="sub">بعد كتابة الاسم اضغط التالي، وسيظهر اسمك عند الجهاز الرئيسي.</p>
+        <input class="nameInput" id="playerNameInput" placeholder="اسم اللاعب">
+        <div class="note" id="playerJoinNote">جاهز للانضمام.</div>
+        <div class="row">
+          <button class="pri" id="playerJoinBtn" type="button">التالي</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="playerWait">
+      <div class="panel center">
+        <div class="pill">بانتظار البداية</div>
+        <h2 id="playerWaitTitle">أنت داخل الغرفة</h2>
+        <p class="sub" id="playerWaitDesc">بانتظار الجهاز الرئيسي ليبدأ الجولة.</p>
+        <div class="waitBox" id="playerWaitBox">ابقَ في هذه الصفحة.</div>
+      </div>
+    </section>
+
+    <section class="screen" id="playerRole">
+      <div class="panel center">
+        <div class="pill">دورك في اللعبة</div>
+        <h2 id="playerRoleName">اللاعب</h2>
+        <p class="sub">هذه الشاشة خاصة بك فقط.</p>
+        <div class="word" id="playerRoleWord">...</div>
+        <div class="waitBox" id="playerRoleHint">بعدها ستظهر لك جولة الأسئلة.</div>
+      </div>
+    </section>
+
+    <section class="screen" id="playerQuestion">
+      <div class="panel center">
+        <div class="pill" id="playerQuestionRound">جولة الأسئلة 1</div>
+        <h2 id="playerQuestionName">اللاعب</h2>
+        <div class="word" id="playerQuestionAsk">اسأل اللاعب ...</div>
+        <div class="note" id="playerQuestionFrom">أنت ستُسأل من اللاعب ...</div>
+        <div class="waitBox">بعد انتهاء الجولة سيحدد الجهاز الرئيسي الاستجواب أو التصويت.</div>
+      </div>
+    </section>
+
+    <section class="screen" id="playerTimer">
+      <div class="panel center">
+        <div class="pill">الاستجواب</div>
+        <h2>وقت الاستجواب المفتوح</h2>
+        <p class="sub">انتظر حتى ينقلك الجهاز الرئيسي إلى التصويت.</p>
+        <div class="timer" id="playerTimerVal">01:30</div>
+      </div>
+    </section>
+
+    <section class="screen" id="playerVote">
+      <div class="panel stack">
+        <div class="hero">
+          <h2>صوّت الآن</h2>
+          <p class="sub">اختر اللاعب الذي تريد التصويت عليه. اسمك لا يظهر في هذه المرحلة.</p>
+        </div>
+
+        <div class="list" id="playerVoteList"></div>
+        <div class="note" id="playerVoteNote">صوت واحد فقط.</div>
+      </div>
+    </section>
+
+    <section class="screen" id="playerResult">
+      <div class="panel center">
+        <div class="pill">نتيجة الجولة</div>
+        <h2 id="playerResultTitle">تم كشف لاعب</h2>
+        <p class="sub" id="playerResultDesc"></p>
+        <div class="word" id="playerResultWord"></div>
+        <div class="waitBox" id="playerResultWait">بانتظار متابعة الجهاز الرئيسي.</div>
+      </div>
+    </section>
+
+    <section class="screen" id="playerFinal">
+      <div class="panel center">
+        <div class="pill">انتهت اللعبة</div>
+        <h2 id="playerFinalTitle">النتيجة النهائية</h2>
+        <p class="sub" id="playerFinalDesc"></p>
+        <div class="word" id="playerFinalWord"></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const categories = [
+      { id: "clothes", name: "ملابس", emoji: "👕", words: ["قميص", "فستان", "جاكيت", "حذاء", "عباية", "كنزة"] },
+      { id: "food", name: "اكلات", emoji: "🍔", words: ["منسف", "بيتزا", "كبسة", "شاورما", "برغر", "ملوخية"] },
+      { id: "series", name: "مسلسلات", emoji: "📺", words: ["فريندز", "باب الحارة", "قيامة أرطغرل", "لا كاسا دي بابيل", "بريكنغ باد"] },
+      { id: "movies", name: "افلام", emoji: "🎬", words: ["تايتنك", "إنسبشن", "الجوكر", "أفاتار", "فاست آند فيوريوس"] },
+      { id: "football", name: "كرة قدم", emoji: "⚽", words: ["ريال مدريد", "برشلونة", "ليفربول", "الهلال", "كأس العالم"] },
+      { id: "anime", name: "انمي", emoji: "🎌", words: ["ناروتو", "ون بيس", "هجوم العمالقة", "ديث نوت", "دراغون بول"] },
+      { id: "places", name: "اماكن", emoji: "📍", words: ["البترا", "دبي", "باريس", "العقبة", "إسطنبول", "مكة"] },
+      { id: "animals", name: "حيوانات", emoji: "🦁", words: ["أسد", "قطة", "نسر", "حصان", "دلفين", "فهد"] }
+    ];
+
+    const FREE_CATEGORY_IDS = ["clothes", "food"];
+    const firebaseConfig = {
+      apiKey: "AIzaSyCPDCKLQg7lFZLjUyksMkGTW9Ks5TtrujY",
+      authDomain: "senjem-30c12.firebaseapp.com",
+      projectId: "senjem-30c12",
+      storageBucket: "senjem-30c12.appspot.com",
+      messagingSenderId: "1059821434956",
+      appId: "1:1059821434956:web:abc123"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    let currentUser = null;
+    let braSubscriptionUnlocked = false;
+
+    const state = {
+      mode: null,
+      cat: null,
+      players: ["اللاعب 1", "اللاعب 2", "اللاعب 3"],
+      spies: 1,
+      roles: [],
+      active: [],
+      q: [],
+      rev: 0,
+      qi: 0,
+      round: 1,
+      voteRoundsDone: 0,
+      maxVoteRounds: 1,
+      votes: {},
+      vi: 0,
+      word: "",
+      out: null,
+      timer: null,
+      roomId: null,
+      playerId: null,
+      channel: null,
+      roomTick: null,
+      lastRoomSnapshot: ""
+    };
+
+    const params = new URLSearchParams(location.search);
+    const getById = (id) => document.getElementById(id);
+    const screens = [...document.querySelectorAll(".screen")];
+
+    function show(screenId) {
+      screens.forEach((screen) => {
+        screen.classList.toggle("active", screen.id === screenId);
+      });
+    }
+
+    function shuffle(list) {
+      const copy = [...list];
+
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+
+      return copy;
+    }
+
+    function uid(prefix = "id") {
+      return `${prefix}_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36).slice(-4)}`;
+    }
+
+    function roomKey(roomId) {
+      return `bra_room_${roomId}`;
+    }
+
+    function saveRoom(room) {
+      localStorage.setItem(roomKey(room.id), JSON.stringify(room));
+      if (state.channel) {
+        state.channel.postMessage({ roomId: room.id, type: "room-update" });
+      }
+    }
+
+    function loadRoom(roomId) {
+      try {
+        return JSON.parse(localStorage.getItem(roomKey(roomId)) || "null");
+      } catch {
+        return null;
+      }
+    }
+
+    function clearRoom(roomId) {
+      localStorage.removeItem(roomKey(roomId));
+      if (state.channel) {
+        state.channel.postMessage({ roomId, type: "room-update" });
+      }
+    }
+
+    function onStorageSync(event) {
+      if (event.key === roomKey(state.roomId)) {
+        syncRoom();
+      }
+    }
+
+    function connectRoom(roomId) {
+      state.roomId = roomId;
+
+      if (state.channel) {
+        state.channel.close();
+      }
+
+      state.channel = new BroadcastChannel(`bra_room_channel_${roomId}`);
+      state.channel.onmessage = () => syncRoom();
+
+      clearInterval(state.roomTick);
+      state.roomTick = setInterval(syncRoom, 900);
+      window.addEventListener("storage", onStorageSync, { passive: true });
+    }
+
+    function baseUrlForJoin(roomId) {
+      const url = new URL(location.href);
+      url.search = "";
+      url.hash = "";
+      url.searchParams.set("room", roomId);
+      return url.toString();
+    }
+
+    function names() {
+      return state.players.map((name, index) => name.trim() || `اللاعب ${index + 1}`);
+    }
+
+    function isCategoryUnlocked(categoryId) {
+      return FREE_CATEGORY_IDS.includes(categoryId) || braSubscriptionUnlocked;
+    }
+
+    async function refreshBraAccess() {
+      braSubscriptionUnlocked = false;
+
+      if (!currentUser) {
+        renderCats();
+        return;
+      }
+
+      try {
+        const [senjymSub, thalathinSub] = await Promise.all([
+          db.collection("subscriptions_senjym").doc(currentUser.uid).get(),
+          db.collection("subscriptions_thalathin").doc(currentUser.uid).get()
+        ]);
+
+        const hasActiveSub = [senjymSub, thalathinSub].some((docSnap) => {
+          if (!docSnap.exists) return false;
+          const data = docSnap.data() || {};
+          if (!data.expiresAt) return false;
+          const expiry = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
+          return expiry > new Date();
+        });
+
+        braSubscriptionUnlocked = hasActiveSub;
+      } catch (error) {
+        console.warn("subscription-check-failed", error);
+      }
+
+      renderCats();
+    }
+    function renderCats() {
+      const grid = getById("catGrid");
+      grid.innerHTML = "";
+
+      categories.forEach((category) => {
+        const button = document.createElement("button");
+        const unlocked = isCategoryUnlocked(category.id);
+        button.className = `cat${state.cat === category.id ? " sel" : ""}${unlocked ? "" : " locked"}`;
+        button.type = "button";
+        button.innerHTML = `
+          <div class="art">${category.emoji}</div>
+          <div>${category.name}</div>
+        `;
+
+        button.onclick = () => {
+          if (!unlocked) {
+            getById("categoryAccessNote").textContent = currentUser
+              ? "هذه الفئة تفتح تلقائيًا إذا كان لديك اشتراك فعّال في سين جيم أو تحدي الثلاثين."
+              : "سجّل الدخول من سين جيم أو تحدي الثلاثين باشتراك فعّال لفتح هذه الفئة.";
+            return;
+          }
+          state.cat = category.id;
+          getById("catNext").classList.remove("dis");
+          getById("categoryAccessNote").textContent = braSubscriptionUnlocked
+            ? "اشتراكك فعّال، وكل الفئات مفتوحة لك."
+            : "الملابس والأكلات مفتوحة مجانًا. باقي الفئات تحتاج اشتراكًا فعّالًا في سين جيم أو تحدي الثلاثين.";
+          renderCats();
+        };
+
+        grid.appendChild(button);
+      });
+    }
+
+    function renderPlayers() {
+      const playersBox = getById("players");
+      playersBox.innerHTML = "";
+
+      state.players.forEach((name, index) => {
+        const row = document.createElement("div");
+        row.className = "player";
+
+        const input = document.createElement("input");
+        input.value = name;
+        input.placeholder = `اسم اللاعب ${index + 1}`;
+        input.oninput = (event) => {
+          state.players[index] = event.target.value.trimStart();
+        };
+
+        row.appendChild(input);
+
+        if (state.players.length > 3) {
+          const removeButton = document.createElement("button");
+          removeButton.className = "rm";
+          removeButton.type = "button";
+          removeButton.textContent = "×";
+          removeButton.onclick = () => {
+            state.players.splice(index, 1);
+            state.spies = Math.max(1, Math.min(state.spies, state.players.length - 1));
+            renderPlayers();
+            setupInfo();
+          };
+          row.appendChild(removeButton);
+        }
+
+        playersBox.appendChild(row);
+      });
+    }
+
+    function setupInfo() {
+      const category = categories.find((item) => item.id === state.cat);
+      const playerNames = names();
+      let message = "";
+
+      getById("selCat").textContent = category ? category.name : "-";
+      getById("spyNum").textContent = state.spies;
+
+      if (!category) {
+        message = "اختَر فئة أولًا.";
+      } else if (playerNames.length < 3) {
+        message = "لازم يكون عندك 3 لاعبين على الأقل.";
+      } else if (state.spies >= playerNames.length) {
+        message = "عدد الجواسيس يجب أن يكون أقل من عدد اللاعبين.";
+      } else {
+        const rounds = state.spies === 1 ? 1 : state.spies + 1;
+        message = `جاهز: ${playerNames.length} لاعبين، ${state.spies} جاسوس${state.spies > 1 ? "ات" : ""}، وجولات التصويت ${rounds}.`;
+      }
+
+      getById("setupNote").textContent = message;
+    }
+
+    function buildGame() {
+      const playerNames = names();
+      const category = categories.find((item) => item.id === state.cat);
+      const spiesSet = new Set(shuffle(playerNames.map((_, index) => index)).slice(0, state.spies));
+
+      state.word = category.words[Math.floor(Math.random() * category.words.length)];
+      state.maxVoteRounds = state.spies === 1 ? 1 : state.spies + 1;
+      state.roles = playerNames.map((name, index) => ({
+        id: index + 1,
+        name,
+        role: spiesSet.has(index) ? "spy" : "citizen",
+        word: spiesSet.has(index) ? "جاسوس" : state.word
+      }));
+      state.active = state.roles.map((player) => ({ ...player }));
+      state.rev = 0;
+      state.qi = 0;
+      state.round = 1;
+      state.voteRoundsDone = 0;
+      state.out = null;
+    }
+
+    function revealScreen() {
+      const player = state.roles[state.rev];
+      getById("revProg").textContent = `${state.rev + 1} / ${state.roles.length}`;
+      getById("revTitle").textContent = `مرر الهاتف إلى ${player.name}`;
+      getById("revWord").textContent = "جاهز للكشف";
+      getById("revWord").className = "word";
+      getById("showRole").classList.remove("hide");
+      getById("doneRole").classList.add("dis");
+      show("reveal");
+    }
+
+    function makeQuestionsForPlayers(players) {
+      const askers = shuffle(players);
+      const targets = shuffle(players);
+
+      for (let attempt = 0; attempt < 12; attempt += 1) {
+        if (askers.every((player, index) => player.id !== targets[index].id)) {
+          break;
+        }
+        targets.push(targets.shift());
+      }
+
+      state.q = askers.map((asker, index) => {
+        let target = targets[index];
+
+        if (target.id === asker.id) {
+          const nextIndex = (index + 1) % targets.length;
+          [targets[index], targets[nextIndex]] = [targets[nextIndex], targets[index]];
+          target = targets[index];
+        }
+
+        return {
+          askerId: asker.id,
+          asker: asker.name,
+          targetId: target.id,
+          target: target.name
+        };
+      });
+    }
+
+    function makeQuestions() {
+      state.q = makeQuestionsForPlayers(state.active);
+      state.qi = 0;
+    }
+
+    function askScreen() {
+      const pair = state.q[state.qi];
+      const remaining = state.q.length - state.qi - 1;
+
+      getById("roundLbl").textContent = `جولة الأسئلة ${state.round}`;
+      getById("asker").textContent = pair.asker;
+      getById("target").textContent = `اسأل اللاعب ${pair.target}`;
+      getById("remain").textContent = remaining > 0
+        ? `تبقى ${remaining} لاعبين لم يسألوا بعد.`
+        : "أنت آخر لاعب في هذه الجولة.";
+      show("ask");
+    }
+
+    function drawVotes() {
+      const voteList = getById("voteList");
+      voteList.innerHTML = "";
+
+      state.active.forEach((player) => {
+        const item = document.createElement("div");
+        item.className = "voteItem";
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.innerHTML = `
+          <span>${player.name}</span>
+          <span class="count">${state.votes[player.id] || 0}</span>
+        `;
+        button.onclick = () => castVote(player.id);
+
+        item.appendChild(button);
+        voteList.appendChild(item);
+      });
+    }
+
+    function voteLabel() {
+      const currentPlayer = state.active[state.vi];
+      getById("votePrompt").textContent = currentPlayer ? `${currentPlayer.name} صوّت` : "اكتمل التصويت.";
+    }
+
+    function prepVote() {
+      clearInterval(state.timer);
+      state.votes = {};
+      state.vi = 0;
+      state.active.forEach((player) => {
+        state.votes[player.id] = 0;
+      });
+      drawVotes();
+      voteLabel();
+      show("vote");
+    }
+
+    function castVote(id) {
+      if (state.vi >= state.active.length) {
+        return;
+      }
+
+      state.votes[id] += 1;
+      state.vi += 1;
+      drawVotes();
+
+      if (state.vi >= state.active.length) {
+        finishVote();
+        return;
+      }
+
+      voteLabel();
+    }
+    function finishVote() {
+      const outPlayer = [...state.active].sort((a, b) => {
+        const diff = state.votes[b.id] - state.votes[a.id];
+        return diff || (a.id - b.id);
+      })[0];
+
+      state.out = outPlayer;
+      state.active = state.active.filter((player) => player.id !== outPlayer.id);
+      state.voteRoundsDone += 1;
+      roundResult();
+    }
+
+    function roundResult() {
+      const player = state.out;
+      const isSpy = player.role === "spy";
+      const spiesLeft = state.active.filter((item) => item.role === "spy").length;
+      const actions = getById("resActions");
+
+      getById("resTitle").textContent = `تم كشف ${player.name}`;
+      getById("resDesc").textContent = isSpy ? "هذا اللاعب كان جاسوسًا بالفعل." : "هذا اللاعب ليس جاسوسًا.";
+      getById("resWord").textContent = isSpy ? "جاسوس" : "ليس جاسوسًا";
+      getById("resWord").className = `word ${isSpy ? "spy" : "cit"}`;
+      actions.innerHTML = "";
+
+      function finishGame(title, description, reveal) {
+        const button = document.createElement("button");
+        button.className = "pri";
+        button.type = "button";
+        button.textContent = "إعلان النتيجة";
+        button.onclick = () => {
+          getById("finalTitle").textContent = title;
+          getById("finalDesc").textContent = description;
+          getById("finalWord").textContent = reveal;
+          show("final");
+        };
+        actions.appendChild(button);
+        show("roundRes");
+      }
+
+      if (spiesLeft === 0) {
+        finishGame(
+          "فاز اللاعبون",
+          "تم كشف كل الجواسيس وانتهت اللعبة.",
+          `الجواسيس كانوا: ${state.roles.filter((item) => item.role === "spy").map((item) => item.name).join(" - ")}`
+        );
+        return;
+      }
+
+      if (state.voteRoundsDone >= state.maxVoteRounds) {
+        finishGame(
+          "انتهت جولات التصويت",
+          "انتهى عدد جولات التصويت المسموح، وبقي جاسوس واحد أو أكثر داخل اللعبة.",
+          `الجواسيس المتبقون: ${state.active.filter((item) => item.role === "spy").map((item) => item.name).join(" - ")}`
+        );
+        return;
+      }
+
+      if (spiesLeft === state.active.length) {
+        finishGame(
+          "فاز الجواسيس",
+          "لم يعد هناك عدد كافٍ من اللاعبين العاديين.",
+          `الجواسيس: ${state.active.map((item) => item.name).join(" - ")}`
+        );
+        return;
+      }
+
+      if (state.spies === 1 && isSpy) {
+        finishGame(
+          "انتهت اللعبة",
+          `تم إخراج ${player.name} وهو الجاسوس الوحيد.`,
+          `الجاسوس هو: ${player.name}`
+        );
+        return;
+      }
+
+      const voteAgainButton = document.createElement("button");
+      voteAgainButton.className = "sec";
+      voteAgainButton.type = "button";
+      voteAgainButton.textContent = "تصويت";
+      voteAgainButton.onclick = prepVote;
+
+      const askAgainButton = document.createElement("button");
+      askAgainButton.className = "pri";
+      askAgainButton.type = "button";
+      askAgainButton.textContent = "إعادة السؤال";
+      askAgainButton.onclick = () => {
+        state.round += 1;
+        makeQuestions();
+        askScreen();
+      };
+
+      actions.append(voteAgainButton, askAgainButton);
+      show("roundRes");
+    }
+
+    function startTimer() {
+      let seconds = 90;
+      getById("timerVal").textContent = "01:30";
+      clearInterval(state.timer);
+      show("timer");
+
+      state.timer = setInterval(() => {
+        seconds -= 1;
+        const minutesText = String(Math.floor(seconds / 60)).padStart(2, "0");
+        const secondsText = String(seconds % 60).padStart(2, "0");
+        getById("timerVal").textContent = `${minutesText}:${secondsText}`;
+
+        if (seconds <= 0) {
+          clearInterval(state.timer);
+          prepVote();
+        }
+      }, 1000);
+    }
+
+    function createRoom() {
+      const roomId = uid("room");
+      connectRoom(roomId);
+
+      const room = {
+        id: roomId,
+        cat: state.cat,
+        spies: 1,
+        word: "",
+        phase: "lobby",
+        round: 1,
+        voteRoundsDone: 0,
+        maxVoteRounds: 1,
+        players: [],
+        activeIds: [],
+        roles: {},
+        questions: [],
+        votes: {},
+        timerEndsAt: 0,
+        result: null,
+        final: null
+      };
+
+      saveRoom(room);
+      renderMultiLobby(room);
+      show("multiLobby");
+    }
+
+    function updateRoom(mutator) {
+      const room = loadRoom(state.roomId);
+
+      if (!room) {
+        return null;
+      }
+
+      mutator(room);
+      saveRoom(room);
+      return room;
+    }
+
+    function activePlayers(room) {
+      return room.activeIds.map((id) => room.roles[id]).filter(Boolean);
+    }
+
+    function buildRoomGame(room) {
+      const category = categories.find((item) => item.id === room.cat);
+      const spiesSet = new Set(shuffle(room.players.map((_, index) => index)).slice(0, room.spies));
+
+      room.word = category.words[Math.floor(Math.random() * category.words.length)];
+      room.maxVoteRounds = room.spies === 1 ? 1 : room.spies + 1;
+      room.roles = {};
+
+      room.players.forEach((player, index) => {
+        room.roles[player.id] = {
+          id: player.id,
+          name: player.name,
+          role: spiesSet.has(index) ? "spy" : "citizen",
+          word: spiesSet.has(index) ? "جاسوس" : room.word
+        };
+      });
+
+      room.activeIds = room.players.map((player) => player.id);
+      room.questions = makeQuestionsForPlayers(room.players.map((player) => ({ id: player.id, name: player.name })));
+      room.round = 1;
+      room.voteRoundsDone = 0;
+      room.votes = {};
+      room.result = null;
+      room.final = null;
+      room.phase = "roles";
+    }
+
+    function roomQuestionsForActive(room) {
+      room.questions = makeQuestionsForPlayers(activePlayers(room).map((player) => ({ id: player.id, name: player.name })));
+    }
+
+    function setRoomResultAndMaybeFinish(room, outId) {
+      const outPlayer = room.roles[outId];
+      const isSpy = outPlayer.role === "spy";
+      room.activeIds = room.activeIds.filter((id) => id !== outId);
+      room.voteRoundsDone += 1;
+      room.result = {
+        title: `تم كشف ${outPlayer.name}`,
+        desc: isSpy ? "هذا اللاعب كان جاسوسًا بالفعل." : "هذا اللاعب ليس جاسوسًا.",
+        word: isSpy ? "جاسوس" : "ليس جاسوسًا",
+        wordClass: isSpy ? "spy" : "cit"
+      };
+
+      const spiesLeft = room.activeIds.filter((id) => room.roles[id].role === "spy").length;
+
+      if (spiesLeft === 0) {
+        room.final = {
+          title: "فاز اللاعبون",
+          desc: "تم كشف كل الجواسيس وانتهت اللعبة.",
+          word: `الجواسيس كانوا: ${Object.values(room.roles).filter((item) => item.role === "spy").map((item) => item.name).join(" - ")}`
+        };
+        room.phase = "final";
+        return;
+      }
+
+      if (room.voteRoundsDone >= room.maxVoteRounds) {
+        room.final = {
+          title: "انتهت جولات التصويت",
+          desc: "انتهى عدد جولات التصويت المسموح، وبقي جاسوس واحد أو أكثر داخل اللعبة.",
+          word: `الجواسيس المتبقون: ${room.activeIds.filter((id) => room.roles[id].role === "spy").map((id) => room.roles[id].name).join(" - ")}`
+        };
+        room.phase = "final";
+        return;
+      }
+
+      if (spiesLeft === room.activeIds.length) {
+        room.final = {
+          title: "فاز الجواسيس",
+          desc: "لم يعد هناك عدد كافٍ من اللاعبين العاديين.",
+          word: `الجواسيس: ${room.activeIds.map((id) => room.roles[id].name).join(" - ")}`
+        };
+        room.phase = "final";
+        return;
+      }
+
+      if (room.spies === 1 && isSpy) {
+        room.final = {
+          title: "انتهت اللعبة",
+          desc: `تم إخراج ${outPlayer.name} وهو الجاسوس الوحيد.`,
+          word: `الجاسوس هو: ${outPlayer.name}`
+        };
+        room.phase = "final";
+        return;
+      }
+
+      room.phase = "round-result";
+    }
+
+    function tallyRoomVotes(room) {
+      const counts = {};
+      room.activeIds.forEach((id) => {
+        counts[id] = 0;
+      });
+
+      Object.values(room.votes).forEach((targetId) => {
+        if (counts[targetId] !== undefined) {
+          counts[targetId] += 1;
+        }
+      });
+
+      const outId = [...room.activeIds].sort((a, b) => {
+        const diff = counts[b] - counts[a];
+        return diff || String(a).localeCompare(String(b));
+      })[0];
+
+      setRoomResultAndMaybeFinish(room, outId);
+    }
+
+    function updateSharedTimer(targetId, endAt) {
+      clearInterval(state.timer);
+
+      function paint() {
+        const left = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
+        const minutesText = String(Math.floor(left / 60)).padStart(2, "0");
+        const secondsText = String(left % 60).padStart(2, "0");
+        getById(targetId).textContent = `${minutesText}:${secondsText}`;
+
+        if (left <= 0) {
+          clearInterval(state.timer);
+
+          if (!params.get("room")) {
+            updateRoom((room) => {
+              if (room.phase === "timer") {
+                room.phase = "vote";
+                room.votes = {};
+              }
+            });
+          }
+        }
+      }
+
+      paint();
+      state.timer = setInterval(paint, 1000);
+    }
+
+    function valid() {
+      const playerNames = names();
+
+      if (!state.cat) {
+        getById("setupNote").textContent = "اختَر فئة أولًا.";
+        return false;
+      }
+
+      if (playerNames.length < 3) {
+        getById("setupNote").textContent = "لازم يكون عندك 3 لاعبين على الأقل.";
+        return false;
+      }
+
+      if (state.spies >= playerNames.length) {
+        getById("setupNote").textContent = "عدد الجواسيس يجب أن يكون أقل من عدد اللاعبين.";
+        return false;
+      }
+
+      state.players = playerNames;
+      return true;
+    }
+
+    function renderMultiLobby(room = loadRoom(state.roomId)) {
+      if (!room) {
+        show("mode");
+        return;
+      }
+
+      const category = categories.find((item) => item.id === room.cat);
+      const joinUrl = baseUrlForJoin(room.id);
+      getById("qrImage").src = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(joinUrl)}`;
+      getById("joinLink").value = joinUrl;
+      getById("openJoinLink").href = joinUrl;
+      getById("multiSelCat").textContent = category ? category.name : "-";
+      getById("multiSpyNum").textContent = room.spies;
+
+      const list = getById("multiPlayersList");
+      list.innerHTML = "";
+
+      room.players.forEach((player, index) => {
+        const card = document.createElement("div");
+        card.className = "playerCard";
+        card.innerHTML = `<div><strong>${index + 1}. ${player.name}</strong><div class="sub">دخل إلى الغرفة بنجاح</div></div><div class="miniTag">جاهز</div>`;
+        list.appendChild(card);
+      });
+
+      if (!room.players.length) {
+        list.innerHTML = '<div class="note">ما دخل أحد بعد.</div>';
+      }
+
+      const rounds = room.spies === 1 ? 1 : room.spies + 1;
+      getById("multiLobbyNote").textContent = room.players.length < 3
+        ? "لازم يدخل 3 لاعبين على الأقل قبل البدء."
+        : `جاهز: ${room.players.length} لاعبين، ${room.spies} جاسوس${room.spies > 1 ? "ات" : ""}، وجولات التصويت ${rounds}.`;
+      getById("multiStart").classList.toggle("dis", room.players.length < 3 || room.spies >= room.players.length);
+    }
+
+    function renderPlayerQuestion(room, pid) {
+      const pair = room.questions.find((item) => item.askerId === pid);
+      const incoming = room.questions.find((item) => item.targetId === pid);
+      const player = room.roles[pid];
+
+      getById("playerQuestionRound").textContent = `جولة الأسئلة ${room.round}`;
+      getById("playerQuestionName").textContent = player.name;
+      getById("playerQuestionAsk").textContent = pair ? `اسأل اللاعب ${pair.target}` : "بانتظار الدور";
+      getById("playerQuestionFrom").textContent = incoming ? `أنت ستُسأل من اللاعب ${incoming.asker}` : "لا يوجد سؤال وارد الآن.";
+      show("playerQuestion");
+    }
+
+    function renderPlayerVote(room, pid) {
+      const box = getById("playerVoteList");
+      box.innerHTML = "";
+
+      if (room.votes[pid]) {
+        getById("playerVoteNote").textContent = "تم تسجيل صوتك. انتظر إعلان النتيجة.";
+        box.innerHTML = '<div class="note">تم إرسال صوتك بنجاح.</div>';
+        return;
+      }
+
+      getById("playerVoteNote").textContent = "صوت واحد فقط.";
+
+      activePlayers(room).filter((player) => player.id !== pid).forEach((player) => {
+        const item = document.createElement("div");
+        item.className = "voteItem";
+        const button = document.createElement("button");
+        button.type = "button";
+        button.innerHTML = `<span>${player.name}</span><span class="count">صوّت</span>`;
+        button.onclick = () => {
+          updateRoom((current) => {
+            if (current.phase !== "vote") {
+              return;
+            }
+
+            current.votes[pid] = player.id;
+
+            if (Object.keys(current.votes).length >= current.activeIds.length) {
+              tallyRoomVotes(current);
+            }
+          });
+        };
+        item.appendChild(button);
+        box.appendChild(item);
+      });
+    }
+
+    function renderMultiRoundResult(room) {
+      getById("multiResTitle").textContent = room.result.title;
+      getById("multiResDesc").textContent = room.result.desc;
+      getById("multiResWord").textContent = room.result.word;
+      getById("multiResWord").className = `word ${room.result.wordClass}`;
+
+      const actions = getById("multiResActions");
+      actions.innerHTML = "";
+
+      const voteAgain = document.createElement("button");
+      voteAgain.className = "sec";
+      voteAgain.type = "button";
+      voteAgain.textContent = "تصويت";
+      voteAgain.onclick = () => {
+        updateRoom((current) => {
+          current.votes = {};
+          current.phase = "vote";
+        });
+      };
+
+      const askAgain = document.createElement("button");
+      askAgain.className = "pri";
+      askAgain.type = "button";
+      askAgain.textContent = "إعادة السؤال";
+      askAgain.onclick = () => {
+        updateRoom((current) => {
+          current.round += 1;
+          current.votes = {};
+          roomQuestionsForActive(current);
+          current.phase = "roles";
+        });
+      };
+
+      actions.append(voteAgain, askAgain);
+    }
+
+    function renderHostRoom(room) {
+      if (room.phase === "lobby") {
+        renderMultiLobby(room);
+        show("multiLobby");
+        return;
+      }
+
+      if (room.phase === "roles") {
+        getById("hostRoundLabel").textContent = `جولة الأسئلة ${room.round}`;
+        const list = getById("hostQuestionsList");
+        list.innerHTML = "";
+
+        room.questions.forEach((pair, index) => {
+          const row = document.createElement("div");
+          row.className = "playerCard";
+          row.innerHTML = `<div><strong>${index + 1}. ${pair.asker}</strong><div class="sub">يسأل ${pair.target}</div></div><div class="miniTag">سؤال</div>`;
+          list.appendChild(row);
+        });
+
+        show("multiHostQuestions");
+        return;
+      }
+
+      if (room.phase === "decision") {
+        show("multiDecision");
+        return;
+      }
+
+      if (room.phase === "timer") {
+        updateSharedTimer("multiTimerVal", room.timerEndsAt);
+        show("multiTimerHost");
+        return;
+      }
+
+      if (room.phase === "vote") {
+        const voted = Object.keys(room.votes).length;
+        getById("multiVoteProgress").textContent = `تم التصويت من ${voted} من أصل ${room.activeIds.length} لاعبين.`;
+
+        const summary = getById("multiVoteSummary");
+        summary.innerHTML = "";
+
+        activePlayers(room).forEach((player) => {
+          const card = document.createElement("div");
+          card.className = "playerCard";
+          card.innerHTML = `<div><strong>${player.name}</strong><div class="sub">متاح للتصويت عليه</div></div><div class="miniTag">مرشح</div>`;
+          summary.appendChild(card);
+        });
+
+        show("multiVoteHost");
+        return;
+      }
+
+      if (room.phase === "round-result") {
+        renderMultiRoundResult(room);
+        show("multiRoundResult");
+        return;
+      }
+
+      if (room.phase === "final") {
+        getById("finalTitle").textContent = room.final.title;
+        getById("finalDesc").textContent = room.final.desc;
+        getById("finalWord").textContent = room.final.word;
+        show("final");
+      }
+    }
+
+    function renderPlayerRoom(room) {
+      const pid = state.playerId;
+      const player = room.players.find((item) => item.id === pid);
+
+      if (!pid || !player) {
+        show("playerJoin");
+        return;
+      }
+
+      if (room.phase === "lobby") {
+        getById("playerWaitTitle").textContent = `${player.name} دخل إلى الغرفة`;
+        getById("playerWaitDesc").textContent = "بانتظار الجهاز الرئيسي ليختار عدد الجواسيس ويبدأ.";
+        getById("playerWaitBox").textContent = "عند البدء ستنتقل تلقائيًا إلى شاشة دورك.";
+        show("playerWait");
+        return;
+      }
+
+      if (room.phase === "roles") {
+        const role = room.roles[pid];
+        getById("playerRoleName").textContent = player.name;
+        getById("playerRoleWord").textContent = role.word;
+        getById("playerRoleWord").className = `word ${role.role === "spy" ? "spy" : "cit"}`;
+        getById("playerRoleHint").textContent = "بعد مراجعة دورك ستظهر لك جولة الأسئلة الحالية.";
+        setTimeout(() => {
+          const latestRoom = loadRoom(room.id);
+          if (latestRoom && latestRoom.phase === "roles") {
+            renderPlayerQuestion(latestRoom, pid);
+          }
+        }, 1200);
+        show("playerRole");
+        return;
+      }
+
+      if (room.phase === "decision") {
+        renderPlayerQuestion(room, pid);
+        return;
+      }
+
+      if (room.phase === "timer") {
+        updateSharedTimer("playerTimerVal", room.timerEndsAt);
+        show("playerTimer");
+        return;
+      }
+
+      if (room.phase === "vote") {
+        renderPlayerVote(room, pid);
+        show("playerVote");
+        return;
+      }
+
+      if (room.phase === "round-result") {
+        getById("playerResultTitle").textContent = room.result.title;
+        getById("playerResultDesc").textContent = room.result.desc;
+        getById("playerResultWord").textContent = room.result.word;
+        getById("playerResultWord").className = `word ${room.result.wordClass}`;
+        getById("playerResultWait").textContent = "بانتظار قرار الجهاز الرئيسي للجولة التالية.";
+        show("playerResult");
+        return;
+      }
+
+      if (room.phase === "final") {
+        getById("playerFinalTitle").textContent = room.final.title;
+        getById("playerFinalDesc").textContent = room.final.desc;
+        getById("playerFinalWord").textContent = room.final.word;
+        show("playerFinal");
+      }
+    }
+
+    function syncRoom() {
+      if (!state.roomId) {
+        return;
+      }
+
+      const room = loadRoom(state.roomId);
+      const next = JSON.stringify(room || {});
+
+      if (state.lastRoomSnapshot === next) {
+        return;
+      }
+
+      state.lastRoomSnapshot = next;
+
+      if (!room) {
+        if (params.get("room")) {
+          getById("playerWaitTitle").textContent = "الغرفة غير متاحة";
+          getById("playerWaitDesc").textContent = "قد يكون الجهاز الرئيسي أنهى الغرفة أو أعاد تشغيل اللعبة.";
+          getById("playerWaitBox").textContent = "اطلب من صاحب الجهاز الرئيسي إرسال رابط جديد.";
+          show("playerWait");
+        } else {
+          show("mode");
+        }
+        return;
+      }
+
+      if (params.get("room")) {
+        renderPlayerRoom(room);
+      } else {
+        renderHostRoom(room);
+      }
+    }
+
+    function playerParamId() {
+      return params.get("player") || localStorage.getItem(`bra_room_player_${params.get("room")}`) || "";
+    }
+
+    function startAsPlayer() {
+      const roomId = params.get("room");
+      connectRoom(roomId);
+      state.playerId = playerParamId();
+      syncRoom();
+    }
+
+    getById("sameBtn").onclick = () => {
+      state.mode = "same";
+      show("cats");
+    };
+
+    getById("catNext").onclick = () => {
+      if (!state.cat) {
+        return;
+      }
+      renderPlayers();
+      setupInfo();
+      show("setup");
+    };
+
+    getById("addPlayer").onclick = () => {
+      state.players.push(`اللاعب ${state.players.length + 1}`);
+      renderPlayers();
+      setupInfo();
+    };
+
+    getById("spyMinus").onclick = () => {
+      state.spies = Math.max(1, state.spies - 1);
+      setupInfo();
+    };
+
+    getById("spyPlus").onclick = () => {
+      state.spies = Math.min(state.players.length - 1, state.spies + 1);
+      setupInfo();
+    };
+
+    getById("startBtn").onclick = () => {
+      if (!valid()) {
+        return;
+      }
+      buildGame();
+      revealScreen();
+    };
+
+    getById("showRole").onclick = () => {
+      const player = state.roles[state.rev];
+      getById("revWord").textContent = player.word;
+      getById("revWord").className = `word ${player.role === "spy" ? "spy" : "cit"}`;
+      getById("showRole").classList.add("hide");
+      getById("doneRole").classList.remove("dis");
+    };
+
+    getById("doneRole").onclick = () => {
+      if (getById("doneRole").classList.contains("dis")) {
+        return;
+      }
+
+      state.rev += 1;
+
+      if (state.rev >= state.roles.length) {
+        makeQuestions();
+        askScreen();
+        return;
+      }
+
+      revealScreen();
+    };
+
+    getById("askDone").onclick = () => {
+      state.qi += 1;
+      if (state.qi >= state.q.length) {
+        show("decision");
+        return;
+      }
+      askScreen();
+    };
+
+    getById("voteNow").onclick = prepVote;
+    getById("interrogate").onclick = startTimer;
+    getById("goVoteNow").onclick = prepVote;
+
+    getById("copyJoinLink").onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(getById("joinLink").value);
+        getById("multiLobbyNote").textContent = "تم نسخ الرابط.";
+      } catch {
+        getById("multiLobbyNote").textContent = "تعذر نسخ الرابط تلقائيًا، انسخه يدويًا من الحقل.";
+      }
+    };
+
+    getById("multiSpyMinus").onclick = () => {
+      updateRoom((room) => {
+        room.spies = Math.max(1, room.spies - 1);
+      });
+    };
+
+    getById("multiSpyPlus").onclick = () => {
+      updateRoom((room) => {
+        room.spies = Math.min(Math.max(1, room.players.length - 1), room.spies + 1);
+      });
+    };
+
+    getById("multiStart").onclick = () => {
+      const room = loadRoom(state.roomId);
+      if (!room || room.players.length < 3 || room.spies >= room.players.length) {
+        return;
+      }
+      updateRoom((current) => {
+        buildRoomGame(current);
+      });
+    };
+
+    getById("multiCancel").onclick = () => {
+      clearInterval(state.roomTick);
+      clearRoom(state.roomId);
+      state.roomId = null;
+      state.lastRoomSnapshot = "";
+      show("mode");
+    };
+
+    getById("hostQuestionsNext").onclick = () => {
+      updateRoom((room) => {
+        room.phase = "decision";
+      });
+    };
+
+    getById("multiVoteNow").onclick = () => {
+      updateRoom((room) => {
+        room.phase = "vote";
+        room.votes = {};
+      });
+    };
+
+    getById("multiInterrogate").onclick = () => {
+      updateRoom((room) => {
+        room.phase = "timer";
+        room.timerEndsAt = Date.now() + 90000;
+      });
+    };
+
+    getById("multiGoVoteNow").onclick = () => {
+      updateRoom((room) => {
+        room.phase = "vote";
+        room.votes = {};
+      });
+    };
+
+    getById("playerJoinBtn").onclick = () => {
+      const roomId = params.get("room");
+      const room = loadRoom(roomId);
+      const name = getById("playerNameInput").value.trim();
+
+      if (!room) {
+        getById("playerJoinNote").textContent = "الغرفة غير موجودة.";
+        return;
+      }
+
+      if (!name) {
+        getById("playerJoinNote").textContent = "اكتب اسمك أولًا.";
+        return;
+      }
+
+      const freshId = uid("player");
+      localStorage.setItem(`bra_room_player_${roomId}`, freshId);
+
+      const playerUrl = new URL(location.href);
+      playerUrl.searchParams.set("player", freshId);
+      history.replaceState({}, "", playerUrl.toString());
+      state.playerId = freshId;
+
+      updateRoom((current) => {
+        if (!current.players.some((item) => item.id === freshId)) {
+          current.players.push({ id: freshId, name });
+        }
+      });
+    };
+
+    function resetLocalState() {
+      clearInterval(state.timer);
+      Object.assign(state, {
+        mode: null,
+        cat: null,
+        players: ["اللاعب 1", "اللاعب 2", "اللاعب 3"],
+        spies: 1,
+        roles: [],
+        active: [],
+        q: [],
+        rev: 0,
+        qi: 0,
+        round: 1,
+        voteRoundsDone: 0,
+        maxVoteRounds: 1,
+        votes: {},
+        vi: 0,
+        word: "",
+        out: null,
+        roomId: null,
+        lastRoomSnapshot: ""
+      });
+      renderCats();
+      renderPlayers();
+      setupInfo();
+      getById("catNext").classList.add("dis");
+      show("mode");
+    }
+
+    getById("restart").onclick = () => {
+      if (state.roomId && !params.get("room")) {
+        clearRoom(state.roomId);
+      }
+      resetLocalState();
+    };
+
+    document.querySelectorAll("[data-back]").forEach((button) => {
+      button.onclick = () => show(button.dataset.back);
+    });
+
+    renderCats();
+    renderPlayers();
+    setupInfo();
+    getById("catNext").classList.add("dis");
+
+    auth.onAuthStateChanged(async (user) => {
+      currentUser = user || null;
+      await refreshBraAccess();
+      getById("categoryAccessNote").textContent = braSubscriptionUnlocked
+        ? "اشتراكك فعّال، وكل الفئات مفتوحة لك."
+        : "الملابس والأكلات مفتوحة مجانًا. باقي الفئات تحتاج اشتراكًا فعّالًا في سين جيم أو تحدي الثلاثين.";
+    });
+
+    if (params.get("room")) {
+      setTimeout(startAsPlayer, 300);
+    } else {
+      setTimeout(() => {
+        show("mode");
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
