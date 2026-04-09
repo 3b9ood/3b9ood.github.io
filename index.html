@@ -3760,7 +3760,11 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        if (firebase.apps && firebase.apps.length) {
+            firebase.app();
+        } else {
+            firebase.initializeApp(firebaseConfig);
+        }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -4524,6 +4528,7 @@
             const messageDiv = document.getElementById("authMessage");
             if (!email || !password) { messageDiv.innerText = "⚠️ الرجاء إدخال البريد الإلكتروني وكلمة المرور"; return; }
             try {
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 currentUser = userCredential.user;
                 const allowed = await checkAndRegisterDevice(currentUser.uid);
@@ -4552,6 +4557,7 @@
             if (!email || !password || !username) { messageDiv.innerText = "⚠️ الرجاء ملء جميع الحقول"; return; }
             if (password.length < 6) { messageDiv.innerText = "⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل"; return; }
             try {
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 currentUser = userCredential.user;
                 await currentUser.updateProfile({ displayName: username });
@@ -9917,9 +9923,3 @@
             <input id="onlineChatInput" placeholder="اكتب رسالة..." maxlength="120"
                 onkeydown="if(event.key==='Enter') sendChatMessage()">
             <button id="onlineChatSendBtn" onclick="sendChatMessage()">إرسال</button>
-        </div>
-    </div>
-
-</body>
-
-</html>
