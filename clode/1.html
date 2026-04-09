@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -930,7 +930,6 @@ const CROSS_GAME_CANDIDATES = {
 
 // ===== GAME CONSTANTS =====
 const STORAGE_KEY = "thalain-game-state";
-const GAME_SELECTOR_RETURN_KEY = "game_selector_return";
 const MAX_QUESTIONS = 10;
 const MAX_SUGGESTED_ANSWERS = 50;
 const gameOptions = ["ماذا تعرف", "المزاد", "السرعة", "من أنا"];
@@ -1694,11 +1693,7 @@ function openGameHub() { document.getElementById('gameHubOverlay').style.display
 function closeGameHub() { document.getElementById('gameHubOverlay').style.display = 'none'; }
 
 function returnToSharedGameSelector() {
-  try {
-    sessionStorage.setItem(GAME_SELECTOR_RETURN_KEY, "1");
-  } catch (e) { }
-  goTo("welcome");
-  openGameHub();
+  navigateToExternalGame('selector');
 }
 
 // ===== PROFILE =====
@@ -2180,7 +2175,7 @@ function setupWelcomeView() {
 
   if (chooseAnotherGameBtn) {
     chooseAnotherGameBtn.onclick = () => {
-      openGameHub();
+      returnToSharedGameSelector();
     };
   }
 }
@@ -2834,13 +2829,6 @@ if (challengeIntro) {
 }
 
 goTo(initialView);
-
-try {
-  if (sessionStorage.getItem(GAME_SELECTOR_RETURN_KEY) === "1" && initialView === "welcome") {
-    sessionStorage.removeItem(GAME_SELECTOR_RETURN_KEY);
-    openGameHub();
-  }
-} catch (e) { }
   </script>
 </body>
 </html>
