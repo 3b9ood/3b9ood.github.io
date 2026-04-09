@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ØªØ­Ø¯ÙŠ Ø§Ù„Ø«Ù„Ø§Ø«ÙŠÙ† Ø§Ù„ØºÙ„Ø§Ø¨Ø©</title>
+  <title>تحدي الثلاثين الغلابة</title>
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
@@ -155,9 +155,9 @@ label, .question-label { display: block; color: var(--gold); font-weight: 800; f
 .sub-option:hover { border-color: rgba(255,158,61,0.5); background: rgba(255,158,61,0.08); }
 .sub-option.active { background: rgba(255,158,61,0.16); border-color: rgba(255,158,61,0.55); color: var(--gold); box-shadow: 0 0 14px rgba(255,110,40,0.16); }
 .sub-option.locked-sub { opacity: 0.55; border-color: rgba(255,255,255,0.06); background: rgba(255,255,255,0.03); cursor: pointer; position: relative; }
-.sub-option.locked-sub::before { content: "ðŸ”’ "; font-size: 0.75rem; }
+.sub-option.locked-sub::before { content: "🔒 "; font-size: 0.75rem; }
 .sub-option.free-sub { border-color: rgba(46,204,140,0.35); background: rgba(46,204,140,0.06); }
-.sub-option.free-sub::after { content: " Ù…Ø¬Ø§Ù†ÙŠ"; font-size: 0.7rem; color: var(--green); }
+.sub-option.free-sub::after { content: " مجاني"; font-size: 0.7rem; color: var(--green); }
 
 .quiz-card { display: grid; gap: 22px; }
 .players-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
@@ -572,9 +572,9 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
   <div class="game-intro-overlay" id="challengeIntro">
     <div class="game-intro-logo" aria-hidden="true">
       <div class="game-intro-content">
-        <div class="game-intro-title">ØªØ­Ø¯ÙŠ</div>
+        <div class="game-intro-title">تحدي</div>
         <div class="game-intro-number">30</div>
-        <div class="game-intro-subtitle">Ø§Ù„ØºÙ„Ø§Ø¨Ø©</div>
+        <div class="game-intro-subtitle">الغلابة</div>
       </div>
     </div>
   </div>
@@ -582,79 +582,79 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
   <!-- ===== AUTH OVERLAY ===== -->
   <div class="auth-overlay" id="authOverlay">
     <div class="auth-box">
-      <div style="font-size:48px;margin-bottom:8px;">ðŸ†</div>
-      <h2>ØªØ­Ø¯ÙŠ Ø§Ù„Ø«Ù„Ø§Ø«ÙŠÙ† Ø§Ù„ØºÙ„Ø§Ø¨Ø©</h2>
+      <div style="font-size:48px;margin-bottom:8px;">🏆</div>
+      <h2>تحدي الثلاثين الغلابة</h2>
       <div id="authForm">
-        <input class="auth-input" id="authEmail" type="email" placeholder="Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ">
-        <input class="auth-input" id="authPass" type="password" placeholder="ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±">
-        <button class="auth-btn auth-btn-login" onclick="doLogin()">ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„</button>
-        <button class="auth-btn auth-btn-register" onclick="doRegister()">Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨ Ø¬Ø¯ÙŠØ¯</button>
+        <input class="auth-input" id="authEmail" type="email" placeholder="البريد الإلكتروني">
+        <input class="auth-input" id="authPass" type="password" placeholder="كلمة المرور">
+        <button class="auth-btn auth-btn-login" onclick="doLogin()">تسجيل الدخول</button>
+        <button class="auth-btn auth-btn-register" onclick="doRegister()">إنشاء حساب جديد</button>
         <div class="auth-msg" id="authMsg"></div>
       </div>
     </div>
   </div>
 
   <!-- ===== FAB MENU BUTTON ===== -->
-  <button id="fabMenuToggle" onclick="toggleFabMenu()">ðŸ‘¤</button>
+  <button id="fabMenuToggle" onclick="toggleFabMenu()">👤</button>
 
   <!-- ===== FAB DROPDOWN ===== -->
   <div id="fabMenuDropdown">
-    <div class="fab-points-bar" id="fabPointsBar">âš¡ 0 Ù†Ù‚Ø·Ø©</div>
+    <div class="fab-points-bar" id="fabPointsBar">⚡ 0 نقطة</div>
     <div class="fab-divider"></div>
-    <button class="fab-btn fab-btn-profile" onclick="openProfile();closeFabMenu()">ðŸ‘¤ Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„Ø´Ø®ØµÙŠØ©</button>
-    <button class="fab-btn fab-btn-ad" onclick="watchAdForPoints();closeFabMenu()">ðŸŽ¬ Ø´Ø§Ù‡Ø¯ Ø¥Ø¹Ù„Ø§Ù† (+1 Ù†Ù‚Ø·Ø©)</button>
-    <button class="fab-btn fab-btn-sub" onclick="openSubInfo();closeFabMenu()">ðŸ’Ž Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ Ø§Ù„Ø´Ù‡Ø±ÙŠ</button>
-    <button class="fab-btn fab-btn-subs" id="adminSubsBtn" onclick="openSubRequestsPopup();closeFabMenu()" style="display:none">ðŸ‘‘ Ø§Ù„Ù…Ø´ØªØ±ÙƒÙŠÙ† <span id="adminSubsCount">(0)</span></button>
-    <button class="fab-btn fab-btn-issues" id="adminIssuesBtn" onclick="openIssuesPopup();closeFabMenu()" style="display:none">âš ï¸ Ø§Ù„Ù…Ø´ÙƒÙ„Ø§Øª</button>
+    <button class="fab-btn fab-btn-profile" onclick="openProfile();closeFabMenu()">👤 المعلومات الشخصية</button>
+    <button class="fab-btn fab-btn-ad" onclick="watchAdForPoints();closeFabMenu()">🎬 شاهد إعلان (+1 نقطة)</button>
+    <button class="fab-btn fab-btn-sub" onclick="openSubInfo();closeFabMenu()">💎 الاشتراك الشهري</button>
+    <button class="fab-btn fab-btn-subs" id="adminSubsBtn" onclick="openSubRequestsPopup();closeFabMenu()" style="display:none">👑 المشتركين <span id="adminSubsCount">(0)</span></button>
+    <button class="fab-btn fab-btn-issues" id="adminIssuesBtn" onclick="openIssuesPopup();closeFabMenu()" style="display:none">⚠️ المشكلات</button>
     <div class="fab-divider"></div>
-    <button class="fab-btn fab-btn-logout" onclick="doLogout();closeFabMenu()">ðŸšª ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬</button>
+    <button class="fab-btn fab-btn-logout" onclick="doLogout();closeFabMenu()">🚪 تسجيل الخروج</button>
   </div>
 
   <!-- ===== POINTS INDICATOR ===== -->
-  <div id="pointsIndicator">âš¡ <span id="pointsVal">0</span> Ù†Ù‚Ø·Ø©</div>
+  <div id="pointsIndicator">⚡ <span id="pointsVal">0</span> نقطة</div>
 
   <!-- ===== MAIN APP ===== -->
   <main class="app-shell">
     <section class="app-view active" id="view-welcome">
       <section class="hero-card single-page">
-        <p class="eyebrow">Ø¬Ø§Ù‡Ø²ÙŠÙ† Ù„Ù„ØªØ­Ø¯ÙŠØŸ</p>
-        <h1>ØªØ­Ø¯ÙŠ Ø§Ù„Ø«Ù„Ø§Ø«ÙŠÙ† Ø§Ù„ØºÙ„Ø§Ø¨Ø©</h1>
-        <p class="hero-copy">Ø£Ø¯Ø®Ù„ Ø§Ø³Ù…ÙŽÙŠ Ø§Ù„Ù„Ø§Ø¹Ø¨ÙŠÙ† ÙÙŠ Ø§Ù„Ø®Ø§Ù†ØªÙŠÙ†ØŒ Ø«Ù… Ø§Ø®ØªØ± ØªØ±ØªÙŠØ¨ Ø§Ù„Ø£Ù„Ø¹Ø§Ø¨ ÙˆØ§Ù„ÙØ¦Ø§Øª ÙˆØ§Ø¨Ø¯Ø£ Ø§Ù„Ù…ÙˆØ§Ø¬Ù‡Ø©.</p>
+        <p class="eyebrow">جاهزين للتحدي؟</p>
+        <h1>تحدي الثلاثين الغلابة</h1>
+        <p class="hero-copy">أدخل اسمَي اللاعبين في الخانتين، ثم اختر ترتيب الألعاب والفئات وابدأ المواجهة.</p>
         <div class="card-grid two-cols">
           <div class="input-card">
-            <label for="playerOne">Ø§Ø³Ù… Ø§Ù„Ù„Ø§Ø¹Ø¨ Ø§Ù„Ø£ÙˆÙ„</label>
-            <input class="text-input" id="playerOne" type="text" placeholder="Ù…Ø«Ø§Ù„: Ù…Ø­Ù…Ø¯">
+            <label for="playerOne">اسم اللاعب الأول</label>
+            <input class="text-input" id="playerOne" type="text" placeholder="مثال: محمد">
           </div>
           <div class="input-card">
-            <label for="playerTwo">Ø§Ø³Ù… Ø§Ù„Ù„Ø§Ø¹Ø¨ Ø§Ù„Ø«Ø§Ù†ÙŠ</label>
-            <input class="text-input" id="playerTwo" type="text" placeholder="Ù…Ø«Ø§Ù„: Ø£Ø­Ù…Ø¯">
+            <label for="playerTwo">اسم اللاعب الثاني</label>
+            <input class="text-input" id="playerTwo" type="text" placeholder="مثال: أحمد">
           </div>
         </div>
-        <button class="primary-btn align-start" id="startSetupBtn">Ø§Ø¨Ø¯Ø£ Ø§Ù„Ù„Ø¹Ø¨</button>
-        <button class="ghost-btn align-start" id="chooseAnotherGameBtn" type="button">Ø§Ø®ØªÙŠØ§Ø± Ù„Ø¹Ø¨Ø© Ø£Ø®Ø±Ù‰</button>
+        <button class="primary-btn align-start" id="startSetupBtn">ابدأ اللعب</button>
+        <button class="ghost-btn align-start" id="chooseAnotherGameBtn" type="button">اختيار لعبة أخرى</button>
       </section>
     </section>
 
     <section class="app-view" id="view-games">
       <section class="panel-card single-page deluxe-page">
         <div class="panel-header">
-          <div><p class="eyebrow">Ø§Ù„Ø®Ø·ÙˆØ© Ø§Ù„Ø«Ø§Ù†ÙŠØ©</p><h2>Ø§Ø®ØªØ± Ø§Ù„Ø£Ù„Ø¹Ø§Ø¨ ÙˆØ­Ø¯Ø¯ Ø¹Ø¯Ø¯ Ø§Ù„Ø£Ø³Ø¦Ù„Ø©</h2></div>
-          <button class="ghost-btn link-btn" id="backToWelcomeBtn">Ø±Ø¬ÙˆØ¹</button>
+          <div><p class="eyebrow">الخطوة الثانية</p><h2>اختر الألعاب وحدد عدد الأسئلة</h2></div>
+          <button class="ghost-btn link-btn" id="backToWelcomeBtn">رجوع</button>
         </div>
         <div class="summary-box" id="playersSummary"></div>
         <div class="games-layout">
           <div class="choices-box">
-            <h3>Ø§Ù„Ø£Ù„Ø¹Ø§Ø¨ Ø§Ù„Ù…ØªØ§Ø­Ø©</h3>
-            <p class="box-copy">Ø¨Ø¹Ø¯ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù„Ø¹Ø¨Ø© Ø³ÙŠØ¸Ù‡Ø± Ø¨Ø¬Ø§Ù†Ø¨Ù‡Ø§ Ø¹Ø¯Ø§Ø¯ Ù…Ù† 1 Ø¥Ù„Ù‰ 10 Ù„ØªØ­Ø¯ÙŠØ¯ Ø¹Ø¯Ø¯ Ø§Ù„Ø£Ø³Ø¦Ù„Ø© Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø©.</p>
+            <h3>الألعاب المتاحة</h3>
+            <p class="box-copy">بعد اختيار اللعبة سيظهر بجانبها عداد من 1 إلى 10 لتحديد عدد الأسئلة المطلوبة.</p>
             <div class="choice-grid" id="gameChoices"></div>
           </div>
           <div class="queue-box">
             <div class="queue-header">
-              <h3>ØªØ±ØªÙŠØ¨ Ø§Ù„Ù„Ø¹Ø¨</h3>
-              <button class="ghost-btn small" id="clearGamesBtn">ØªÙØ±ÙŠØº</button>
+              <h3>ترتيب اللعب</h3>
+              <button class="ghost-btn small" id="clearGamesBtn">تفريغ</button>
             </div>
             <div class="selected-stack" id="selectedGames"></div>
-            <button class="primary-btn" id="toCategoriesBtn">Ø§Ù„ØªØ§Ù„ÙŠ</button>
+            <button class="primary-btn" id="toCategoriesBtn">التالي</button>
           </div>
         </div>
       </section>
@@ -663,14 +663,14 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
     <section class="app-view" id="view-categories">
       <section class="panel-card single-page deluxe-page">
         <div class="panel-header">
-          <div><p class="eyebrow">Ø§Ù„Ø®Ø·ÙˆØ© Ø§Ù„Ø«Ø§Ù„Ø«Ø©</p><h2>Ø§Ø®ØªØ± Ø§Ù„ÙØ¦Ø§Øª ÙˆØ§Ù„Ù…Ø¬Ù…ÙˆØ¹Ø§Øª</h2></div>
-          <button class="ghost-btn link-btn" id="backFromCategoriesBtn">Ø±Ø¬ÙˆØ¹</button>
+          <div><p class="eyebrow">الخطوة الثالثة</p><h2>اختر الفئات والمجموعات</h2></div>
+          <button class="ghost-btn link-btn" id="backFromCategoriesBtn">رجوع</button>
         </div>
         <div class="selection-summary" id="selectionSummary"></div>
         <div class="summary-box compact" id="categoriesModeNotice"></div>
         <div class="categories-grid" id="categoryCards"></div>
         <div class="footer-actions">
-          <button class="primary-btn" id="launchGameBtn">Ø§Ø¨Ø¯Ø£ Ø§Ù„Ù„Ø¹Ø¨Ø©</button>
+          <button class="primary-btn" id="launchGameBtn">ابدأ اللعبة</button>
         </div>
       </section>
     </section>
@@ -678,47 +678,47 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
     <section class="app-view" id="view-quiz">
       <section class="panel-card quiz-card single-page deluxe-page">
         <div class="panel-header">
-          <div><p class="eyebrow">Ø§Ù„Ù„Ø¹Ø¨Ø© Ø§Ù„Ø­Ø§Ù„ÙŠØ©</p><h2 id="currentGameTitle">Ù…Ø§Ø°Ø§ ØªØ¹Ø±Ù</h2></div>
+          <div><p class="eyebrow">اللعبة الحالية</p><h2 id="currentGameTitle">ماذا تعرف</h2></div>
           <div class="panel-actions">
             <span class="stat-pill" id="currentCategoryPill"></span>
             <span class="stat-pill" id="currentRoundPill"></span>
-            <button class="ghost-btn link-btn small" id="backFromQuizBtn">Ø±Ø¬ÙˆØ¹</button>
+            <button class="ghost-btn link-btn small" id="backFromQuizBtn">رجوع</button>
           </div>
         </div>
         <div class="players-board" id="playersBoard"></div>
         <div class="question-box">
-          <p class="question-label">Ø§Ù„Ø³Ø¤Ø§Ù„</p>
+          <p class="question-label">السؤال</p>
           <h3 id="questionText"></h3>
           <div class="answers-grid" id="answersGrid"></div>
         </div>
         <div class="action-row">
-          <button class="primary-btn" id="finishAnswersBtn">Ø§Ù†ØªÙ‡Øª Ø§Ù„Ø£Ø¬ÙˆØ¨Ø©</button>
-          <button class="ghost-btn" id="changeQuestionBtn">ØªØºÙŠÙŠØ± Ø§Ù„Ø³Ø¤Ø§Ù„</button>
-          <button class="ghost-btn" id="reportQuestionBtn" type="button">Ø¥Ø¨Ù„Ø§Øº</button>
+          <button class="primary-btn" id="finishAnswersBtn">انتهت الأجوبة</button>
+          <button class="ghost-btn" id="changeQuestionBtn">تغيير السؤال</button>
+          <button class="ghost-btn" id="reportQuestionBtn" type="button">إبلاغ</button>
         </div>
         <div class="result-banner" id="resultBanner"></div>
         <div class="winner-screen hidden" id="winnerScreen">
-          <p class="eyebrow">Ø§Ù†ØªÙ‡Øª Ø§Ù„Ù…ÙˆØ§Ø¬Ù‡Ø©</p>
+          <p class="eyebrow">انتهت المواجهة</p>
           <h2 id="winnerName"></h2>
           <p id="winnerSummary"></p>
-          <button class="primary-btn" id="restartGameBtn">Ø§Ø¨Ø¯Ø£ Ù…Ù† Ø¬Ø¯ÙŠØ¯</button>
+          <button class="primary-btn" id="restartGameBtn">ابدأ من جديد</button>
         </div>
       </section>
     </section>
 
     <section class="app-view" id="view-intermission">
       <section class="panel-card single-page intermission-card deluxe-page">
-        <p class="eyebrow">Ø§Ù†ØªÙ‡Øª Ø§Ù„Ù„Ø¹Ø¨Ø© Ø§Ù„Ø­Ø§Ù„ÙŠØ©</p>
-        <h1 id="intermissionTitle">Ù…Ø§Ø°Ø§ ØªØ±ÙŠØ¯ Ù‚Ø¨Ù„ Ø¨Ø¯Ø¡ Ø§Ù„Ù„Ø¹Ø¨Ø© Ø§Ù„ØªØ§Ù„ÙŠØ©ØŸ</h1>
+        <p class="eyebrow">انتهت اللعبة الحالية</p>
+        <h1 id="intermissionTitle">ماذا تريد قبل بدء اللعبة التالية؟</h1>
         <p class="hero-copy" id="intermissionCopy"></p>
         <div class="score-strip" id="intermissionScores"></div>
         <div class="option-grid">
-          <button class="feature-option" id="changeCountsBtn"><span>ØªØºÙŠÙŠØ± Ø¹Ø¯Ø¯ Ø§Ù„Ø£Ø³Ø¦Ù„Ø©</span><small>Ø¹Ø¯Ù‘Ù„ Ø§Ù„Ø¹Ø¯Ø§Ø¯ Ù…Ø¨Ø§Ø´Ø±Ø© Ù„Ù„Ø¹Ø¨Ø© Ø§Ù„Ù‚Ø§Ø¯Ù…Ø©.</small></button>
-          <button class="feature-option" id="changeCategoriesBtn"><span>ØªØºÙŠÙŠØ± Ø§Ù„ÙØ¦Ø§Øª</span><small>Ø§Ø°Ù‡Ø¨ Ù„Ø§Ø®ØªÙŠØ§Ø± ÙØ¦Ø§Øª ÙˆÙ…Ø¬Ù…ÙˆØ¹Ø§Øª Ø¬Ø¯ÙŠØ¯Ø© Ù„Ù„Ø¹Ø¨Ø© Ø§Ù„Ù‚Ø§Ø¯Ù…Ø©.</small></button>
-          <button class="feature-option accent" id="continueBtn"><span>Ø¥ÙƒÙ…Ø§Ù„</span><small>Ø§Ø¨Ø¯Ø£ Ø§Ù„Ù„Ø¹Ø¨Ø© Ø§Ù„Ù‚Ø§Ø¯Ù…Ø© Ø¨Ù†ÙØ³ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø­Ø§Ù„ÙŠØ©.</small></button>
+          <button class="feature-option" id="changeCountsBtn"><span>تغيير عدد الأسئلة</span><small>عدّل العداد مباشرة للعبة القادمة.</small></button>
+          <button class="feature-option" id="changeCategoriesBtn"><span>تغيير الفئات</span><small>اذهب لاختيار فئات ومجموعات جديدة للعبة القادمة.</small></button>
+          <button class="feature-option accent" id="continueBtn"><span>إكمال</span><small>ابدأ اللعبة القادمة بنفس الإعدادات الحالية.</small></button>
         </div>
         <div class="summary-box compact hidden" id="countsEditorBox">
-          <h3>Ø¹Ø¯Ø¯ Ø£Ø³Ø¦Ù„Ø© Ø§Ù„Ù„Ø¹Ø¨Ø© Ø§Ù„Ù‚Ø§Ø¯Ù…Ø©</h3>
+          <h3>عدد أسئلة اللعبة القادمة</h3>
           <div id="countsEditor"></div>
         </div>
       </section>
@@ -728,34 +728,34 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
   <div class="confetti-container hidden" id="confettiContainer"></div>
   <div class="winner-overlay hidden" id="winnerOverlay">
     <div class="winner-content">
-      <span class="winner-trophy" id="winnerTrophy">ðŸ†</span>
-      <p class="winner-eyebrow" id="winnerEyebrow">Ø§Ù„ÙØ§Ø¦Ø² Ø¨Ø§Ù„ØªØ­Ø¯ÙŠ</p>
+      <span class="winner-trophy" id="winnerTrophy">🏆</span>
+      <p class="winner-eyebrow" id="winnerEyebrow">الفائز بالتحدي</p>
       <div class="winner-name-big" id="winnerOverlayName"></div>
       <div class="winner-score-box" id="winnerScoreBox"></div>
-      <button class="primary-btn" id="winnerRestartBtn" style="margin-top:8px;padding:16px 40px;font-size:1.05rem;">Ø§Ø¨Ø¯Ø£ Ù…Ù† Ø¬Ø¯ÙŠØ¯</button>
+      <button class="primary-btn" id="winnerRestartBtn" style="margin-top:8px;padding:16px 40px;font-size:1.05rem;">ابدأ من جديد</button>
     </div>
   </div>
 
   <!-- ===== AD CONFIRM POPUP ===== -->
   <div id="adConfirmPopup">
-    <div style="font-size:42px;margin-bottom:8px;">ðŸŽ¬</div>
-    <p>Ù‡Ù„ Ø£Ù†Ù‡ÙŠØª Ù…Ø´Ø§Ù‡Ø¯Ø© Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†ØŸ</p>
-    <button onclick="confirmAdWatched()" style="background:linear-gradient(135deg,var(--green),#1aa870);color:#03200f;">âœ… Ù†Ø¹Ù…ØŒ Ø£Ø¶Ù Ø§Ù„Ù†Ù‚Ø·Ø©</button>
-    <button onclick="closeAdConfirm()" style="background:rgba(255,255,255,0.08);color:var(--muted);border:1px solid rgba(255,255,255,0.12);">Ø¥ØºÙ„Ø§Ù‚</button>
+    <div style="font-size:42px;margin-bottom:8px;">🎬</div>
+    <p>هل أنهيت مشاهدة الإعلان؟</p>
+    <button onclick="confirmAdWatched()" style="background:linear-gradient(135deg,var(--green),#1aa870);color:#03200f;">✅ نعم، أضف النقطة</button>
+    <button onclick="closeAdConfirm()" style="background:rgba(255,255,255,0.08);color:var(--muted);border:1px solid rgba(255,255,255,0.12);">إغلاق</button>
   </div>
 
   <!-- ===== SUBSCRIPTION INFO ===== -->
   <div class="sub-overlay" id="subInfoOverlay">
     <div class="sub-box">
-      <div class="sub-title">ðŸ’Ž Ù…Ù…ÙŠØ²Ø§Øª Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ</div>
-      <div style="background:rgba(255,158,61,.07);border:1px solid rgba(255,158,61,.2);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:13px;color:var(--muted);text-align:center;">Ø§Ø´ØªØ±Ùƒ Ø§Ù„Ø¢Ù† ÙˆØ³ÙŠØªÙ… ØªÙØ¹ÙŠÙ„ Ø­Ø³Ø§Ø¨Ùƒ ÙÙˆØ±Ø§Ù‹!</div>
-      <div class="sub-feature"><span class="sub-feature-icon">ðŸ”“</span><span>ØªÙØªØ­ Ù„Ùƒ <strong>Ø¬Ù…ÙŠØ¹ Ø§Ù„ÙØ¦Ø§Øª</strong> Ø¨Ø¹Ø¯Ø¯ Ù„Ø§ Ù†Ù‡Ø§Ø¦ÙŠ Ù…Ù† Ø§Ù„Ù„Ø¹Ø¨</span></div>
-      <div class="sub-feature"><span class="sub-feature-icon">âœ¨</span><span>Ø£ÙŠ ÙØ¦Ø© Ø¬Ø¯ÙŠØ¯Ø© ØªÙØ¶Ø§Ù Ù„Ù„Ø¹Ø¨Ø© ØªÙÙØªØ­ Ù„Ùƒ <strong>ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹</strong></span></div>
-      <div class="sub-feature"><span class="sub-feature-icon">ðŸ’°</span><span><strong>Ø£Ø³Ø¹Ø§Ø± Ù…Ù…ØªØ§Ø²Ø©</strong> ØªØ¨Ø¯Ø£ Ù…Ù† Ø¯ÙˆÙ„Ø§Ø± ÙˆØ§Ø­Ø¯ ÙÙ‚Ø·</span></div>
+      <div class="sub-title">💎 مميزات الاشتراك</div>
+      <div style="background:rgba(255,158,61,.07);border:1px solid rgba(255,158,61,.2);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:13px;color:var(--muted);text-align:center;">اشترك الآن وسيتم تفعيل حسابك فوراً!</div>
+      <div class="sub-feature"><span class="sub-feature-icon">🔓</span><span>تفتح لك <strong>جميع الفئات</strong> بعدد لا نهائي من اللعب</span></div>
+      <div class="sub-feature"><span class="sub-feature-icon">✨</span><span>أي فئة جديدة تُضاف للعبة تُفتح لك <strong>تلقائياً</strong></span></div>
+      <div class="sub-feature"><span class="sub-feature-icon">💰</span><span><strong>أسعار ممتازة</strong> تبدأ من دولار واحد فقط</span></div>
       <div id="subActiveBadgeInfo"></div>
       <div class="sub-btns">
-        <button class="sub-btn-close" onclick="closeSubInfo()">Ø¥ØºÙ„Ø§Ù‚</button>
-        <button class="sub-btn-next" onclick="openSubPlans()">Ù…ØªØ§Ø¨Ø¹Ø© â†</button>
+        <button class="sub-btn-close" onclick="closeSubInfo()">إغلاق</button>
+        <button class="sub-btn-next" onclick="openSubPlans()">متابعة ←</button>
       </div>
     </div>
   </div>
@@ -763,26 +763,26 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
   <!-- ===== SUBSCRIPTION PLANS ===== -->
   <div class="sub-overlay" id="subPlansOverlay">
     <div class="sub-box">
-      <div class="sub-title">Ø§Ø®ØªØ± Ø®Ø·Ø© Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ</div>
+      <div class="sub-title">اختر خطة الاشتراك</div>
       <div class="plan-card" id="plan-1" onclick="selectPlan(1)">
-        <div class="plan-name">ðŸ—“ Ø§Ø´ØªØ±Ø§Ùƒ Ø´Ù‡Ø±ÙŠ</div>
-        <div class="plan-price">1$ <span>/ Ø´Ù‡Ø±</span></div>
-        <div class="plan-desc">Ø¬Ù…ÙŠØ¹ Ø§Ù„ÙØ¦Ø§Øª Ù…ÙØªÙˆØ­Ø© Ù„Ù…Ø¯Ø© Ø´Ù‡Ø± ÙƒØ§Ù…Ù„</div>
+        <div class="plan-name">🗓 اشتراك شهري</div>
+        <div class="plan-price">1$ <span>/ شهر</span></div>
+        <div class="plan-desc">جميع الفئات مفتوحة لمدة شهر كامل</div>
       </div>
       <div class="plan-card popular" id="plan-6" onclick="selectPlan(6)">
-        <div class="plan-badge">â­ Ø§Ù„Ø£ÙØ¶Ù„ Ù‚ÙŠÙ…Ø©</div>
-        <div class="plan-name">ðŸ“… Ø§Ø´ØªØ±Ø§Ùƒ 6 Ø£Ø´Ù‡Ø±</div>
-        <div class="plan-price">5$ <span>/ 6 Ø£Ø´Ù‡Ø±</span></div>
-        <div class="plan-desc">ÙˆÙÙ‘Ø± 1$ Ù…Ù‚Ø§Ø±Ù†Ø©Ù‹ Ø¨Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ Ø§Ù„Ø´Ù‡Ø±ÙŠ</div>
+        <div class="plan-badge">⭐ الأفضل قيمة</div>
+        <div class="plan-name">📅 اشتراك 6 أشهر</div>
+        <div class="plan-price">5$ <span>/ 6 أشهر</span></div>
+        <div class="plan-desc">وفّر 1$ مقارنةً بالاشتراك الشهري</div>
       </div>
       <div class="plan-card" id="plan-12" onclick="selectPlan(12)">
-        <div class="plan-name">ðŸ† Ø§Ø´ØªØ±Ø§Ùƒ Ø³Ù†ÙˆÙŠ</div>
-        <div class="plan-price">9$ <span>/ Ø³Ù†Ø©</span></div>
-        <div class="plan-desc">Ø£ÙØ¶Ù„ Ø³Ø¹Ø± â€” ÙˆÙÙ‘Ø± 3$ Ø¹Ù„Ù‰ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ Ø§Ù„Ø´Ù‡Ø±ÙŠ</div>
+        <div class="plan-name">🏆 اشتراك سنوي</div>
+        <div class="plan-price">9$ <span>/ سنة</span></div>
+        <div class="plan-desc">أفضل سعر — وفّر 3$ على الاشتراك الشهري</div>
       </div>
-      <button class="sub-confirm-btn" id="subConfirmBtn" disabled onclick="confirmSubscription()">âœ… Ø§Ø´ØªØ±Ùƒ Ø§Ù„Ø¢Ù†</button>
+      <button class="sub-confirm-btn" id="subConfirmBtn" disabled onclick="confirmSubscription()">✅ اشترك الآن</button>
       <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;">
-        <button class="sub-btn-close" onclick="closeSubPlans()">â†© Ø±Ø¬ÙˆØ¹</button>
+        <button class="sub-btn-close" onclick="closeSubPlans()">↩ رجوع</button>
       </div>
       <div id="subPlanMsg" style="margin-top:10px;font-size:13px;color:var(--muted);"></div>
     </div>
@@ -791,15 +791,15 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
   <!-- ===== PROFILE OVERLAY ===== -->
   <div class="profile-overlay" id="profileOverlay">
     <div class="profile-box">
-      <div class="profile-avatar" id="profileAvatar">ðŸ‘¤</div>
-      <div class="profile-name" id="profileName">â€”</div>
-      <div class="profile-row"><span class="profile-row-label">Ø§Ù„Ø¨Ø±ÙŠØ¯</span><span class="profile-row-value" id="profileEmail">â€”</span></div>
-      <div class="profile-row"><span class="profile-row-label">Ø§Ù„Ù†Ù‚Ø§Ø·</span><span class="profile-row-value" id="profilePoints">0 Ù†Ù‚Ø·Ø© âš¡</span></div>
-      <div class="profile-row"><span class="profile-row-label">Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ</span><span class="profile-row-value" id="profileSub">ØºÙŠØ± Ù…Ø´ØªØ±Ùƒ</span></div>
+      <div class="profile-avatar" id="profileAvatar">👤</div>
+      <div class="profile-name" id="profileName">—</div>
+      <div class="profile-row"><span class="profile-row-label">البريد</span><span class="profile-row-value" id="profileEmail">—</span></div>
+      <div class="profile-row"><span class="profile-row-label">النقاط</span><span class="profile-row-value" id="profilePoints">0 نقطة ⚡</span></div>
+      <div class="profile-row"><span class="profile-row-label">الاشتراك</span><span class="profile-row-value" id="profileSub">غير مشترك</span></div>
       <div id="profileSubBadge" style="margin:8px 0;"></div>
       <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;">
-        <button class="modal-btn modal-btn-sub" onclick="closeProfile();openSubInfo()">ðŸ’Ž Ø§Ø´ØªØ±Ùƒ</button>
-        <button class="modal-btn modal-btn-close" onclick="closeProfile()">Ø¥ØºÙ„Ø§Ù‚</button>
+        <button class="modal-btn modal-btn-sub" onclick="closeProfile();openSubInfo()">💎 اشترك</button>
+        <button class="modal-btn modal-btn-close" onclick="closeProfile()">إغلاق</button>
       </div>
     </div>
   </div>
@@ -808,31 +808,31 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
   <div id="subRequestsPopup" style="position:fixed;inset:0;background:rgba(13,7,24,0.88);z-index:10055;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);">
     <div style="background:linear-gradient(145deg,rgba(28,14,58,0.99),rgba(18,8,40,0.99));border:1px solid rgba(255,255,255,.1);border-radius:28px;padding:28px;max-width:480px;width:94%;max-height:85vh;overflow-y:auto;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-        <div style="font-size:18px;font-weight:900;color:var(--gold);">ðŸ’Ž Ø§Ù„Ù…Ø´ØªØ±ÙƒÙˆÙ† <span id="subscribersCountLabel">(0)</span></div>
-        <button onclick="closeSubRequestsPopup()" style="background:rgba(255,255,255,.08);border:none;color:var(--muted);cursor:pointer;font-size:18px;border-radius:50%;width:32px;height:32px;">âœ•</button>
+        <div style="font-size:18px;font-weight:900;color:var(--gold);">💎 المشتركون <span id="subscribersCountLabel">(0)</span></div>
+        <button onclick="closeSubRequestsPopup()" style="background:rgba(255,255,255,.08);border:none;color:var(--muted);cursor:pointer;font-size:18px;border-radius:50%;width:32px;height:32px;">✕</button>
       </div>
-      <div id="subRequestsList"><div style="color:var(--muted);text-align:center;padding:20px;">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div></div>
+      <div id="subRequestsList"><div style="color:var(--muted);text-align:center;padding:20px;">⏳ جاري التحميل...</div></div>
     </div>
   </div>
 
   <div id="issuesPopup" style="position:fixed;inset:0;background:rgba(13,7,24,0.88);z-index:10056;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);">
     <div style="background:linear-gradient(145deg,rgba(28,14,58,0.99),rgba(18,8,40,0.99));border:1px solid rgba(255,255,255,.1);border-radius:28px;padding:28px;max-width:560px;width:94%;max-height:85vh;overflow-y:auto;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-        <div style="font-size:18px;font-weight:900;color:#ff8aaa;">âš ï¸ Ø§Ù„Ù…Ø´ÙƒÙ„Ø§Øª</div>
-        <button onclick="closeIssuesPopup()" style="background:rgba(255,255,255,.08);border:none;color:var(--muted);cursor:pointer;font-size:18px;border-radius:50%;width:32px;height:32px;">âœ•</button>
+        <div style="font-size:18px;font-weight:900;color:#ff8aaa;">⚠️ المشكلات</div>
+        <button onclick="closeIssuesPopup()" style="background:rgba(255,255,255,.08);border:none;color:var(--muted);cursor:pointer;font-size:18px;border-radius:50%;width:32px;height:32px;">✕</button>
       </div>
-      <div id="issuesList"><div style="color:var(--muted);text-align:center;padding:20px;">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div></div>
+      <div id="issuesList"><div style="color:var(--muted);text-align:center;padding:20px;">⏳ جاري التحميل...</div></div>
     </div>
   </div>
 
   <div id="reportPopup" style="position:fixed;inset:0;background:rgba(13,7,24,0.88);z-index:10057;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);">
     <div style="background:linear-gradient(145deg,rgba(28,14,58,0.99),rgba(18,8,40,0.99));border:1px solid rgba(255,255,255,.1);border-radius:28px;padding:28px;max-width:420px;width:94%;">
-      <div style="font-size:20px;font-weight:900;color:#ff8aaa;margin-bottom:12px;">Ø¥Ø¨Ù„Ø§Øº Ø¹Ù† Ù…Ø´ÙƒÙ„Ø©</div>
-      <p style="color:var(--muted);line-height:1.8;margin-bottom:18px;">Ø³ÙŠØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø³Ø¤Ø§Ù„ Ø§Ù„Ø­Ø§Ù„ÙŠ Ù„Ù„Ø¥Ø¯Ø§Ø±Ø© Ù„Ù…Ø±Ø§Ø¬Ø¹ØªÙ‡.</p>
+      <div style="font-size:20px;font-weight:900;color:#ff8aaa;margin-bottom:12px;">إبلاغ عن مشكلة</div>
+      <p style="color:var(--muted);line-height:1.8;margin-bottom:18px;">سيتم إرسال السؤال الحالي للإدارة لمراجعته.</p>
       <div id="reportPreview" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px;margin-bottom:16px;color:var(--text);line-height:1.8;"></div>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button class="ghost-btn" type="button" onclick="closeReportPopup()">Ø¥Ù„ØºØ§Ø¡</button>
-        <button class="primary-btn" type="button" onclick="submitQuestionIssue()">Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ù„Ø§Øº</button>
+        <button class="ghost-btn" type="button" onclick="closeReportPopup()">إلغاء</button>
+        <button class="primary-btn" type="button" onclick="submitQuestionIssue()">إرسال البلاغ</button>
       </div>
     </div>
   </div>
@@ -841,26 +841,26 @@ ul li { margin-bottom: 8px; line-height: 1.6; }
     <div class="game-hub-box">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
         <div>
-          <div class="eyebrow" style="margin-bottom:8px;">ÙˆØ§Ø¬Ù‡Ø© Ø§Ù„Ø£Ù„Ø¹Ø§Ø¨</div>
-          <h2 style="margin:0;">Ø§Ø®ØªØ± Ø§Ù„Ù„Ø¹Ø¨Ø©</h2>
+          <div class="eyebrow" style="margin-bottom:8px;">واجهة الألعاب</div>
+          <h2 style="margin:0;">اختر اللعبة</h2>
         </div>
-        <button class="ghost-btn" type="button" onclick="closeGameHub()">Ø¥ØºÙ„Ø§Ù‚</button>
+        <button class="ghost-btn" type="button" onclick="closeGameHub()">إغلاق</button>
       </div>
       <div class="game-hub-grid">
         <div class="game-hub-top">
           <button class="game-hub-card gold" type="button" onclick="navigateToExternalGame('senjym')">
-            <div style="font-size:18px;font-weight:900;margin-bottom:8px;">Ø³ÙŠÙ† Ø¬ÙŠÙ… Ø§Ù„ØºÙ„Ø§Ø¨Ø©</div>
-            <div style="color:var(--muted);line-height:1.8;">Ø§Ù„ÙˆØ§Ø¬Ù‡Ø© Ø§Ù„Ø£ÙˆÙ„Ù‰ ÙÙŠ Ø§Ù„Ù…Ø«Ù„Ø« Ø§Ù„Ù…Ù‚Ù„ÙˆØ¨.</div>
+            <div style="font-size:18px;font-weight:900;margin-bottom:8px;">سين جيم الغلابة</div>
+            <div style="color:var(--muted);line-height:1.8;">الواجهة الأولى في المثلث المقلوب.</div>
           </button>
           <button class="game-hub-card cyan" type="button" onclick="closeGameHub()">
-            <div style="font-size:18px;font-weight:900;margin-bottom:8px;">ØªØ­Ø¯ÙŠ Ø§Ù„Ø«Ù„Ø§Ø«ÙŠÙ† Ø§Ù„ØºÙ„Ø§Ø¨Ø©</div>
-            <div style="color:var(--muted);line-height:1.8;">Ø£Ù†Øª Ø¯Ø§Ø®Ù„Ù‡Ø§ Ø§Ù„Ø¢Ù†.</div>
+            <div style="font-size:18px;font-weight:900;margin-bottom:8px;">تحدي الثلاثين الغلابة</div>
+            <div style="color:var(--muted);line-height:1.8;">أنت داخلها الآن.</div>
           </button>
         </div>
         <div class="game-hub-bottom">
           <button class="game-hub-card pink" type="button" onclick="navigateToExternalGame('brasalfa')">
-            <div style="font-size:18px;font-weight:900;margin-bottom:8px;">Ø¨Ø±Ø§ Ø§Ù„Ø³Ø§Ù„ÙØ© Ø§Ù„ØºÙ„Ø§Ø¨Ø©</div>
-            <div style="color:var(--muted);line-height:1.8;">ØªØ¸Ù‡Ø± Ø£Ø³ÙÙ„ Ø§Ù„Ù„Ø¹Ø¨ØªÙŠÙ† Ù„ØªÙƒÙ…Ù„ Ø´ÙƒÙ„ Ø§Ù„Ù…Ø«Ù„Ø« Ø¨Ø§Ù„Ù…Ù‚Ù„ÙˆØ¨.</div>
+            <div style="font-size:18px;font-weight:900;margin-bottom:8px;">برا السالفة الغلابة</div>
+            <div style="color:var(--muted);line-height:1.8;">تظهر أسفل اللعبتين لتكمل شكل المثلث بالمقلوب.</div>
           </button>
         </div>
       </div>
@@ -888,6 +888,7 @@ const ADMIN_EMAILS = ["3bedelshareif@gmail.com"];
 const USERS_COLLECTION = "users";
 const LEGACY_THALATHIN_COLLECTION = "users_thalain";
 const SUBSCRIPTIONS_COLLECTION = "subscriptions_thalathin";
+const THALATHIN_ISSUES_COLLECTION = "questionIssues_thalathin";
 const CROSS_GAME_CANDIDATES = {
   selector: [
     "../سين جيم/site_v11.html",
@@ -895,9 +896,9 @@ const CROSS_GAME_CANDIDATES = {
     "./index.html",
     "../index.html",
     "../../index.html",
-    "../Ã˜Â³Ã™Å Ã™â€  Ã˜Â¬Ã™Å Ã™â€¦/index.html",
+    "../Ø³ÙŠÙ† Ø¬ÙŠÙ…/index.html",
     "../%D8%B3%D9%8A%D9%86%20%D8%AC%D9%8A%D9%85/index.html",
-    "../Ã˜Â³Ã™Å Ã™â€  Ã˜Â¬Ã™Å Ã™â€¦/site_v10.html",
+    "../Ø³ÙŠÙ† Ø¬ÙŠÙ…/site_v10.html",
     "../%D8%B3%D9%8A%D9%86%20%D8%AC%D9%8A%D9%85/site_v10.html",
     "../site_v10.html",
     "./site_v10.html"
@@ -905,13 +906,13 @@ const CROSS_GAME_CANDIDATES = {
   senjym: [
     "../سين جيم/site_v11.html",
     "../%D8%B3%D9%8A%D9%86%20%D8%AC%D9%8A%D9%85/site_v11.html",
-    "../Ø³ÙŠÙ† Ø¬ÙŠÙ…/site_v10.html",
+    "../سين جيم/site_v10.html",
     "../%D8%B3%D9%8A%D9%86%20%D8%AC%D9%8A%D9%85/site_v10.html",
     "../site_v10.html",
     "./site_v10.html"
   ],
   brasalfa: [
-    "../Ø¨Ø±Ø§ Ø§Ù„Ø³Ø§Ù„ÙØ©/bra.html",
+    "../برا السالفة/bra.html",
     "../%D8%A8%D8%B1%D8%A7%20%D8%A7%D9%84%D8%B3%D8%A7%D9%84%D9%81%D8%A9/bra.html",
     "./bra.html",
     "../bra.html"
@@ -926,203 +927,203 @@ const CROSS_GAME_CANDIDATES = {
 const STORAGE_KEY = "thalain-game-state";
 const MAX_QUESTIONS = 10;
 const MAX_SUGGESTED_ANSWERS = 50;
-const gameOptions = ["Ù…Ø§Ø°Ø§ ØªØ¹Ø±Ù", "Ø§Ù„Ù…Ø²Ø§Ø¯", "Ø§Ù„Ø³Ø±Ø¹Ø©", "Ù…Ù† Ø£Ù†Ø§"];
+const gameOptions = ["ماذا تعرف", "المزاد", "السرعة", "من أنا"];
 const validViews = ["welcome", "games", "categories", "quiz", "intermission"];
 const CATEGORY_COST = 100;
 
 let auctionTimer = null;
 
-// ===== QUESTION BANK: Ù…Ø§Ø°Ø§ ØªØ¹Ø±Ù =====
+// ===== QUESTION BANK: ماذا تعرف =====
 const knowQuestionBank = {
-  "ÙƒØ±Ø© Ø§Ù„Ù‚Ø¯Ù…": {
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠ": [
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ù„Ø¹Ø¨Øª ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠ Ø¹Ø¨Ø± ØªØ§Ø±ÙŠØ®Ù‡ØŸ", "answers": ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯","ÙØ§Ù„Ù†Ø³ÙŠØ§","Ø¥Ø´Ø¨ÙŠÙ„ÙŠØ©","Ø£ØªÙ„ØªÙŠÙƒ Ø¨ÙŠÙ„Ø¨Ø§Ùˆ","Ø±ÙŠØ§Ù„ Ø³ÙˆØ³ÙŠØ¯Ø§Ø¯","Ø±ÙŠØ§Ù„ Ø¨ÙŠØªÙŠØ³","ÙÙŠØ§Ø±ÙŠØ§Ù„","Ø¯ÙŠØ¨ÙˆØ±ØªÙŠÙÙˆ Ù„Ø§ÙƒÙˆØ±ÙˆÙ†ÙŠØ§","Ø±ÙŠØ§Ù„ Ø³Ø±Ù‚Ø³Ø·Ø©","Ø³Ù„ØªØ§ ÙÙŠØºÙˆ","Ø¥Ø³Ø¨Ø§Ù†ÙŠÙˆÙ„","ØºØ±Ù†Ø§Ø·Ø©","Ø£ÙˆØ³Ø§Ø³ÙˆÙ†Ø§","Ø±Ø§ÙŠÙˆ ÙØ§ÙŠÙƒØ§Ù†Ùˆ","Ø®ÙŠØªØ§ÙÙŠ","Ù…Ù„Ù‚Ø§","Ø±ÙŠØ§Ù„ Ø¨Ù„Ø¯ Ø§Ù„ÙˆÙ„ÙŠØ¯","Ù‚Ø§Ø¯Ø´","Ø£Ù„Ø§ÙÙŠØ³","Ø¥Ù„ØªØ´ÙŠ","Ù…Ø§ÙŠÙˆØ±ÙƒØ§","Ù„Ø§Ø³ Ø¨Ø§Ù„Ù…Ø§Ø³","ØªÙ†Ø±ÙŠÙÙŠ"] },
+  "كرة القدم": {
+    "الدوري الإسباني": [
+  { "question": "أذكر أندية لعبت في الدوري الإسباني عبر تاريخه؟", "answers": ["ريال مدريد","برشلونة","أتلتيكو مدريد","فالنسيا","إشبيلية","أتلتيك بيلباو","ريال سوسيداد","ريال بيتيس","فياريال","ديبورتيفو لاكورونيا","ريال سرقسطة","سلتا فيغو","إسبانيول","غرناطة","أوساسونا","رايو فايكانو","خيتافي","ملقا","ريال بلد الوليد","قادش","ألافيس","إلتشي","مايوركا","لاس بالماس","تنريفي"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† Ø£Ø¬Ø§Ù†Ø¨ ØªØ§Ø±ÙŠØ®ÙŠÙŠÙ† ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØŸ", "answers": ["Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ø²ÙŠÙ† Ø§Ù„Ø¯ÙŠÙ† Ø²ÙŠØ¯Ø§Ù†","Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ Ù†Ø§Ø²Ø§Ø±ÙŠÙˆ","Ø£Ù„ÙØ±ÙŠØ¯Ùˆ Ø¯ÙŠ Ø³ØªÙŠÙØ§Ù†Ùˆ","ÙŠÙˆÙ‡Ø§Ù† ÙƒØ±ÙˆÙŠÙ","Ø¯ÙŠÙŠØºÙˆ Ù…Ø§Ø±Ø§Ø¯ÙˆÙ†Ø§","Ø±ÙˆÙ†Ø§Ù„Ø¯ÙŠÙ†ÙŠÙˆ","Ù„ÙˆÙŠØ³ ÙÙŠØºÙˆ","Ù„ÙˆÙƒØ§ Ù…ÙˆØ¯Ø±ÙŠØªØ´","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","Ù„ÙˆÙŠØ³ Ø³ÙˆØ§Ø±ÙŠØ²","Ù†ÙŠÙ…Ø§Ø±","ØºØ§Ø±ÙŠØ« Ø¨ÙŠÙ„","Ø£Ù†Ø·ÙˆØ§Ù† ØºØ±ÙŠØ²Ù…Ø§Ù†","Ø±Ø§Ø¯Ø§Ù…ÙŠÙ„ ÙØ§Ù„ÙƒØ§Ùˆ","Ø±ÙŠÙØ§Ù„Ø¯Ùˆ","ØµØ§Ù…ÙˆÙŠÙ„ Ø¥ÙŠØªÙˆ","Ø¯Ø§ÙÙŠØ¯ ÙÙŠØ§","Ø¯ÙŠÙŠØºÙˆ ÙÙˆØ±Ù„Ø§Ù†","Ø®Ø§Ù…ÙŠØ³ Ø±ÙˆØ¯Ø±ÙŠØºÙŠØ²","Ø¥ÙŠÙØ§Ù† Ø±Ø§ÙƒÙŠØªÙŠØªØ´"] },
+  { "question": "أذكر لاعبين أجانب تاريخيين في الدوري الإسباني؟", "answers": ["ليونيل ميسي","كريستيانو رونالدو","زين الدين زيدان","رونالدو نازاريو","ألفريدو دي ستيفانو","يوهان كرويف","دييغو مارادونا","رونالدينيو","لويس فيغو","لوكا مودريتش","كريم بنزيما","لويس سواريز","نيمار","غاريث بيل","أنطوان غريزمان","راداميل فالكاو","ريفالدو","صامويل إيتو","دافيد فيا","دييغو فورلان","خاميس رودريغيز","إيفان راكيتيتش"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù…Ø¯Ø±Ø¨ÙŠÙ† ÙØ§Ø²ÙˆØ§ Ø¨Ù„Ù‚Ø¨ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØŸ", "answers": ["Ø¨ÙŠØ¨ ØºÙˆØ§Ø±Ø¯ÙŠÙˆÙ„Ø§","ÙƒØ§Ø±Ù„Ùˆ Ø£Ù†Ø´ÙŠÙ„ÙˆØªÙŠ","Ø¯ÙŠÙŠØºÙˆ Ø³ÙŠÙ…ÙŠÙˆÙ†ÙŠ","Ø²ÙŠÙ† Ø§Ù„Ø¯ÙŠÙ† Ø²ÙŠØ¯Ø§Ù†","ÙÙŠØ³Ù†ØªÙŠ Ø¯ÙŠÙ„ Ø¨ÙˆØ³ÙƒÙŠ","Ù„ÙˆÙŠØ³ Ø£Ø±Ø§ØºÙˆÙ†ÙŠØ³","Ø¥Ø±Ù†Ø³ØªÙˆ ÙØ§Ù„ÙÙŠØ±Ø¯ÙŠ","ØªÙŠØªÙˆ ÙÙŠÙ„Ø§Ù†ÙˆÙØ§","Ù…ÙŠØºÙŠÙ„ Ù…ÙˆÙ†ÙŠÙˆØ²","Ù‡ÙŠÙ„ÙŠÙ†ÙŠÙˆ Ù‡ÙŠØ±ÙŠØ±Ø§","Ø±Ø§Ø¯ÙˆÙ…ÙŠØ± Ø£Ù†ØªÙŠØªØ´","ÙŠÙˆÙ‡Ø§Ù† ÙƒØ±ÙˆÙŠÙ","ÙØ§Ø¨ÙŠÙˆ ÙƒØ§Ø¨ÙŠÙ„Ùˆ","Ø±Ø§ÙØ§ÙŠÙŠÙ„ Ø¨ÙŠÙ†ÙŠØªÙŠØ²","Ù„ÙˆÙŠØ³ Ø¥Ù†Ø±ÙŠÙƒÙŠ"] },
+  { "question": "أذكر مدربين فازوا بلقب الدوري الإسباني؟", "answers": ["بيب غوارديولا","كارلو أنشيلوتي","دييغو سيميوني","زين الدين زيدان","فيسنتي ديل بوسكي","لويس أراغونيس","إرنستو فالفيردي","تيتو فيلانوفا","ميغيل مونيوز","هيلينيو هيريرا","رادومير أنتيتش","يوهان كرويف","فابيو كابيلو","رافاييل بينيتيز","لويس إنريكي"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙØ§Ø²Øª Ø¨Ù„Ù‚Ø¨ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠ Ø¹Ø¨Ø± Ø§Ù„ØªØ§Ø±ÙŠØ®ØŸ", "answers": ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯","ÙØ§Ù„Ù†Ø³ÙŠØ§","Ø±ÙŠØ§Ù„ Ø³ÙˆØ³ÙŠØ¯Ø§Ø¯","Ø¯ÙŠØ¨ÙˆØ±ØªÙŠÙÙˆ Ù„Ø§ÙƒÙˆØ±ÙˆÙ†ÙŠØ§","Ø±ÙŠØ§Ù„ Ø¨ÙŠØªÙŠØ³","Ø£ØªÙ„ØªÙŠÙƒ Ø¨ÙŠÙ„Ø¨Ø§Ùˆ"] },
+  { "question": "أذكر أندية فازت بلقب الدوري الإسباني عبر التاريخ؟", "answers": ["ريال مدريد","برشلونة","أتلتيكو مدريد","فالنسيا","ريال سوسيداد","ديبورتيفو لاكورونيا","ريال بيتيس","أتلتيك بيلباو"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù‡Ø¯Ø§ÙÙŠÙ† ÙØ§Ø²ÙˆØ§ Ø¨Ø¬Ø§Ø¦Ø²Ø© Ø§Ù„Ø¨ÙŠØªØ´ÙŠØªØ´ÙŠØŸ", "answers": ["Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","ØªÙŠÙ„Ù…Ùˆ Ø²Ø§Ø±Ø§","Ù‡ÙˆØºÙˆ Ø³Ø§Ù†Ø´ÙŠØ²","Ø£Ù„ÙØ±ÙŠØ¯Ùˆ Ø¯ÙŠ Ø³ØªÙŠÙØ§Ù†Ùˆ","Ø±Ø§Ø¤ÙˆÙ„ ØºÙˆÙ†Ø²Ø§Ù„ÙŠØ³","Ø¯Ø§ÙÙŠØ¯ ÙÙŠØ§","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","Ù„ÙˆÙŠØ³ Ø³ÙˆØ§Ø±ÙŠØ²","ÙƒÙˆÙŠÙ†ÙŠ","Ø¯ÙŠÙŠØºÙˆ ÙÙˆØ±Ù„Ø§Ù†","ÙŠØ§ØºÙˆ Ø£Ø³Ø¨Ø§Ø³","Ø£Ø±ÙŠØªØ² Ø£Ø¯ÙˆØ±ÙŠØ²","Ø¯Ø§Ù†ÙŠ ØºÙˆÙŠØ²Ø§","Ø¯ÙŠÙŠØºÙˆ ÙƒÙˆØ³ØªØ§","ØµØ§Ù…ÙˆÙŠÙ„ Ø¥ÙŠØªÙˆ","Ø±Ø§ÙØ§ÙŠÙ„ ÙØ§Ù† Ø¯ÙŠØ± ÙØ§Ø±Øª"] },
+  { "question": "أذكر هدافين فازوا بجائزة البيتشيتشي؟", "answers": ["ليونيل ميسي","كريستيانو رونالدو","تيلمو زارا","هوغو سانشيز","ألفريدو دي ستيفانو","راؤول غونزاليس","دافيد فيا","كريم بنزيما","لويس سواريز","كويني","دييغو فورلان","ياغو أسباس","أريتز أدوريز","داني غويزا","دييغو كوستا","صامويل إيتو","رافايل فان دير فارت"] },
 
-  { "question": "Ø£Ø°ÙƒØ± ØµÙÙ‚Ø§Øª ÙƒØ¨ÙŠØ±Ø© ÙÙŠ ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØŸ", "answers": ["ÙÙŠÙ„ÙŠØ¨ ÙƒÙˆØªÙŠÙ†ÙŠÙˆ","Ø¹Ø«Ù…Ø§Ù† Ø¯ÙŠÙ…Ø¨ÙŠÙ„ÙŠ","Ø¬ÙˆØ§Ùˆ ÙÙŠÙ„ÙŠÙƒØ³","Ø¥ÙŠØ¯ÙŠÙ† Ù‡Ø§Ø²Ø§Ø±Ø¯","Ø£Ù†Ø·ÙˆØ§Ù† ØºØ±ÙŠØ²Ù…Ø§Ù†","ØºØ§Ø±ÙŠØ« Ø¨ÙŠÙ„","ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ù„ÙˆÙŠØ³ ÙÙŠØºÙˆ","Ø²ÙŠÙ† Ø§Ù„Ø¯ÙŠÙ† Ø²ÙŠØ¯Ø§Ù†","Ø®Ø§Ù…ÙŠØ³ Ø±ÙˆØ¯Ø±ÙŠØºÙŠØ²","Ù†ÙŠÙ…Ø§Ø±","Ø¬ÙˆØ¯ Ø¨ÙŠÙ„ÙŠÙ†ØºÙ‡Ø§Ù…","Ø£ÙˆØ±ÙŠÙ„ÙŠØ§Ù† ØªØ´ÙˆØ§Ù…ÙŠÙ†ÙŠ","Ù„ÙˆÙƒØ§ ÙŠÙˆÙÙŠØªØ´","Ø±ÙˆØ¨Ø±Øª Ù„ÙŠÙØ§Ù†Ø¯ÙˆÙØ³ÙƒÙŠ","ÙÙŠØ±Ø§Ù† ØªÙˆØ±ÙŠØ³","Ø¬ÙˆÙ„ ÙƒÙˆÙ†Ø¯ÙŠ"] },
+  { "question": "أذكر صفقات كبيرة في تاريخ الدوري الإسباني؟", "answers": ["فيليب كوتينيو","عثمان ديمبيلي","جواو فيليكس","إيدين هازارد","أنطوان غريزمان","غاريث بيل","كريستيانو رونالدو","لويس فيغو","زين الدين زيدان","خاميس رودريغيز","نيمار","جود بيلينغهام","أوريليان تشواميني","لوكا يوفيتش","روبرت ليفاندوفسكي","فيران توريس","جول كوندي"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø­Ø±Ø§Ø³ Ù…Ø±Ù…Ù‰ Ø£Ø³Ø·ÙˆØ±ÙŠÙŠÙ† ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØŸ", "answers": ["Ø¥ÙŠÙƒØ± ÙƒØ§Ø³ÙŠØ§Ø³","Ø£Ù†Ø¯ÙˆÙ†ÙŠ Ø²ÙˆØ¨ÙŠØ²Ø§Ø±ÙŠØªØ§","ØªÙŠØ¨Ùˆ ÙƒÙˆØ±ØªÙˆØ§","Ù…Ø§Ø±Ùƒ Ø£Ù†Ø¯Ø±ÙŠÙ‡ ØªÙŠØ± Ø´ØªÙŠØºÙ†","Ø³Ø§Ù†ØªÙŠØ§ØºÙˆ ÙƒØ§Ù†ÙŠØ²Ø§Ø±ÙŠØ³","ÙƒÙ„Ø§ÙˆØ¯ÙŠÙˆ Ø¨Ø±Ø§ÙÙˆ","Ø¯ÙŠÙŠØºÙˆ Ù„ÙˆØ¨ÙŠØ²","ÙŠØ§Ù† Ø£ÙˆØ¨Ù„Ø§Ùƒ","Ø±ÙŠÙƒØ§Ø±Ø¯Ùˆ Ø²Ø§Ù…ÙˆØ±Ø§","Ø£Ù†Ø¯Ø±ÙŠØ³ Ø¨Ø§Ù„ÙˆØ¨","ÙÙŠÙƒØªÙˆØ± ÙØ§Ù„Ø¯ÙŠØ²","Ù…ÙŠØºÙŠÙ„ Ø±ÙŠÙ†Ø§"] },
+  { "question": "أذكر حراس مرمى أسطوريين في الدوري الإسباني؟", "answers": ["إيكر كاسياس","أندوني زوبيزاريتا","تيبو كورتوا","مارك أندريه تير شتيغن","سانتياغو كانيزاريس","كلاوديو برافو","دييغو لوبيز","يان أوبلاك","ريكاردو زامورا","أندريس بالوب","فيكتور فالديز","ميغيل رينا"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† Ù…Ù† Ø£ÙƒØ§Ø¯ÙŠÙ…ÙŠØ© Ù„Ø§ Ù…Ø§Ø³ÙŠØ§ØŸ", "answers": ["Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","Ø£Ù†Ø¯Ø±ÙŠØ³ Ø¥Ù†ÙŠÙŠØ³ØªØ§","ØªØ´Ø§ÙÙŠ Ù‡ÙŠØ±Ù†Ø§Ù†Ø¯ÙŠØ²","Ø¬ÙŠØ±Ø§Ø±Ø¯ Ø¨ÙŠÙƒÙŠÙ‡","Ø³ÙŠØ±Ø¬ÙŠÙˆ Ø¨ÙˆØ³ÙƒÙŠØªØ³","ÙƒØ§Ø±Ù„ÙŠØ³ Ø¨ÙˆÙŠÙˆÙ„","Ø³ÙŠØ³Ùƒ ÙØ§Ø¨Ø±ÙŠØºØ§Ø³","Ø¨ÙŠØ¯Ø±Ùˆ Ø±ÙˆØ¯Ø±ÙŠØºÙŠØ²","ÙÙŠÙƒØªÙˆØ± ÙØ§Ù„Ø¯ÙŠØ²","ØªÙŠØ§ØºÙˆ Ø£Ù„ÙƒØ§Ù†ØªØ§Ø±Ø§","Ø³ÙŠØ±Ø¬ÙŠ Ø±ÙˆØ¨ÙŠØ±ØªÙˆ","Ø£Ù†Ø³Ùˆ ÙØ§ØªÙŠ","Ù„Ø§Ù…ÙŠÙ† ÙŠØ§Ù…Ø§Ù„"] },
+  { "question": "أذكر لاعبين من أكاديمية لا ماسيا؟", "answers": ["ليونيل ميسي","أندريس إنييستا","تشافي هيرنانديز","جيرارد بيكيه","سيرجيو بوسكيتس","كارليس بويول","سيسك فابريغاس","بيدرو رودريغيز","فيكتور فالديز","تياغو ألكانتارا","سيرجي روبيرتو","أنسو فاتي","لامين يامال"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù…Ù„Ø§Ø¹Ø¨ Ø´Ù‡ÙŠØ±Ø© ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØŸ", "answers": ["ÙƒØ§Ù…Ø¨ Ù†Ùˆ","Ø³Ø§Ù†ØªÙŠØ§ØºÙˆ Ø¨Ø±Ù†Ø§Ø¨ÙŠÙˆ","ÙˆØ§Ù†Ø¯Ø§ Ù…ØªØ±ÙˆØ¨ÙˆÙ„ÙŠØªØ§Ù†Ùˆ","Ù…Ø³ØªØ§ÙŠØ§","Ø±Ø§Ù…ÙˆÙ† Ø³Ø§Ù†Ø´ÙŠØ² Ø¨ÙŠØ²Ø®ÙˆØ§Ù†","Ø³Ø§Ù† Ù…Ø§Ù…ÙŠØ³","Ø£Ù†ÙˆÙŠØªØ§","Ø¨ÙŠÙ†ÙŠØªÙˆ ÙÙŠØ§Ù…Ø§Ø±ÙŠÙ†","Ù„Ø§ Ø³ÙŠØ±Ø§Ù…ÙŠÙƒØ§","ÙƒÙˆÙ„ÙŠØ³ÙŠÙˆÙ… Ø£Ù„ÙÙˆÙ†Ø³Ùˆ Ø¨ÙŠØ±ÙŠØ²","Ø¨Ø§Ù„Ø§ÙŠØ¯ÙˆØ³","Ø¥Ù„ Ø³Ø§Ø¯Ø§Ø±"] },
+  { "question": "أذكر ملاعب شهيرة في الدوري الإسباني؟", "answers": ["كامب نو","سانتياغو برنابيو","واندا متروبوليتانو","مستايا","رامون سانشيز بيزخوان","سان ماميس","أنويتا","بينيتو فيامارين","لا سيراميكا","كوليسيوم ألفونسو بيريز","بالايدوس","إل سادار"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ø¥Ø³Ø¨Ø§Ù†ÙŠØ© ÙØ§Ø²Øª Ø¨Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£ÙˆØ±ÙˆØ¨ÙŠ Ø£Ùˆ ÙƒØ£Ø³ Ø§Ù„Ø§ØªØ­Ø§Ø¯ØŸ", "answers": ["Ø¥Ø´Ø¨ÙŠÙ„ÙŠØ©","Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯","ÙØ§Ù„Ù†Ø³ÙŠØ§","ÙÙŠØ§Ø±ÙŠØ§Ù„","Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø£ØªÙ„ØªÙŠÙƒ Ø¨ÙŠÙ„Ø¨Ø§Ùˆ","Ø¥Ø³Ø¨Ø§Ù†ÙŠÙˆÙ„"] },
+  { "question": "أذكر أندية إسبانية فازت بالدوري الأوروبي أو كأس الاتحاد؟", "answers": ["إشبيلية","أتلتيكو مدريد","فالنسيا","فياريال","ريال مدريد","برشلونة","أتلتيك بيلباو","إسبانيول"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† Ø³Ø¬Ù„ÙˆØ§ Ø³ÙˆØ¨Ø± Ù‡Ø§ØªØ±ÙŠÙƒ ÙÙŠ Ø§Ù„Ù„ÙŠØºØ§ØŸ", "answers": ["Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ù„ÙˆÙŠØ³ Ø³ÙˆØ§Ø±ÙŠØ²","Ø±Ø§Ø¯Ø§Ù…ÙŠÙ„ ÙØ§Ù„ÙƒØ§Ùˆ","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","ØºØ§Ø±ÙŠØ« Ø¨ÙŠÙ„","Ø£Ù†Ø·ÙˆØ§Ù† ØºØ±ÙŠØ²Ù…Ø§Ù†","Ø¯Ø§ÙÙŠØ¯ ÙÙŠØ§","Ø¯ÙŠÙŠØºÙˆ ÙÙˆØ±Ù„Ø§Ù†","Ù‡ÙˆØºÙˆ Ø³Ø§Ù†Ø´ÙŠØ²"] },
+  { "question": "أذكر لاعبين سجلوا سوبر هاتريك في الليغا؟", "answers": ["ليونيل ميسي","كريستيانو رونالدو","لويس سواريز","راداميل فالكاو","كريم بنزيما","غاريث بيل","أنطوان غريزمان","دافيد فيا","دييغو فورلان","هوغو سانشيز"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† Ø¹Ø±Ø¨ Ø£Ùˆ Ù…Ø³Ù„Ù…ÙŠÙ† Ù„Ø¹Ø¨ÙˆØ§ ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØŸ", "answers": ["ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","Ø£Ø´Ø±Ù Ø­ÙƒÙŠÙ…ÙŠ","ÙŠØ§Ø³ÙŠÙ† Ø¨ÙˆÙ†Ùˆ","Ù†Ø¨ÙŠÙ„ ÙÙ‚ÙŠØ±","Ù…Ù†ÙŠØ± Ø§Ù„Ø­Ø¯Ø§Ø¯ÙŠ","Ù…Ù‡Ø¯ÙŠ Ø§Ù„Ù†ÙØ·ÙŠ","Ø²Ù‡ÙŠØ± ÙØ¶Ø§Ù„","Ø¬ÙˆØ§Ø¯ Ø§Ù„Ø²Ø§ÙŠØ±ÙŠ","Ø­Ø³Ù† ÙŠØ¨Ø¯Ø©","Ø³ÙÙŠØ§Ù† ÙÙŠØºÙˆÙ„ÙŠ","ÙŠØ§Ø³ÙŠÙ† Ø¨Ø±Ø§Ù‡ÙŠÙ…ÙŠ"] },
+  { "question": "أذكر لاعبين عرب أو مسلمين لعبوا في الدوري الإسباني؟", "answers": ["كريم بنزيما","أشرف حكيمي","ياسين بونو","نبيل فقير","منير الحدادي","مهدي النفطي","زهير فضال","جواد الزايري","حسن يبدة","سفيان فيغولي","ياسين براهيمي"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† Ø³Ø¬Ù„ÙˆØ§ ÙÙŠ Ø§Ù„ÙƒÙ„Ø§Ø³ÙŠÙƒÙˆØŸ", "answers": ["Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ø£Ù„ÙØ±ÙŠØ¯Ùˆ Ø¯ÙŠ Ø³ØªÙŠÙØ§Ù†Ùˆ","Ø±Ø§Ø¤ÙˆÙ„ ØºÙˆÙ†Ø²Ø§Ù„ÙŠØ³","Ù„ÙˆÙŠØ³ ÙÙŠØºÙˆ","Ø±ÙˆÙ†Ø§Ù„Ø¯ÙŠÙ†ÙŠÙˆ","ØªØ´Ø§ÙÙŠ","Ø¥Ù†ÙŠÙŠØ³ØªØ§","Ø³ÙŠØ±Ø¬ÙŠÙˆ Ø±Ø§Ù…ÙˆØ³","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","ØºØ§Ø±ÙŠØ« Ø¨ÙŠÙ„","Ø¯Ø§ÙÙŠØ¯ ÙÙŠØ§"] },
+  { "question": "أذكر لاعبين سجلوا في الكلاسيكو؟", "answers": ["ليونيل ميسي","كريستيانو رونالدو","ألفريدو دي ستيفانو","راؤول غونزاليس","لويس فيغو","رونالدينيو","تشافي","إنييستا","سيرجيو راموس","كريم بنزيما","غاريث بيل","دافيد فيا"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙØ§Ø²Øª Ø¨ÙƒØ£Ø³ Ù…Ù„Ùƒ Ø¥Ø³Ø¨Ø§Ù†ÙŠØ§ØŸ", "answers": ["Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø£ØªÙ„ØªÙŠÙƒ Ø¨ÙŠÙ„Ø¨Ø§Ùˆ","Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯","ÙØ§Ù„Ù†Ø³ÙŠØ§","Ø±ÙŠØ§Ù„ Ø³Ø±Ù‚Ø³Ø·Ø©","Ø¥Ø´Ø¨ÙŠÙ„ÙŠØ©","Ø¥Ø³Ø¨Ø§Ù†ÙŠÙˆÙ„","Ø±ÙŠØ§Ù„ Ø³ÙˆØ³ÙŠØ¯Ø§Ø¯","Ø±ÙŠØ§Ù„ Ø¨ÙŠØªÙŠØ³","Ø¯ÙŠØ¨ÙˆØ±ØªÙŠÙÙˆ Ù„Ø§ÙƒÙˆØ±ÙˆÙ†ÙŠØ§"] },
+  { "question": "أذكر أندية فازت بكأس ملك إسبانيا؟", "answers": ["برشلونة","أتلتيك بيلباو","ريال مدريد","أتلتيكو مدريد","فالنسيا","ريال سرقسطة","إشبيلية","إسبانيول","ريال سوسيداد","ريال بيتيس","ديبورتيفو لاكورونيا"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† ÙØ§Ø²ÙˆØ§ Ø¨Ø¬Ø§Ø¦Ø²Ø© Ø£ÙØ¶Ù„ Ù„Ø§Ø¹Ø¨ ÙÙŠ Ø§Ù„Ù„ÙŠØºØ§ØŸ", "answers": ["Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ù„ÙˆÙŠØ³ Ø³ÙˆØ§Ø±ÙŠØ²","Ø£Ù†Ø·ÙˆØ§Ù† ØºØ±ÙŠØ²Ù…Ø§Ù†","Ù„ÙˆÙƒØ§ Ù…ÙˆØ¯Ø±ÙŠØªØ´","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","Ø£Ù†Ø¯Ø±ÙŠØ³ Ø¥Ù†ÙŠÙŠØ³ØªØ§","ØªØ´Ø§ÙÙŠ","Ø±Ø§Ø¯Ø§Ù…ÙŠÙ„ ÙØ§Ù„ÙƒØ§Ùˆ","ÙŠØ§Ù† Ø£ÙˆØ¨Ù„Ø§Ùƒ","ØªÙŠØ¨Ùˆ ÙƒÙˆØ±ØªÙˆØ§"] },
+  { "question": "أذكر لاعبين فازوا بجائزة أفضل لاعب في الليغا؟", "answers": ["ليونيل ميسي","كريستيانو رونالدو","لويس سواريز","أنطوان غريزمان","لوكا مودريتش","كريم بنزيما","أندريس إنييستا","تشافي","راداميل فالكاو","يان أوبلاك","تيبو كورتوا"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ù„Ù… ØªÙ‡Ø¨Ø· Ù…Ù† Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØŸ", "answers": ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø£ØªÙ„ØªÙŠÙƒ Ø¨ÙŠÙ„Ø¨Ø§Ùˆ"] },
+  { "question": "أذكر أندية لم تهبط من الدوري الإسباني؟", "answers": ["ريال مدريد","برشلونة","أتلتيك بيلباو"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù…Ø¯Ø±Ø¨ÙŠÙ† Ø¯Ø±Ø¨ÙˆØ§ Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯ØŸ", "answers": ["Ø¯ÙŠÙŠØºÙˆ Ø³ÙŠÙ…ÙŠÙˆÙ†ÙŠ","Ù„ÙˆÙŠØ³ Ø£Ø±Ø§ØºÙˆÙ†ÙŠØ³","ÙƒÙŠÙƒÙŠ Ø³Ø§Ù†Ø´ÙŠØ² ÙÙ„ÙˆØ±ÙŠØ³","Ø±Ø§Ø¯ÙˆÙ…ÙŠØ± Ø£Ù†ØªÙŠØªØ´","ØºØ±ÙŠØºÙˆØ±ÙŠÙˆ Ù…Ø§Ù†Ø²Ø§Ù†Ùˆ","Ø®Ø§ÙÙŠÙŠØ± Ø£ØºÙŠØ±ÙŠ","ÙƒÙ„Ø§ÙˆØ¯ÙŠÙˆ Ø±Ø§Ù†ÙŠÙŠØ±ÙŠ"] },
+  { "question": "أذكر مدربين دربوا أتلتيكو مدريد؟", "answers": ["دييغو سيميوني","لويس أراغونيس","كيكي سانشيز فلوريس","رادومير أنتيتش","غريغوريو مانزانو","خافيير أغيري","كلاوديو رانييري"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù‡Ø¯Ø§ÙÙŠÙ† ØªØ§Ø±ÙŠØ®ÙŠÙŠÙ† Ù„Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯ ÙÙŠ Ø§Ù„Ù„ÙŠØºØ§ØŸ", "answers": ["ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ø±Ø§Ø¤ÙˆÙ„","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","Ø£Ù„ÙØ±ÙŠØ¯Ùˆ Ø¯ÙŠ Ø³ØªÙŠÙØ§Ù†Ùˆ","Ù‡ÙˆØºÙˆ Ø³Ø§Ù†Ø´ÙŠØ²","ÙƒØ§Ø±Ù„ÙˆØ³ Ø³Ø§Ù†ØªÙŠØ§Ù†Ø§"] },
+  { "question": "أذكر هدافين تاريخيين لريال مدريد في الليغا؟", "answers": ["كريستيانو رونالدو","راؤول","كريم بنزيما","ألفريدو دي ستيفانو","هوغو سانشيز","كارلوس سانتيانا"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù‡Ø¯Ø§ÙÙŠÙ† ØªØ§Ø±ÙŠØ®ÙŠÙŠÙ† Ù„Ø¨Ø±Ø´Ù„ÙˆÙ†Ø© ÙÙŠ Ø§Ù„Ù„ÙŠØºØ§ØŸ", "answers": ["Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","Ø³ÙŠØ²Ø§Ø± Ø±ÙˆØ¯Ø±ÙŠØºÙŠØ²","Ù„ÙˆÙŠØ³ Ø³ÙˆØ§Ø±ÙŠØ²","ØµØ§Ù…ÙˆÙŠÙ„ Ø¥ÙŠØªÙˆ","Ø±ÙŠÙØ§Ù„Ø¯Ùˆ","Ù†ÙŠÙ…Ø§Ø±"] },
+  { "question": "أذكر هدافين تاريخيين لبرشلونة في الليغا؟", "answers": ["ليونيل ميسي","سيزار رودريغيز","لويس سواريز","صامويل إيتو","ريفالدو","نيمار"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ø´Ø§Ø±ÙƒØª ÙÙŠ Ù…ÙˆØ³Ù… 2023-2024ØŸ", "answers": ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯","Ø¥Ø´Ø¨ÙŠÙ„ÙŠØ©","ÙØ§Ù„Ù†Ø³ÙŠØ§","Ø±ÙŠØ§Ù„ Ø³ÙˆØ³ÙŠØ¯Ø§Ø¯","Ø±ÙŠØ§Ù„ Ø¨ÙŠØªÙŠØ³","Ø£ØªÙ„ØªÙŠÙƒ Ø¨ÙŠÙ„Ø¨Ø§Ùˆ","ÙÙŠØ§Ø±ÙŠØ§Ù„","Ø®ÙŠØªØ§ÙÙŠ","Ø£ÙˆØ³Ø§Ø³ÙˆÙ†Ø§","Ø³Ù„ØªØ§ ÙÙŠØºÙˆ","Ù‚Ø§Ø¯Ø´","ØºØ±Ù†Ø§Ø·Ø©","Ø£Ù„Ù…ÙŠØ±ÙŠØ§","Ù„Ø§Ø³ Ø¨Ø§Ù„Ù…Ø§Ø³","Ù…Ø§ÙŠÙˆØ±ÙƒØ§","Ø±Ø§ÙŠÙˆ ÙØ§ÙŠÙƒØ§Ù†Ùˆ","Ø£Ù„Ø§ÙÙŠØ³"] },
+  { "question": "أذكر أندية شاركت في موسم 2023-2024؟", "answers": ["ريال مدريد","برشلونة","أتلتيكو مدريد","إشبيلية","فالنسيا","ريال سوسيداد","ريال بيتيس","أتلتيك بيلباو","فياريال","خيتافي","أوساسونا","سلتا فيغو","قادش","غرناطة","ألميريا","لاس بالماس","مايوركا","رايو فايكانو","ألافيس"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù…Ø¯Ø§ÙØ¹ÙŠÙ† Ø£Ø³Ø·ÙˆØ±ÙŠÙŠÙ† ÙÙŠ Ø§Ù„Ù„ÙŠØºØ§ØŸ", "answers": ["Ø³ÙŠØ±Ø¬ÙŠÙˆ Ø±Ø§Ù…ÙˆØ³","ÙƒØ§Ø±Ù„ÙŠØ³ Ø¨ÙˆÙŠÙˆÙ„","Ø¬ÙŠØ±Ø§Ø±Ø¯ Ø¨ÙŠÙƒÙŠÙ‡","Ø±ÙˆØ¨Ø±ØªÙˆ ÙƒØ§Ø±Ù„ÙˆØ³","Ù…Ø§Ø±Ø³ÙŠÙ„Ùˆ","Ø¯ÙŠÙŠØºÙˆ ØºÙˆØ¯ÙŠÙ†","ÙØ±Ù†Ø§Ù†Ø¯Ùˆ Ù‡ÙŠÙŠØ±Ùˆ","Ø±Ø§ÙØ§ÙŠÙŠÙ„ ÙØ§Ø±Ø§Ù†"] },
+  { "question": "أذكر مدافعين أسطوريين في الليغا؟", "answers": ["سيرجيو راموس","كارليس بويول","جيرارد بيكيه","روبرتو كارلوس","مارسيلو","دييغو غودين","فرناندو هييرو","رافاييل فاران"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠ ÙˆØ³Ø· Ø£Ø³Ø·ÙˆØ±ÙŠÙŠÙ† ÙÙŠ Ø§Ù„Ù„ÙŠØºØ§ØŸ", "answers": ["ØªØ´Ø§ÙÙŠ","Ø¥Ù†ÙŠÙŠØ³ØªØ§","Ù„ÙˆÙƒØ§ Ù…ÙˆØ¯Ø±ÙŠØªØ´","ØªÙˆÙ†ÙŠ ÙƒØ±ÙˆØ³","ØªØ´Ø§Ø¨ÙŠ Ø£Ù„ÙˆÙ†Ø³Ùˆ","Ø¯ÙŠÙƒÙˆ","Ø¨ÙˆØ³ÙƒÙŠØªØ³","ÙÙŠØ¯ÙŠØ±ÙŠÙƒÙˆ ÙØ§Ù„ÙÙŠØ±Ø¯ÙŠ"] },
+  { "question": "أذكر لاعبي وسط أسطوريين في الليغا؟", "answers": ["تشافي","إنييستا","لوكا مودريتش","توني كروس","تشابي ألونسو","ديكو","بوسكيتس","فيديريكو فالفيردي"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù…Ù‡Ø§Ø¬Ù…ÙŠÙ† Ø£Ø³Ø·ÙˆØ±ÙŠÙŠÙ† ÙÙŠ Ø§Ù„Ù„ÙŠØºØ§ØŸ", "answers": ["Ù…ÙŠØ³ÙŠ","Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ø¨Ù†Ø²ÙŠÙ…Ø§","Ø³ÙˆØ§Ø±ÙŠØ²","Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ Ù†Ø§Ø²Ø§Ø±ÙŠÙˆ","Ø¥ÙŠØªÙˆ","ÙÙŠÙ„Ø§","ÙÙˆØ±Ù„Ø§Ù†","Ù†ÙŠÙ…Ø§Ø±"] },
+  { "question": "أذكر مهاجمين أسطوريين في الليغا؟", "answers": ["ميسي","رونالدو","بنزيما","سواريز","رونالدو نازاريو","إيتو","فيلا","فورلان","نيمار"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ø¯ÙŠØ±Ø¨ÙŠØ§Øª Ù…Ø´Ù‡ÙˆØ±Ø© ÙÙŠ Ø¥Ø³Ø¨Ø§Ù†ÙŠØ§ØŸ", "answers": ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯","Ø¥Ø³Ø¨Ø§Ù†ÙŠÙˆÙ„","Ø±ÙŠØ§Ù„ Ø¨ÙŠØªÙŠØ³","Ø¥Ø´Ø¨ÙŠÙ„ÙŠØ©","Ø£ØªÙ„ØªÙŠÙƒ Ø¨ÙŠÙ„Ø¨Ø§Ùˆ","Ø±ÙŠØ§Ù„ Ø³ÙˆØ³ÙŠØ¯Ø§Ø¯"] },
+  { "question": "أذكر أندية ديربيات مشهورة في إسبانيا؟", "answers": ["ريال مدريد","برشلونة","أتلتيكو مدريد","إسبانيول","ريال بيتيس","إشبيلية","أتلتيك بيلباو","ريال سوسيداد"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† Ø§Ø±ØªØ¯ÙˆØ§ Ù‚Ù…ÙŠØµ Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯ ÙˆØ¨Ø±Ø´Ù„ÙˆÙ†Ø©ØŸ", "answers": ["Ù„ÙˆÙŠØ³ ÙÙŠØºÙˆ","Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ Ù†Ø§Ø²Ø§Ø±ÙŠÙˆ","Ø¨ÙŠØ±Ù†Ø¯ Ø´ÙˆØ³ØªØ±","Ù…ÙŠÙƒØ§ÙŠÙ„ Ù„Ø§ÙˆØ¯Ø±ÙˆØ¨","Ø®Ø§ÙÙŠÙŠØ± Ø³Ø§ÙÙŠÙˆÙ„Ø§"] }
+  { "question": "أذكر لاعبين ارتدوا قميص ريال مدريد وبرشلونة؟", "answers": ["لويس فيغو","رونالدو نازاريو","بيرند شوستر","ميكايل لاودروب","خافيير سافيولا"] }
     ],
     
-    "Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„": [
+    "دوري الأبطال": [
       
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙØ§Ø²Øª Ø¨Ø¯ÙˆØ±ÙŠ Ø£Ø¨Ø·Ø§Ù„ Ø£ÙˆØ±ÙˆØ¨Ø§ Ø¹Ø¨Ø± Ø§Ù„ØªØ§Ø±ÙŠØ®ØŸ", "answers": ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ù…ÙŠÙ„Ø§Ù†","Ø¨Ø§ÙŠØ±Ù† Ù…ÙŠÙˆÙ†Ø®","Ù„ÙŠÙØ±Ø¨ÙˆÙ„","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø£ÙŠØ§ÙƒØ³","Ø¥Ù†ØªØ± Ù…ÙŠÙ„Ø§Ù†","Ù…Ø§Ù†Ø´Ø³ØªØ± ÙŠÙˆÙ†Ø§ÙŠØªØ¯","ØªØ´ÙŠÙ„Ø³ÙŠ","ÙŠÙˆÙÙ†ØªÙˆØ³","Ø¨Ù†ÙÙŠÙƒØ§","Ø¨ÙˆØ±ØªÙˆ","Ù†ÙˆØªÙ†ØºÙ‡Ø§Ù… ÙÙˆØ±Ø³Øª","Ø³Ù„ØªÙŠÙƒ","Ù‡Ø§Ù…Ø¨ÙˆØ±Øº","Ø³ØªÙŠÙˆØ§ Ø¨ÙˆØ®Ø§Ø±Ø³Øª","Ù…Ø§Ø±Ø³ÙŠÙ„ÙŠØ§","Ø¨ÙˆØ±ÙˆØ³ÙŠØ§ Ø¯ÙˆØ±ØªÙ…ÙˆÙ†Ø¯","ÙÙŠÙ†ÙˆØ±Ø¯","Ø£Ø³ØªÙˆÙ† ÙÙŠÙ„Ø§","Ù…Ø§Ù†Ø´Ø³ØªØ± Ø³ÙŠØªÙŠ"] },
+  { "question": "أذكر أندية فازت بدوري أبطال أوروبا عبر التاريخ؟", "answers": ["ريال مدريد","ميلان","بايرن ميونخ","ليفربول","برشلونة","أياكس","إنتر ميلان","مانشستر يونايتد","تشيلسي","يوفنتوس","بنفيكا","بورتو","نوتنغهام فورست","سلتيك","هامبورغ","ستيوا بوخارست","مارسيليا","بوروسيا دورتموند","فينورد","أستون فيلا","مانشستر سيتي"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† ÙØ§Ø²ÙˆØ§ Ø¨Ø¯ÙˆØ±ÙŠ Ø£Ø¨Ø·Ø§Ù„ Ø£ÙˆØ±ÙˆØ¨Ø§ØŸ", "answers": ["ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","ØªØ´Ø§ÙÙŠ","Ø¥Ù†ÙŠÙŠØ³ØªØ§","Ø¨Ø§ÙˆÙ„Ùˆ Ù…Ø§Ù„Ø¯ÙŠÙ†ÙŠ","Ø¥ÙŠÙƒØ± ÙƒØ§Ø³ÙŠØ§Ø³","Ø³ÙŠØ±Ø¬ÙŠÙˆ Ø±Ø§Ù…ÙˆØ³","Ù„ÙˆÙƒØ§ Ù…ÙˆØ¯Ø±ÙŠØªØ´","ØªÙˆÙ†ÙŠ ÙƒØ±ÙˆØ³","Ø±ÙˆØ¨Ø±Øª Ù„ÙŠÙØ§Ù†Ø¯ÙˆÙØ³ÙƒÙŠ","ÙØ±Ø§Ù†Ùƒ Ù„Ø§Ù…Ø¨Ø§Ø±Ø¯","Ø¯ÙŠØ¯ÙŠÙŠÙ‡ Ø¯Ø±ÙˆØºØ¨Ø§","Ø±Ø§Ø¤ÙˆÙ„ ØºÙˆÙ†Ø²Ø§Ù„ÙŠØ³","Ø²ÙŠÙ† Ø§Ù„Ø¯ÙŠÙ† Ø²ÙŠØ¯Ø§Ù†","Ø£Ù†Ø¯Ø±ÙŠØ§ Ø¨ÙŠØ±Ù„Ùˆ","ÙƒÙ„Ø§Ø±Ù†Ø³ Ø³ÙŠØ¯ÙˆØ±Ù","Ø¬ÙŠØ±Ø§Ø±Ø¯ Ø¨ÙŠÙƒÙŠÙ‡"] },
+  { "question": "أذكر لاعبين فازوا بدوري أبطال أوروبا؟", "answers": ["كريستيانو رونالدو","ليونيل ميسي","كريم بنزيما","تشافي","إنييستا","باولو مالديني","إيكر كاسياس","سيرجيو راموس","لوكا مودريتش","توني كروس","روبرت ليفاندوفسكي","فرانك لامبارد","ديدييه دروغبا","راؤول غونزاليس","زين الدين زيدان","أندريا بيرلو","كلارنس سيدورف","جيرارد بيكيه"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù‡Ø¯Ø§ÙÙŠÙ† ØªØ§Ø±ÙŠØ®ÙŠÙŠÙ† Ù„Ø¯ÙˆØ±ÙŠ Ø£Ø¨Ø·Ø§Ù„ Ø£ÙˆØ±ÙˆØ¨Ø§ØŸ", "answers": ["ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","Ø±ÙˆØ¨Ø±Øª Ù„ÙŠÙØ§Ù†Ø¯ÙˆÙØ³ÙƒÙŠ","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","Ø±Ø§Ø¤ÙˆÙ„ ØºÙˆÙ†Ø²Ø§Ù„ÙŠØ³","ØªÙˆÙ…Ø§Ø³ Ù…ÙˆÙ„Ø±","ØªÙŠÙŠØ±ÙŠ Ù‡Ù†Ø±ÙŠ","Ø²Ù„Ø§ØªØ§Ù† Ø¥Ø¨Ø±Ø§Ù‡ÙŠÙ…ÙˆÙÙŠØªØ´","Ø£Ù†Ø¯Ø±ÙŠÙ‡ Ø´ÙŠÙØªØ´ÙŠÙ†ÙƒÙˆ","ÙÙŠÙ„ÙŠØ¨Ùˆ Ø¥Ù†Ø²Ø§ØºÙŠ","ÙˆØ§ÙŠÙ† Ø±ÙˆÙ†ÙŠ","Ù…Ø­Ù…Ø¯ ØµÙ„Ø§Ø­"] },
+  { "question": "أذكر هدافين تاريخيين لدوري أبطال أوروبا؟", "answers": ["كريستيانو رونالدو","ليونيل ميسي","روبرت ليفاندوفسكي","كريم بنزيما","راؤول غونزاليس","توماس مولر","تييري هنري","زلاتان إبراهيموفيتش","أندريه شيفتشينكو","فيليبو إنزاغي","واين روني","محمد صلاح"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù…Ø¯Ø±Ø¨ÙŠÙ† ÙØ§Ø²ÙˆØ§ Ø¨Ø¯ÙˆØ±ÙŠ Ø£Ø¨Ø·Ø§Ù„ Ø£ÙˆØ±ÙˆØ¨Ø§ØŸ", "answers": ["ÙƒØ§Ø±Ù„Ùˆ Ø£Ù†Ø´ÙŠÙ„ÙˆØªÙŠ","Ø¨ÙŠØ¨ ØºÙˆØ§Ø±Ø¯ÙŠÙˆÙ„Ø§","Ø²ÙŠÙ† Ø§Ù„Ø¯ÙŠÙ† Ø²ÙŠØ¯Ø§Ù†","Ø¬ÙˆØ²ÙŠÙ‡ Ù…ÙˆØ±ÙŠÙ†ÙŠÙˆ","ÙŠÙˆØ±ØºÙ† ÙƒÙ„ÙˆØ¨","Ø£ÙˆØªÙˆ Ø±ÙŠÙ‡Ø§Ø¬Ù„","ÙÙŠØ³Ù†ØªÙŠ Ø¯ÙŠÙ„ Ø¨ÙˆØ³ÙƒÙŠ","Ø¨ÙˆØ¨ Ø¨Ø§ÙŠØ²Ù„ÙŠ","Ø£Ø±ÙŠØºÙˆ Ø³Ø§ÙƒÙŠ","Ù‡ÙŠÙ„ÙŠÙ†ÙŠÙˆ Ù‡ÙŠØ±ÙŠØ±Ø§","Ù„ÙˆÙŠØ³ Ø¥Ù†Ø±ÙŠÙƒÙŠ","ÙŠÙˆÙ‡Ø§Ù† ÙƒØ±ÙˆÙŠÙ"] },
+  { "question": "أذكر مدربين فازوا بدوري أبطال أوروبا؟", "answers": ["كارلو أنشيلوتي","بيب غوارديولا","زين الدين زيدان","جوزيه مورينيو","يورغن كلوب","أوتو ريهاجل","فيسنتي ديل بوسكي","بوب بايزلي","أريغو ساكي","هيلينيو هيريرا","لويس إنريكي","يوهان كرويف"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙˆØµÙ„Øª Ù†Ù‡Ø§Ø¦ÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø¨Ø§ÙŠØ±Ù† Ù…ÙŠÙˆÙ†Ø®","Ù…ÙŠÙ„Ø§Ù†","Ù„ÙŠÙØ±Ø¨ÙˆÙ„","Ù…Ø§Ù†Ø´Ø³ØªØ± ÙŠÙˆÙ†Ø§ÙŠØªØ¯","ØªØ´ÙŠÙ„Ø³ÙŠ","ÙŠÙˆÙÙ†ØªÙˆØ³","Ø¨Ø§Ø±ÙŠØ³ Ø³Ø§Ù† Ø¬ÙŠØ±Ù…Ø§Ù†","Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯","Ø¨ÙˆØ±ÙˆØ³ÙŠØ§ Ø¯ÙˆØ±ØªÙ…ÙˆÙ†Ø¯","Ø¥Ù†ØªØ± Ù…ÙŠÙ„Ø§Ù†","Ø¨Ù†ÙÙŠÙƒØ§","Ø£ÙŠØ§ÙƒØ³"] },
+  { "question": "أذكر أندية وصلت نهائي دوري الأبطال؟", "answers": ["ريال مدريد","برشلونة","بايرن ميونخ","ميلان","ليفربول","مانشستر يونايتد","تشيلسي","يوفنتوس","باريس سان جيرمان","أتلتيكو مدريد","بوروسيا دورتموند","إنتر ميلان","بنفيكا","أياكس"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù…Ù„Ø§Ø¹Ø¨ Ø§Ø³ØªØ¶Ø§ÙØª Ù†Ù‡Ø§Ø¦ÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["ÙˆÙŠÙ…Ø¨Ù„ÙŠ","Ø³Ø§Ù†ØªÙŠØ§ØºÙˆ Ø¨Ø±Ù†Ø§Ø¨ÙŠÙˆ","ÙƒØ§Ù…Ø¨ Ù†Ùˆ","Ø£Ù„ÙŠØ§Ù†Ø² Ø£Ø±ÙŠÙ†Ø§","Ø£ÙˆÙ„Ù…Ø¨ÙŠÙƒÙˆ Ø±ÙˆÙ…Ø§","Ø³ØªØ§Ø¯ Ø¯Ùˆ ÙØ±Ø§Ù†Ø³","Ø£ØªØ§ØªÙˆØ±Ùƒ","Ø¯Ø§ Ù„ÙˆØ²","Ø£Ù„ÙØ§Ù„Ø§Ø¯ÙŠ","Ø³Ø§Ù† Ø³ÙŠØ±Ùˆ","Ù‡Ø§Ù…Ø¨Ø¯Ù† Ø¨Ø§Ø±Ùƒ","Ø£Ù…Ø³ØªØ±Ø¯Ø§Ù… Ø£Ø±ÙŠÙ†Ø§"] },
+  { "question": "أذكر ملاعب استضافت نهائي دوري الأبطال؟", "answers": ["ويمبلي","سانتياغو برنابيو","كامب نو","أليانز أرينا","أولمبيكو روما","ستاد دو فرانس","أتاتورك","دا لوز","ألفالادي","سان سيرو","هامبدن بارك","أمستردام أرينا"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† Ø³Ø¬Ù„ÙˆØ§ ÙÙŠ Ù†Ù‡Ø§Ø¦ÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","Ø¯ÙŠØ¯ÙŠÙŠÙ‡ Ø¯Ø±ÙˆØºØ¨Ø§","Ø³ÙŠØ±Ø¬ÙŠÙˆ Ø±Ø§Ù…ÙˆØ³","Ø²ÙŠÙ† Ø§Ù„Ø¯ÙŠÙ† Ø²ÙŠØ¯Ø§Ù†","Ù…Ø­Ù…Ø¯ ØµÙ„Ø§Ø­","Ø³Ø§Ø¯ÙŠÙˆ Ù…Ø§Ù†ÙŠ","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","Ø£Ø±ÙŠÙ† Ø±ÙˆØ¨Ù†","ØµØ§Ù…ÙˆÙŠÙ„ Ø¥ÙŠØªÙˆ","Ù…Ø§Ø±ÙŠÙˆ Ù…Ø§Ù†Ø¯Ø²ÙˆÙƒÙŠØªØ´"] },
+  { "question": "أذكر لاعبين سجلوا في نهائي دوري الأبطال؟", "answers": ["كريستيانو رونالدو","ليونيل ميسي","ديدييه دروغبا","سيرجيو راموس","زين الدين زيدان","محمد صلاح","ساديو ماني","كريم بنزيما","أرين روبن","صامويل إيتو","ماريو ماندزوكيتش"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ© ÙØ§Ø²Øª Ø¨Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["Ù„ÙŠÙØ±Ø¨ÙˆÙ„","Ù…Ø§Ù†Ø´Ø³ØªØ± ÙŠÙˆÙ†Ø§ÙŠØªØ¯","ØªØ´ÙŠÙ„Ø³ÙŠ","Ù†ÙˆØªÙ†ØºÙ‡Ø§Ù… ÙÙˆØ±Ø³Øª","Ø£Ø³ØªÙˆÙ† ÙÙŠÙ„Ø§","Ù…Ø§Ù†Ø´Ø³ØªØ± Ø³ÙŠØªÙŠ"] },
+  { "question": "أذكر أندية إنجليزية فازت بدوري الأبطال؟", "answers": ["ليفربول","مانشستر يونايتد","تشيلسي","نوتنغهام فورست","أستون فيلا","مانشستر سيتي"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ø¥Ø³Ø¨Ø§Ù†ÙŠØ© ÙØ§Ø²Øª Ø¨Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯"] },
+  { "question": "أذكر أندية إسبانية فازت بدوري الأبطال؟", "answers": ["ريال مدريد","برشلونة","أتلتيكو مدريد"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ø¥ÙŠØ·Ø§Ù„ÙŠØ© ÙØ§Ø²Øª Ø¨Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["Ù…ÙŠÙ„Ø§Ù†","Ø¥Ù†ØªØ± Ù…ÙŠÙ„Ø§Ù†","ÙŠÙˆÙÙ†ØªÙˆØ³"] },
+  { "question": "أذكر أندية إيطالية فازت بدوري الأبطال؟", "answers": ["ميلان","إنتر ميلان","يوفنتوس"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ø£Ù„Ù…Ø§Ù†ÙŠØ© ÙØ§Ø²Øª Ø¨Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["Ø¨Ø§ÙŠØ±Ù† Ù…ÙŠÙˆÙ†Ø®","Ø¨ÙˆØ±ÙˆØ³ÙŠØ§ Ø¯ÙˆØ±ØªÙ…ÙˆÙ†Ø¯","Ù‡Ø§Ù…Ø¨ÙˆØ±Øº"] },
+  { "question": "أذكر أندية ألمانية فازت بدوري الأبطال؟", "answers": ["بايرن ميونخ","بوروسيا دورتموند","هامبورغ"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙØ±Ù†Ø³ÙŠØ© ÙˆØµÙ„Øª Ù†Ù‡Ø§Ø¦ÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["Ø¨Ø§Ø±ÙŠØ³ Ø³Ø§Ù† Ø¬ÙŠØ±Ù…Ø§Ù†","Ù…Ø§Ø±Ø³ÙŠÙ„ÙŠØ§","Ù…ÙˆÙ†Ø§ÙƒÙˆ","Ø³Ø§Ù†Øª Ø¥ØªÙŠØ§Ù†","Ø±ÙŠÙ…Ø³"] },
+  { "question": "أذكر أندية فرنسية وصلت نهائي دوري الأبطال؟", "answers": ["باريس سان جيرمان","مارسيليا","موناكو","سانت إتيان","ريمس"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† ÙØ§Ø²ÙˆØ§ Ø¨Ø§Ù„Ø¨Ø·ÙˆÙ„Ø© Ù…Ø¹ Ø£ÙƒØ«Ø± Ù…Ù† Ù†Ø§Ø¯ÙŠØŸ", "answers": ["ÙƒÙ„Ø§Ø±Ù†Ø³ Ø³ÙŠØ¯ÙˆØ±Ù","ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","ØµØ§Ù…ÙˆÙŠÙ„ Ø¥ÙŠØªÙˆ","Ø¬ÙŠØ±Ø§Ø±Ø¯ Ø¨ÙŠÙƒÙŠÙ‡","Ø²Ù„Ø§ØªØ§Ù† Ø¥Ø¨Ø±Ø§Ù‡ÙŠÙ…ÙˆÙÙŠØªØ´","ØªØ´Ø§Ø¨ÙŠ Ø£Ù„ÙˆÙ†Ø³Ùˆ","Ø¯Ø§Ù†ÙŠ Ø£Ù„ÙÙŠØ´"] },
+  { "question": "أذكر لاعبين فازوا بالبطولة مع أكثر من نادي؟", "answers": ["كلارنس سيدورف","كريستيانو رونالدو","صامويل إيتو","جيرارد بيكيه","زلاتان إبراهيموفيتش","تشابي ألونسو","داني ألفيش"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø­Ø±Ø§Ø³ Ù…Ø±Ù…Ù‰ ÙØ§Ø²ÙˆØ§ Ø¨Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["Ø¥ÙŠÙƒØ± ÙƒØ§Ø³ÙŠØ§Ø³","Ù…Ø§Ù†ÙˆÙŠÙ„ Ù†ÙˆÙŠØ±","Ø¬ÙŠØ§Ù†Ù„ÙˆÙŠØ¬ÙŠ Ø¨ÙˆÙÙˆÙ†","Ø¨ÙŠØªØ± ØªØ´ÙŠÙƒ","ÙÙŠÙƒØªÙˆØ± ÙØ§Ù„Ø¯ÙŠØ²","Ø¥Ø¯ÙˆÙŠÙ† ÙØ§Ù† Ø¯ÙŠØ± Ø³Ø§Ø±","ØªÙŠØ¨Ùˆ ÙƒÙˆØ±ØªÙˆØ§","Ø£Ù„ÙŠØ³ÙˆÙ† Ø¨ÙŠÙƒØ±"] },
+  { "question": "أذكر حراس مرمى فازوا بدوري الأبطال؟", "answers": ["إيكر كاسياس","مانويل نوير","جيانلويجي بوفون","بيتر تشيك","فيكتور فالديز","إدوين فان دير سار","تيبو كورتوا","أليسون بيكر"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† ÙØ§Ø²ÙˆØ§ Ø¨Ø§Ù„Ø­Ø°Ø§Ø¡ Ø§Ù„Ø°Ù‡Ø¨ÙŠ ÙÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","Ø±ÙˆØ¨Ø±Øª Ù„ÙŠÙØ§Ù†Ø¯ÙˆÙØ³ÙƒÙŠ","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","Ù†ÙŠÙ…Ø§Ø±","Ø¥ÙŠØ±Ù„ÙŠÙ†Øº Ù‡Ø§Ù„Ø§Ù†Ø¯","Ù…Ø­Ù…Ø¯ ØµÙ„Ø§Ø­","ÙƒØ§ÙƒØ§","Ø±ÙŠÙØ§Ù„Ø¯Ùˆ"] },
+  { "question": "أذكر لاعبين فازوا بالحذاء الذهبي في دوري الأبطال؟", "answers": ["كريستيانو رونالدو","ليونيل ميسي","روبرت ليفاندوفسكي","كريم بنزيما","نيمار","إيرلينغ هالاند","محمد صلاح","كاكا","ريفالدو"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙØ§Ø²Øª Ø¨Ø§Ù„Ø¨Ø·ÙˆÙ„Ø© Ø¨Ø¯ÙˆÙ† Ø®Ø³Ø§Ø±Ø©ØŸ", "answers": ["Ø£ÙŠØ§ÙƒØ³","Ø¨Ø§ÙŠØ±Ù† Ù…ÙŠÙˆÙ†Ø®","Ù„ÙŠÙØ±Ø¨ÙˆÙ„","Ù…Ø§Ù†Ø´Ø³ØªØ± ÙŠÙˆÙ†Ø§ÙŠØªØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©"] },
+  { "question": "أذكر أندية فازت بالبطولة بدون خسارة؟", "answers": ["أياكس","بايرن ميونخ","ليفربول","مانشستر يونايتد","برشلونة"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† Ø³Ø¬Ù„ÙˆØ§ Ù‡Ø§ØªØ±ÙŠÙƒ ÙÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","Ø±ÙˆØ¨Ø±Øª Ù„ÙŠÙØ§Ù†Ø¯ÙˆÙØ³ÙƒÙŠ","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","Ù…Ø­Ù…Ø¯ ØµÙ„Ø§Ø­","Ù‡Ø§Ø±ÙŠ ÙƒÙŠÙ†","Ù†ÙŠÙ…Ø§Ø±","Ø³ÙŠØ±Ø¬ÙŠÙˆ Ø£ØºÙˆÙŠØ±Ùˆ"] },
+  { "question": "أذكر لاعبين سجلوا هاتريك في دوري الأبطال؟", "answers": ["كريستيانو رونالدو","ليونيل ميسي","روبرت ليفاندوفسكي","كريم بنزيما","محمد صلاح","هاري كين","نيمار","سيرجيو أغويرو"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù…Ø¯Ø±Ø¨ÙŠÙ† ÙØ§Ø²ÙˆØ§ Ø¨Ø§Ù„Ø¨Ø·ÙˆÙ„Ø© Ù…Ø¹ Ø£ÙƒØ«Ø± Ù…Ù† ÙØ±ÙŠÙ‚ØŸ", "answers": ["ÙƒØ§Ø±Ù„Ùˆ Ø£Ù†Ø´ÙŠÙ„ÙˆØªÙŠ","Ø¬ÙˆØ²ÙŠÙ‡ Ù…ÙˆØ±ÙŠÙ†ÙŠÙˆ","Ø¨ÙŠØ¨ ØºÙˆØ§Ø±Ø¯ÙŠÙˆÙ„Ø§","Ø£ÙˆØªÙˆ Ø±ÙŠÙ‡Ø§Ø¬Ù„","Ø¥Ø±Ù†Ø³Øª Ù‡Ø§Ø¨Ù„"] },
+  { "question": "أذكر مدربين فازوا بالبطولة مع أكثر من فريق؟", "answers": ["كارلو أنشيلوتي","جوزيه مورينيو","بيب غوارديولا","أوتو ريهاجل","إرنست هابل"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙˆØµÙ„Øª Ù†ØµÙ Ø§Ù„Ù†Ù‡Ø§Ø¦ÙŠ ÙƒØ«ÙŠØ±Ù‹Ø§ØŸ", "answers": ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø¨Ø§ÙŠØ±Ù† Ù…ÙŠÙˆÙ†Ø®","Ù…ÙŠÙ„Ø§Ù†","Ù„ÙŠÙØ±Ø¨ÙˆÙ„","ÙŠÙˆÙÙ†ØªÙˆØ³","Ù…Ø§Ù†Ø´Ø³ØªØ± ÙŠÙˆÙ†Ø§ÙŠØªØ¯"] },
+  { "question": "أذكر أندية وصلت نصف النهائي كثيرًا؟", "answers": ["ريال مدريد","برشلونة","بايرن ميونخ","ميلان","ليفربول","يوفنتوس","مانشستر يونايتد"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† Ø¹Ø±Ø¨ Ø´Ø§Ø±ÙƒÙˆØ§ ÙÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", "answers": ["Ù…Ø­Ù…Ø¯ ØµÙ„Ø§Ø­","Ø±ÙŠØ§Ø¶ Ù…Ø­Ø±Ø²","Ø­ÙƒÙŠÙ… Ø²ÙŠØ§Ø´","ÙŠØ§Ø³ÙŠÙ† Ø¨ÙˆÙ†Ùˆ","Ø£Ø´Ø±Ù Ø­ÙƒÙŠÙ…ÙŠ","Ù…Ù‡Ø¯ÙŠ Ø¨Ù†Ø¹Ø·ÙŠØ©","Ø³ÙÙŠØ§Ù† ÙÙŠØºÙˆÙ„ÙŠ","Ù…Ø±Ø§Ø¯ Ù…ØºÙ†ÙŠ"] },
+  { "question": "أذكر لاعبين عرب شاركوا في دوري الأبطال؟", "answers": ["محمد صلاح","رياض محرز","حكيم زياش","ياسين بونو","أشرف حكيمي","مهدي بنعطية","سفيان فيغولي","مراد مغني"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙØ§Ø²Øª Ø¨Ø§Ù„Ø¨Ø·ÙˆÙ„Ø© ÙÙŠ Ø§Ù„Ù‚Ø±Ù† 21ØŸ", "answers": ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø¨Ø§ÙŠØ±Ù† Ù…ÙŠÙˆÙ†Ø®","Ù…ÙŠÙ„Ø§Ù†","Ù„ÙŠÙØ±Ø¨ÙˆÙ„","ØªØ´ÙŠÙ„Ø³ÙŠ","Ø¥Ù†ØªØ± Ù…ÙŠÙ„Ø§Ù†","Ù…Ø§Ù†Ø´Ø³ØªØ± ÙŠÙˆÙ†Ø§ÙŠØªØ¯","Ù…Ø§Ù†Ø´Ø³ØªØ± Ø³ÙŠØªÙŠ","Ø¨ÙˆØ±ØªÙˆ"] },
+  { "question": "أذكر أندية فازت بالبطولة في القرن 21؟", "answers": ["ريال مدريد","برشلونة","بايرن ميونخ","ميلان","ليفربول","تشيلسي","إنتر ميلان","مانشستر يونايتد","مانشستر سيتي","بورتو"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† ÙØ§Ø²ÙˆØ§ Ø¨Ø§Ù„Ø¨Ø·ÙˆÙ„Ø© Ø£ÙƒØ«Ø± Ù…Ù† 3 Ù…Ø±Ø§ØªØŸ", "answers": ["ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","ÙƒØ±ÙŠÙ… Ø¨Ù†Ø²ÙŠÙ…Ø§","Ø³ÙŠØ±Ø¬ÙŠÙˆ Ø±Ø§Ù…ÙˆØ³","Ù„ÙˆÙƒØ§ Ù…ÙˆØ¯Ø±ÙŠØªØ´","ØªÙˆÙ†ÙŠ ÙƒØ±ÙˆØ³","Ù…Ø§Ø±Ø³ÙŠÙ„Ùˆ","Ø¯Ø§Ù†ÙŠ ÙƒØ§Ø±ÙØ§Ø®Ø§Ù„"] },
+  { "question": "أذكر لاعبين فازوا بالبطولة أكثر من 3 مرات؟", "answers": ["كريستيانو رونالدو","ليونيل ميسي","كريم بنزيما","سيرجيو راموس","لوكا مودريتش","توني كروس","مارسيلو","داني كارفاخال"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ø­Ù‚Ù‚Øª Ø§Ù„Ø«Ù„Ø§Ø«ÙŠØ© (Ø§Ù„Ø¯ÙˆØ±ÙŠ + Ø§Ù„ÙƒØ£Ø³ + Ø§Ù„Ø£Ø¨Ø·Ø§Ù„)ØŸ", "answers": ["Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©","Ø¨Ø§ÙŠØ±Ù† Ù…ÙŠÙˆÙ†Ø®","Ø¥Ù†ØªØ± Ù…ÙŠÙ„Ø§Ù†","Ù…Ø§Ù†Ø´Ø³ØªØ± ÙŠÙˆÙ†Ø§ÙŠØªØ¯","Ù…Ø§Ù†Ø´Ø³ØªØ± Ø³ÙŠØªÙŠ","Ø£ÙŠØ§ÙƒØ³","Ø³ÙŠÙ„ØªÙŠÙƒ"] },
+  { "question": "أذكر أندية حققت الثلاثية (الدوري + الكأس + الأبطال)؟", "answers": ["برشلونة","بايرن ميونخ","إنتر ميلان","مانشستر يونايتد","مانشستر سيتي","أياكس","سيلتيك"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ù„Ø§Ø¹Ø¨ÙŠÙ† Ø³Ø¬Ù„ÙˆØ§ Ø£Ù‡Ø¯Ø§ÙÙ‹Ø§ Ø­Ø§Ø³Ù…Ø© ÙÙŠ Ø§Ù„Ù†Ù‡Ø§Ø¦ÙŠØ§ØªØŸ", "answers": ["Ø¯ÙŠØ¯ÙŠÙŠÙ‡ Ø¯Ø±ÙˆØºØ¨Ø§","Ø³ÙŠØ±Ø¬ÙŠÙˆ Ø±Ø§Ù…ÙˆØ³","Ø²ÙŠÙ† Ø§Ù„Ø¯ÙŠÙ† Ø²ÙŠØ¯Ø§Ù†","Ù„ÙŠÙˆÙ†ÙŠÙ„ Ù…ÙŠØ³ÙŠ","ÙƒØ±ÙŠØ³ØªÙŠØ§Ù†Ùˆ Ø±ÙˆÙ†Ø§Ù„Ø¯Ùˆ","Ù…Ø§Ø±ÙŠÙˆ Ù…Ø§Ù†Ø¯Ø²ÙˆÙƒÙŠØªØ´","Ø£Ø±ÙŠÙ† Ø±ÙˆØ¨Ù†","Ù…Ø­Ù…Ø¯ ØµÙ„Ø§Ø­"] },
+  { "question": "أذكر لاعبين سجلوا أهدافًا حاسمة في النهائيات؟", "answers": ["ديدييه دروغبا","سيرجيو راموس","زين الدين زيدان","ليونيل ميسي","كريستيانو رونالدو","ماريو ماندزوكيتش","أرين روبن","محمد صلاح"] },
 
-  { "question": "Ø£Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ù„Ø¹Ø¨Øª Ù†Ù‡Ø§Ø¦ÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ ÙˆØ®Ø³Ø±ØªÙ‡ØŸ", "answers": ["Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯","Ø¨Ø§Ø±ÙŠØ³ Ø³Ø§Ù† Ø¬ÙŠØ±Ù…Ø§Ù†","Ø¢Ø±Ø³Ù†Ø§Ù„","ØªÙˆØªÙ†Ù‡Ø§Ù…","ÙØ§Ù„Ù†Ø³ÙŠØ§","Ø¨Ø§ÙŠØ± Ù„ÙŠÙØ±ÙƒÙˆØ²Ù†","Ø±ÙˆÙ…Ø§","Ù…ÙˆÙ†Ø§ÙƒÙˆ"] }
+  { "question": "أذكر أندية لعبت نهائي دوري الأبطال وخسرته؟", "answers": ["أتلتيكو مدريد","باريس سان جيرمان","آرسنال","توتنهام","فالنسيا","باير ليفركوزن","روما","موناكو"] }
     ],
-    "ÙƒØ£Ø³ Ø§Ù„Ø¹Ø§Ù„Ù…": [
-      { question: "Ø§Ø®ØªØ± Ù…Ù†ØªØ®Ø¨Ø§Øª ÙØ§Ø²Øª Ø¨ÙƒØ£Ø³ Ø§Ù„Ø¹Ø§Ù„Ù….", answers: ["Ø§Ù„Ø¨Ø±Ø§Ø²ÙŠÙ„", "Ø£Ù„Ù…Ø§Ù†ÙŠØ§", "Ø§Ù„Ø£Ø±Ø¬Ù†ØªÙŠÙ†", "ÙØ±Ù†Ø³Ø§", "Ø¥ÙŠØ·Ø§Ù„ÙŠØ§"] }
+    "كأس العالم": [
+      { question: "اختر منتخبات فازت بكأس العالم.", answers: ["البرازيل", "ألمانيا", "الأرجنتين", "فرنسا", "إيطاليا"] }
     ],
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ": [
-      { question: "Ø§Ø°ÙƒØ± ÙØ±Ù‚Ù‹Ø§ Ù…Ù† Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ Ø§Ù„Ù…Ù…ØªØ§Ø².", answers: ["Ù„ÙŠÙØ±Ø¨ÙˆÙ„", "Ø£Ø±Ø³Ù†Ø§Ù„", "ØªØ´ÙŠÙ„Ø³ÙŠ", "ØªÙˆØªÙ†Ù‡Ø§Ù…", "Ù†ÙŠÙˆÙƒØ§Ø³Ù„"] }
+    "الدوري الإنجليزي": [
+      { question: "اذكر فرقًا من الدوري الإنجليزي الممتاز.", answers: ["ليفربول", "أرسنال", "تشيلسي", "توتنهام", "نيوكاسل"] }
     ],
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ù…Ù† Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ.", answers: ["ÙŠÙˆÙÙ†ØªÙˆØ³", "Ù…ÙŠÙ„Ø§Ù†", "Ø¥Ù†ØªØ±", "Ø±ÙˆÙ…Ø§", "Ù†Ø§Ø¨ÙˆÙ„ÙŠ"] },
-      { question: "Ø§Ø®ØªØ± Ù…Ø¯Ù†Ù‹Ø§ Ù„Ø£Ù†Ø¯ÙŠØ© Ù…Ø¹Ø±ÙˆÙØ© ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ.", answers: ["ØªÙˆØ±ÙŠÙ†Ùˆ", "Ù…ÙŠÙ„Ø§Ù†Ùˆ", "Ø±ÙˆÙ…Ø§", "Ù†Ø§Ø¨ÙˆÙ„ÙŠ", "Ø¨ÙŠØ±ØºØ§Ù…Ùˆ"] }
+    "الدوري الإيطالي": [
+      { question: "اذكر أندية من الدوري الإيطالي.", answers: ["يوفنتوس", "ميلان", "إنتر", "روما", "نابولي"] },
+      { question: "اختر مدنًا لأندية معروفة في الدوري الإيطالي.", answers: ["تورينو", "ميلانو", "روما", "نابولي", "بيرغامو"] }
     ]
   },
-  "Ù…Ø³Ù„Ø³Ù„Ø§Øª": {
-    "Ø¨Ø§Ø¨ Ø§Ù„Ø­Ø§Ø±Ø©": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ø´Ù‡ÙˆØ±Ø© Ù…Ù† Ø¨Ø§Ø¨ Ø§Ù„Ø­Ø§Ø±Ø©.", answers: ["Ø£Ø¨Ùˆ Ø´Ù‡Ø§Ø¨", "Ø£Ø¨Ùˆ Ø¹ØµØ§Ù…", "Ø£Ù… Ø¹ØµØ§Ù…", "Ø§Ù„Ø¹Ù‚ÙŠØ¯ Ø£Ø¨Ùˆ Ø§Ù„Ù†Ø§Ø±", "Ø§Ù„Ù†Ù…Ø³"] }
+  "مسلسلات": {
+    "باب الحارة": [
+      { question: "اذكر شخصيات مشهورة من باب الحارة.", answers: ["أبو شهاب", "أبو عصام", "أم عصام", "العقيد أبو النار", "النمس"] }
     ],
-    "ØµØ±Ø§Ø¹ Ø§Ù„Ø¹Ø±ÙˆØ´": [
-      { question: "Ø§Ø®ØªØ± Ø¨ÙŠÙˆØªÙ‹Ø§ ÙˆØ¹Ø§Ø¦Ù„Ø§Øª Ù…Ù† Ù…Ø³Ù„Ø³Ù„ ØµØ±Ø§Ø¹ Ø§Ù„Ø¹Ø±ÙˆØ´.", answers: ["Ø³ØªØ§Ø±Ùƒ", "Ù„Ø§Ù†ÙŠØ³ØªØ±", "ØªØ§Ø±ØºØ§Ø±ÙŠØ§Ù†", "Ø¨Ø§Ø±Ø§Ø«ÙŠÙˆÙ†", "ØºØ±ÙŠØ¬ÙˆÙŠ"] }
+    "صراع العروش": [
+      { question: "اختر بيوتًا وعائلات من مسلسل صراع العروش.", answers: ["ستارك", "لانيستر", "تارغاريان", "باراثيون", "غريجوي"] }
     ],
-    "Ù‚ÙŠØ§Ù…Ø© Ø£Ø±Ø·ØºØ±Ù„": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ø³Ù…Ø§Ø¡ Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù‚ÙŠØ§Ù…Ø© Ø£Ø±Ø·ØºØ±Ù„.", answers: ["Ø£Ø±Ø·ØºØ±Ù„", "Ø­Ù„ÙŠÙ…Ø©", "Ø³Ù„ÙŠÙ…Ø§Ù† Ø´Ø§Ù‡", "ØªÙˆØ±ØºÙˆØª", "Ø¨Ø§Ù…Ø³ÙŠ"] }
+    "قيامة أرطغرل": [
+      { question: "اذكر أسماء شخصيات من قيامة أرطغرل.", answers: ["أرطغرل", "حليمة", "سليمان شاه", "تورغوت", "بامسي"] }
     ],
-    "ÙØ±ÙŠÙ†Ø¯Ø²": [
-      { question: "Ù…Ù† Ù‡Ù… Ø§Ù„Ø£ØµØ¯Ù‚Ø§Ø¡ Ø§Ù„Ø³ØªØ© ÙÙŠ Ù…Ø³Ù„Ø³Ù„ ÙØ±ÙŠÙ†Ø¯Ø²ØŸ", answers: ["Ø±Ø§Ø´ÙŠÙ„", "Ø±ÙˆØ³", "Ù…ÙˆÙ†ÙŠÙƒØ§", "ØªØ´Ø§Ù†Ø¯Ù„Ø±", "Ø¬ÙˆÙŠ", "ÙÙŠØ¨ÙŠ"] }
+    "فريندز": [
+      { question: "من هم الأصدقاء الستة في مسلسل فريندز؟", answers: ["راشيل", "روس", "مونيكا", "تشاندلر", "جوي", "فيبي"] }
     ],
   },
-  "Ø§Ø³Ù„Ø§Ù…ÙŠ" : {
-    "Ù‚Ø±Ø§Ù†" : [] ,
-    "Ø§Ù„ØµØ­Ø§Ø¨Ø©" : [] ,
+  "اسلامي" : {
+    "قران" : [] ,
+    "الصحابة" : [] ,
 
   },
-  "Ø£ÙÙ„Ø§Ù…": {
-    "Ø£ÙÙ„Ø§Ù… Ø£ÙƒØ´Ù†": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙÙ„Ø§Ù… Ø£ÙƒØ´Ù† Ù…Ø´Ù‡ÙˆØ±Ø©.", answers: ["Ø¬ÙˆÙ† ÙˆÙŠÙƒ", "Ù…Ù‡Ù…Ø© Ù…Ø³ØªØ­ÙŠÙ„Ø©", "Ù…Ø§Ø¯ Ù…Ø§ÙƒØ³", "Ø¯ÙŠ Ù‡Ø§Ø±Ø¯", "Ø°Ø§ Ø¯Ø§Ø±Ùƒ Ù†Ø§ÙŠØª"] }
+  "أفلام": {
+    "أفلام أكشن": [
+      { question: "اذكر أفلام أكشن مشهورة.", answers: ["جون ويك", "مهمة مستحيلة", "ماد ماكس", "دي هارد", "ذا دارك نايت"] }
     ],
-    "Ø£ÙÙ„Ø§Ù… ÙƒÙˆÙ…ÙŠØ¯ÙŠØ§": [
-      { question: "Ø§Ø®ØªØ± Ø£ÙÙ„Ø§Ù…Ù‹Ø§ ÙƒÙˆÙ…ÙŠØ¯ÙŠØ© Ù…Ø¹Ø±ÙˆÙØ©.", answers: ["Ù‡ÙˆÙ… Ø£Ù„ÙˆÙ†", "Ø°Ø§ Ù…Ø§Ø³Ùƒ", "ÙˆØ§ÙŠØª ØªØ´ÙŠÙƒØ³", "Ù…Ø³ØªØ± Ø¨ÙŠÙ†", "Ù†Ø§ÙŠØª Ø£Øª Ø°Ø§ Ù…ÙŠÙˆØ²ÙŠÙˆÙ…"] }
+    "أفلام كوميديا": [
+      { question: "اختر أفلامًا كوميدية معروفة.", answers: ["هوم ألون", "ذا ماسك", "وايت تشيكس", "مستر بين", "نايت أت ذا ميوزيوم"] }
     ],
-    "Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ø³Ù„Ø³Ù„Ø© Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±.", answers: ["Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±", "Ù‡ÙŠØ±Ù…Ø§ÙŠÙ†ÙŠ", "Ø±ÙˆÙ†", "Ø¯Ù…Ø¨Ù„Ø¯ÙˆØ±", "Ø³Ù†Ø§Ø¨"] }
+    "هاري بوتر": [
+      { question: "اذكر شخصيات من سلسلة هاري بوتر.", answers: ["هاري بوتر", "هيرمايني", "رون", "دمبلدور", "سناب"] }
     ],
-    "Ù…Ø§Ø±ÙÙ„": [
-      { question: "Ø§Ø®ØªØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ø£ÙÙ„Ø§Ù… Ù…Ø§Ø±ÙÙ„.", answers: ["Ø¢ÙŠØ±ÙˆÙ† Ù…Ø§Ù†", "Ø«ÙˆØ±", "ÙƒØ§Ø¨ØªÙ† Ø£Ù…Ø±ÙŠÙƒØ§", "Ù‡Ø§Ù„Ùƒ", "Ø³Ø¨Ø§ÙŠØ¯Ø±Ù…Ø§Ù†"] }
+    "مارفل": [
+      { question: "اختر شخصيات من أفلام مارفل.", answers: ["آيرون مان", "ثور", "كابتن أمريكا", "هالك", "سبايدرمان"] }
     ]
   },
-  "Ø§Ù„Ø¹Ø§Ø¨": {
-    "ÙÙŠÙØ§": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙˆØ¶Ø§Ø¹ Ù„Ø¹Ø¨ Ù…ÙˆØ¬ÙˆØ¯Ø© ÙÙŠ Ù„Ø¹Ø¨Ø© ÙÙŠÙØ§.", answers: ["Ø£Ù„ØªÙŠÙ…ÙŠØª ØªÙŠÙ…", "Ø§Ù„Ù…Ù‡Ù†Ø©", "Ù…Ø¨Ø§Ø±ÙŠØ§Øª Ø³Ø±ÙŠØ¹Ø©", "Ø§Ù„Ø£Ù†Ø¯ÙŠØ© Ø§Ù„Ù…Ø­ØªØ±ÙØ©", "ÙÙˆÙ„ØªØ§"] }
+  "العاب": {
+    "فيفا": [
+      { question: "اذكر أوضاع لعب موجودة في لعبة فيفا.", answers: ["ألتيميت تيم", "المهنة", "مباريات سريعة", "الأندية المحترفة", "فولتا"] }
     ],
-    "Ù‚Ø±Ø§Ù†Ø¯": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ø±Ø¦ÙŠØ³ÙŠØ© Ù…Ù† GTA V.", answers: ["Ù…Ø§ÙŠÙƒÙ„", "ÙØ±Ø§Ù†ÙƒÙ„ÙŠÙ†", "ØªØ±ÙŠÙÙˆØ±", "Ù„Ø§Ù…Ø§Ø±", "Ø£Ù…Ø§Ù†Ø¯Ø§"] }
+    "قراند": [
+      { question: "اذكر شخصيات رئيسية من GTA V.", answers: ["مايكل", "فرانكلين", "تريفور", "لامار", "أماندا"] }
     ],
-    "Ù…Ø§ÙŠÙ†ÙƒØ±Ø§ÙØª": [
-      { question: "Ø§Ø°ÙƒØ± Ù…ÙˆØ§Ø¯ Ø£Ùˆ Ø¹Ù†Ø§ØµØ± Ù…Ù† Ù…Ø§ÙŠÙ†ÙƒØ±Ø§ÙØª.", answers: ["Ø¯Ø§ÙŠÙ…ÙˆÙ†Ø¯", "Ø±ÙŠØ¯Ø³ØªÙˆÙ†", "Ø­Ø¯ÙŠØ¯", "Ø®Ø´Ø¨", "Ø¥ÙŠÙ…Ø±Ø§Ù„Ø¯"] }
+    "ماينكرافت": [
+      { question: "اذكر مواد أو عناصر من ماينكرافت.", answers: ["دايموند", "ريدستون", "حديد", "خشب", "إيمرالد"] }
     ],
-    "ÙÙˆØ±ØªÙ†Ø§ÙŠØª": [
-      { question: "Ø§Ø®ØªØ± Ø£Ø´ÙŠØ§Ø¡ Ù…Ø±ØªØ¨Ø·Ø© Ø¨Ù„Ø¹Ø¨Ø© ÙÙˆØ±ØªÙ†Ø§ÙŠØª.", answers: ["Ø¨Ø§ØªÙ„ Ø±ÙˆÙŠØ§Ù„", "Ø§Ù„Ø±Ù‚ØµØ§Øª", "Ø§Ù„Ø³ÙƒÙŠÙ†Ø§Øª", "Ø§Ù„Ø¨Ø§Øµ Ø§Ù„Ø·Ø§Ø¦Ø±", "Ø§Ù„Ø¨Ù†Ø§Ø¡"] }
+    "فورتنايت": [
+      { question: "اختر أشياء مرتبطة بلعبة فورتنايت.", answers: ["باتل رويال", "الرقصات", "السكينات", "الباص الطائر", "البناء"] }
     ]
   },
-  "Ø§Ù†Ù…ÙŠ": {
-    "ÙˆÙ† Ø¨ÙŠØ³": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙØ±Ø§Ø¯ Ø·Ø§Ù‚Ù… Ù‚Ø¨Ø¹Ø© Ø§Ù„Ù‚Ø´.", answers: ["Ù„ÙˆÙÙŠ", "Ø²ÙˆØ±Ùˆ", "Ù†Ø§Ù…ÙŠ", "Ø³Ø§Ù†Ø¬ÙŠ", "Ø£ÙˆØ³ÙˆØ¨", "ØªØ´ÙˆØ¨Ø±"] }
+  "انمي": {
+    "ون بيس": [
+      { question: "اذكر أفراد طاقم قبعة القش.", answers: ["لوفي", "زورو", "نامي", "سانجي", "أوسوب", "تشوبر"] }
     ],
-    "Ù†Ø§Ø±ÙˆØªÙˆ": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù†Ø§Ø±ÙˆØªÙˆ.", answers: ["Ù†Ø§Ø±ÙˆØªÙˆ", "Ø³Ø§Ø³ÙƒÙŠ", "Ø³Ø§ÙƒÙˆØ±Ø§", "ÙƒØ§ÙƒØ§Ø´ÙŠ", "Ø¥ÙŠØªØ§ØªØ´ÙŠ"] }
+    "ناروتو": [
+      { question: "اذكر شخصيات من ناروتو.", answers: ["ناروتو", "ساسكي", "ساكورا", "كاكاشي", "إيتاتشي"] }
     ],
-    "Ù‡Ø¬ÙˆÙ… Ø§Ù„Ø¹Ù…Ø§Ù„Ù‚Ø©": [
-      { question: "Ø§Ø®ØªØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù‡Ø¬ÙˆÙ… Ø§Ù„Ø¹Ù…Ø§Ù„Ù‚Ø©.", answers: ["Ø¥ÙŠØ±ÙŠÙ†", "Ù…ÙŠÙƒØ§Ø³Ø§", "Ø£Ø±Ù…ÙŠÙ†", "Ù„ÙŠÙØ§ÙŠ", "Ù‡Ø§Ù†Ø¬ÙŠ"] }
+    "هجوم العمالقة": [
+      { question: "اختر شخصيات من هجوم العمالقة.", answers: ["إيرين", "ميكاسا", "أرمين", "ليفاي", "هانجي"] }
     ],
-    "Ø¯ÙŠØ« Ù†ÙˆØª": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ø¹Ø±ÙˆÙØ© Ù…Ù† Ø¯ÙŠØ« Ù†ÙˆØª.", answers: ["Ù„Ø§ÙŠØª", "Ø¥Ù„", "Ù…ÙŠØ³Ø§", "Ø±ÙŠÙˆÙƒ", "Ù†ÙŠØ±"] }
+    "ديث نوت": [
+      { question: "اذكر شخصيات معروفة من ديث نوت.", answers: ["لايت", "إل", "ميسا", "ريوك", "نير"] }
     ]
   },
-  "Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø¹Ø§Ù…Ø©": {
-    "Ø¹ÙˆØ§ØµÙ…": [
-      { question: "Ø§Ø®ØªØ± Ø¹ÙˆØ§ØµÙ… Ù„Ø¯ÙˆÙ„ Ø¹Ø±Ø¨ÙŠØ©.", answers: ["Ø¹Ù…Ù‘Ø§Ù†", "Ø§Ù„Ù‚Ø§Ù‡Ø±Ø©", "Ø§Ù„Ø±ÙŠØ§Ø¶", "Ø¨ØºØ¯Ø§Ø¯", "Ø§Ù„Ø±Ø¨Ø§Ø·"] }
+  "معلومات عامة": {
+    "عواصم": [
+      { question: "اختر عواصم لدول عربية.", answers: ["عمّان", "القاهرة", "الرياض", "بغداد", "الرباط"] }
     ],
-    "Ø§Ø®ØªØ±Ø§Ø¹Ø§Øª": [
-      { question: "Ø§Ø°ÙƒØ± Ø§Ø®ØªØ±Ø§Ø¹Ø§Øª ØºÙŠÙ‘Ø±Øª Ø§Ù„Ø¹Ø§Ù„Ù….", answers: ["Ø§Ù„Ø·Ø¨Ø§Ø¹Ø©", "Ø§Ù„Ù‡Ø§ØªÙ", "Ø§Ù„Ø¥Ù†ØªØ±Ù†Øª", "Ø§Ù„Ù…ØµØ¨Ø§Ø­", "Ø§Ù„Ø·Ø§Ø¦Ø±Ø©"] }
+    "اختراعات": [
+      { question: "اذكر اختراعات غيّرت العالم.", answers: ["الطباعة", "الهاتف", "الإنترنت", "المصباح", "الطائرة"] }
     ],
-    "ØªØ§Ø±ÙŠØ®": [
-      { question: "Ø§Ø®ØªØ± Ø­Ø¶Ø§Ø±Ø§Øª Ù‚Ø¯ÙŠÙ…Ø© Ù…Ø¹Ø±ÙˆÙØ©.", answers: ["Ø§Ù„Ø±ÙˆÙ…Ø§Ù†ÙŠØ©", "Ø§Ù„ÙØ±Ø¹ÙˆÙ†ÙŠØ©", "Ø§Ù„Ø¨Ø§Ø¨Ù„ÙŠØ©", "Ø§Ù„Ø¥ØºØ±ÙŠÙ‚ÙŠØ©", "Ø§Ù„ÙØ§Ø±Ø³ÙŠØ©"] }
+    "تاريخ": [
+      { question: "اختر حضارات قديمة معروفة.", answers: ["الرومانية", "الفرعونية", "البابلية", "الإغريقية", "الفارسية"] }
     ],
-    "Ø¹Ù„ÙˆÙ…": [
-      { question: "Ø§Ø°ÙƒØ± ÙƒÙˆØ§ÙƒØ¨ Ù…Ù† Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹Ø© Ø§Ù„Ø´Ù…Ø³ÙŠØ©.", answers: ["Ø§Ù„Ù…Ø±ÙŠØ®", "Ø§Ù„Ù…Ø´ØªØ±ÙŠ", "Ø²Ø­Ù„", "Ø¹Ø·Ø§Ø±Ø¯", "Ø§Ù„Ø²Ù‡Ø±Ø©"] }
+    "علوم": [
+      { question: "اذكر كواكب من المجموعة الشمسية.", answers: ["المريخ", "المشتري", "زحل", "عطارد", "الزهرة"] }
     ]
   },
 };
@@ -1144,313 +1145,313 @@ function cloneQuestionBank(bank) {
   );
 }
 
-// ===== QUESTION BANK: Ø§Ù„Ù…Ø²Ø§Ø¯ =====
-// ÙŠÙ…ÙƒÙ†Ùƒ ØªØ¹Ø¯ÙŠÙ„ Ø£Ø³Ø¦Ù„Ø© Ø§Ù„Ù…Ø²Ø§Ø¯ Ù‡Ù†Ø§ Ù…Ø¨Ø§Ø´Ø±Ø©
+// ===== QUESTION BANK: المزاد =====
+// يمكنك تعديل أسئلة المزاد هنا مباشرة
 const auctionQuestionBank = {
- "ÙƒØ±Ø© Ø§Ù„Ù‚Ø¯Ù…": {
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠ": [
-      { question: "ÙƒÙ… Ø¹Ø¯Ø¯ Ø§Ù„ÙØ±Ù‚ Ø§Ù„Ù…Ø´Ø§Ø±ÙƒØ© Ø¹Ø§Ø¯Ø© ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØŸ", answers: ["20 ÙØ±ÙŠÙ‚Ù‹Ø§", "Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©", "Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯", "Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯", "Ø¥Ø´Ø¨ÙŠÙ„ÙŠØ©"] },
-      { question: "Ø§Ø®ØªØ± ÙØ±Ù‚Ù‹Ø§ Ù„Ø¹Ø¨Øª ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠ.", answers: ["ÙØ§Ù„Ù†Ø³ÙŠØ§", "ÙÙŠØ§Ø±ÙŠØ§Ù„", "Ø±ÙŠØ§Ù„ Ø¨ÙŠØªÙŠØ³", "Ø£ØªÙ„ØªÙŠÙƒ Ø¨Ù„Ø¨Ø§Ùˆ", "Ø®ÙŠØªØ§ÙÙŠ"] }
+ "كرة القدم": {
+    "الدوري الإسباني": [
+      { question: "كم عدد الفرق المشاركة عادة في الدوري الإسباني؟", answers: ["20 فريقًا", "برشلونة", "ريال مدريد", "أتلتيكو مدريد", "إشبيلية"] },
+      { question: "اختر فرقًا لعبت في الدوري الإسباني.", answers: ["فالنسيا", "فياريال", "ريال بيتيس", "أتلتيك بلباو", "خيتافي"] }
     ],
-    "Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙØ§Ø²Øª Ø¨Ø¯ÙˆØ±ÙŠ Ø£Ø¨Ø·Ø§Ù„ Ø£ÙˆØ±ÙˆØ¨Ø§.", answers: ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯", "Ù…ÙŠÙ„Ø§Ù†", "Ù„ÙŠÙØ±Ø¨ÙˆÙ„", "Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©", "Ø¨Ø§ÙŠØ±Ù† Ù…ÙŠÙˆÙ†Ø®"] },
-      { question: "Ù…Ø§ Ø§Ù„ÙØ±Ù‚ Ø§Ù„ØªÙŠ ØªØ´Ø§Ø±Ùƒ ÙƒØ«ÙŠØ±Ù‹Ø§ ÙÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", answers: ["Ù…Ø§Ù†Ø´Ø³ØªØ± Ø³ÙŠØªÙŠ", "Ø¥Ù†ØªØ±", "Ø¨Ø§Ø±ÙŠØ³ Ø³Ø§Ù† Ø¬ÙŠØ±Ù…Ø§Ù†", "Ø£Ø±Ø³Ù†Ø§Ù„", "Ø¨ÙˆØ±ÙˆØ³ÙŠØ§ Ø¯ÙˆØ±ØªÙ…ÙˆÙ†Ø¯"] }
+    "دوري الأبطال": [
+      { question: "اذكر أندية فازت بدوري أبطال أوروبا.", answers: ["ريال مدريد", "ميلان", "ليفربول", "برشلونة", "بايرن ميونخ"] },
+      { question: "ما الفرق التي تشارك كثيرًا في دوري الأبطال؟", answers: ["مانشستر سيتي", "إنتر", "باريس سان جيرمان", "أرسنال", "بوروسيا دورتموند"] }
     ],
-    "ÙƒØ£Ø³ Ø§Ù„Ø¹Ø§Ù„Ù…": [
-      { question: "Ø§Ø®ØªØ± Ù…Ù†ØªØ®Ø¨Ø§Øª ÙØ§Ø²Øª Ø¨ÙƒØ£Ø³ Ø§Ù„Ø¹Ø§Ù„Ù….", answers: ["Ø§Ù„Ø¨Ø±Ø§Ø²ÙŠÙ„", "Ø£Ù„Ù…Ø§Ù†ÙŠØ§", "Ø§Ù„Ø£Ø±Ø¬Ù†ØªÙŠÙ†", "ÙØ±Ù†Ø³Ø§", "Ø¥ÙŠØ·Ø§Ù„ÙŠØ§"] }
+    "كأس العالم": [
+      { question: "اختر منتخبات فازت بكأس العالم.", answers: ["البرازيل", "ألمانيا", "الأرجنتين", "فرنسا", "إيطاليا"] }
     ],
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ": [
-      { question: "Ø§Ø°ÙƒØ± ÙØ±Ù‚Ù‹Ø§ Ù…Ù† Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ Ø§Ù„Ù…Ù…ØªØ§Ø².", answers: ["Ù„ÙŠÙØ±Ø¨ÙˆÙ„", "Ø£Ø±Ø³Ù†Ø§Ù„", "ØªØ´ÙŠÙ„Ø³ÙŠ", "ØªÙˆØªÙ†Ù‡Ø§Ù…", "Ù†ÙŠÙˆÙƒØ§Ø³Ù„"] }
+    "الدوري الإنجليزي": [
+      { question: "اذكر فرقًا من الدوري الإنجليزي الممتاز.", answers: ["ليفربول", "أرسنال", "تشيلسي", "توتنهام", "نيوكاسل"] }
     ],
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ù…Ù† Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ.", answers: ["ÙŠÙˆÙÙ†ØªÙˆØ³", "Ù…ÙŠÙ„Ø§Ù†", "Ø¥Ù†ØªØ±", "Ø±ÙˆÙ…Ø§", "Ù†Ø§Ø¨ÙˆÙ„ÙŠ"] },
-      { question: "Ø§Ø®ØªØ± Ù…Ø¯Ù†Ù‹Ø§ Ù„Ø£Ù†Ø¯ÙŠØ© Ù…Ø¹Ø±ÙˆÙØ© ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ.", answers: ["ØªÙˆØ±ÙŠÙ†Ùˆ", "Ù…ÙŠÙ„Ø§Ù†Ùˆ", "Ø±ÙˆÙ…Ø§", "Ù†Ø§Ø¨ÙˆÙ„ÙŠ", "Ø¨ÙŠØ±ØºØ§Ù…Ùˆ"] }
+    "الدوري الإيطالي": [
+      { question: "اذكر أندية من الدوري الإيطالي.", answers: ["يوفنتوس", "ميلان", "إنتر", "روما", "نابولي"] },
+      { question: "اختر مدنًا لأندية معروفة في الدوري الإيطالي.", answers: ["تورينو", "ميلانو", "روما", "نابولي", "بيرغامو"] }
     ]
   },
-  "Ù…Ø³Ù„Ø³Ù„Ø§Øª": {
-    "Ø¨Ø§Ø¨ Ø§Ù„Ø­Ø§Ø±Ø©": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ø´Ù‡ÙˆØ±Ø© Ù…Ù† Ø¨Ø§Ø¨ Ø§Ù„Ø­Ø§Ø±Ø©.", answers: ["Ø£Ø¨Ùˆ Ø´Ù‡Ø§Ø¨", "Ø£Ø¨Ùˆ Ø¹ØµØ§Ù…", "Ø£Ù… Ø¹ØµØ§Ù…", "Ø§Ù„Ø¹Ù‚ÙŠØ¯ Ø£Ø¨Ùˆ Ø§Ù„Ù†Ø§Ø±", "Ø§Ù„Ù†Ù…Ø³"] }
+  "مسلسلات": {
+    "باب الحارة": [
+      { question: "اذكر شخصيات مشهورة من باب الحارة.", answers: ["أبو شهاب", "أبو عصام", "أم عصام", "العقيد أبو النار", "النمس"] }
     ],
-    "ØµØ±Ø§Ø¹ Ø§Ù„Ø¹Ø±ÙˆØ´": [
-      { question: "Ø§Ø®ØªØ± Ø¨ÙŠÙˆØªÙ‹Ø§ ÙˆØ¹Ø§Ø¦Ù„Ø§Øª Ù…Ù† Ù…Ø³Ù„Ø³Ù„ ØµØ±Ø§Ø¹ Ø§Ù„Ø¹Ø±ÙˆØ´.", answers: ["Ø³ØªØ§Ø±Ùƒ", "Ù„Ø§Ù†ÙŠØ³ØªØ±", "ØªØ§Ø±ØºØ§Ø±ÙŠØ§Ù†", "Ø¨Ø§Ø±Ø§Ø«ÙŠÙˆÙ†", "ØºØ±ÙŠØ¬ÙˆÙŠ"] }
+    "صراع العروش": [
+      { question: "اختر بيوتًا وعائلات من مسلسل صراع العروش.", answers: ["ستارك", "لانيستر", "تارغاريان", "باراثيون", "غريجوي"] }
     ],
-    "Ù‚ÙŠØ§Ù…Ø© Ø£Ø±Ø·ØºØ±Ù„": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ø³Ù…Ø§Ø¡ Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù‚ÙŠØ§Ù…Ø© Ø£Ø±Ø·ØºØ±Ù„.", answers: ["Ø£Ø±Ø·ØºØ±Ù„", "Ø­Ù„ÙŠÙ…Ø©", "Ø³Ù„ÙŠÙ…Ø§Ù† Ø´Ø§Ù‡", "ØªÙˆØ±ØºÙˆØª", "Ø¨Ø§Ù…Ø³ÙŠ"] }
+    "قيامة أرطغرل": [
+      { question: "اذكر أسماء شخصيات من قيامة أرطغرل.", answers: ["أرطغرل", "حليمة", "سليمان شاه", "تورغوت", "بامسي"] }
     ],
-    "ÙØ±ÙŠÙ†Ø¯Ø²": [
-      { question: "Ù…Ù† Ù‡Ù… Ø§Ù„Ø£ØµØ¯Ù‚Ø§Ø¡ Ø§Ù„Ø³ØªØ© ÙÙŠ Ù…Ø³Ù„Ø³Ù„ ÙØ±ÙŠÙ†Ø¯Ø²ØŸ", answers: ["Ø±Ø§Ø´ÙŠÙ„", "Ø±ÙˆØ³", "Ù…ÙˆÙ†ÙŠÙƒØ§", "ØªØ´Ø§Ù†Ø¯Ù„Ø±", "Ø¬ÙˆÙŠ", "ÙÙŠØ¨ÙŠ"] }
+    "فريندز": [
+      { question: "من هم الأصدقاء الستة في مسلسل فريندز؟", answers: ["راشيل", "روس", "مونيكا", "تشاندلر", "جوي", "فيبي"] }
     ],
   },
-  "Ø§Ø³Ù„Ø§Ù…ÙŠ" : {
-    "Ù‚Ø±Ø§Ù†" : [] ,
-    "Ø§Ù„ØµØ­Ø§Ø¨Ø©" : [] ,
+  "اسلامي" : {
+    "قران" : [] ,
+    "الصحابة" : [] ,
 
   },
-  "Ø£ÙÙ„Ø§Ù…": {
-    "Ø£ÙÙ„Ø§Ù… Ø£ÙƒØ´Ù†": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙÙ„Ø§Ù… Ø£ÙƒØ´Ù† Ù…Ø´Ù‡ÙˆØ±Ø©.", answers: ["Ø¬ÙˆÙ† ÙˆÙŠÙƒ", "Ù…Ù‡Ù…Ø© Ù…Ø³ØªØ­ÙŠÙ„Ø©", "Ù…Ø§Ø¯ Ù…Ø§ÙƒØ³", "Ø¯ÙŠ Ù‡Ø§Ø±Ø¯", "Ø°Ø§ Ø¯Ø§Ø±Ùƒ Ù†Ø§ÙŠØª"] }
+  "أفلام": {
+    "أفلام أكشن": [
+      { question: "اذكر أفلام أكشن مشهورة.", answers: ["جون ويك", "مهمة مستحيلة", "ماد ماكس", "دي هارد", "ذا دارك نايت"] }
     ],
-    "Ø£ÙÙ„Ø§Ù… ÙƒÙˆÙ…ÙŠØ¯ÙŠØ§": [
-      { question: "Ø§Ø®ØªØ± Ø£ÙÙ„Ø§Ù…Ù‹Ø§ ÙƒÙˆÙ…ÙŠØ¯ÙŠØ© Ù…Ø¹Ø±ÙˆÙØ©.", answers: ["Ù‡ÙˆÙ… Ø£Ù„ÙˆÙ†", "Ø°Ø§ Ù…Ø§Ø³Ùƒ", "ÙˆØ§ÙŠØª ØªØ´ÙŠÙƒØ³", "Ù…Ø³ØªØ± Ø¨ÙŠÙ†", "Ù†Ø§ÙŠØª Ø£Øª Ø°Ø§ Ù…ÙŠÙˆØ²ÙŠÙˆÙ…"] }
+    "أفلام كوميديا": [
+      { question: "اختر أفلامًا كوميدية معروفة.", answers: ["هوم ألون", "ذا ماسك", "وايت تشيكس", "مستر بين", "نايت أت ذا ميوزيوم"] }
     ],
-    "Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ø³Ù„Ø³Ù„Ø© Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±.", answers: ["Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±", "Ù‡ÙŠØ±Ù…Ø§ÙŠÙ†ÙŠ", "Ø±ÙˆÙ†", "Ø¯Ù…Ø¨Ù„Ø¯ÙˆØ±", "Ø³Ù†Ø§Ø¨"] }
+    "هاري بوتر": [
+      { question: "اذكر شخصيات من سلسلة هاري بوتر.", answers: ["هاري بوتر", "هيرمايني", "رون", "دمبلدور", "سناب"] }
     ],
-    "Ù…Ø§Ø±ÙÙ„": [
-      { question: "Ø§Ø®ØªØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ø£ÙÙ„Ø§Ù… Ù…Ø§Ø±ÙÙ„.", answers: ["Ø¢ÙŠØ±ÙˆÙ† Ù…Ø§Ù†", "Ø«ÙˆØ±", "ÙƒØ§Ø¨ØªÙ† Ø£Ù…Ø±ÙŠÙƒØ§", "Ù‡Ø§Ù„Ùƒ", "Ø³Ø¨Ø§ÙŠØ¯Ø±Ù…Ø§Ù†"] }
+    "مارفل": [
+      { question: "اختر شخصيات من أفلام مارفل.", answers: ["آيرون مان", "ثور", "كابتن أمريكا", "هالك", "سبايدرمان"] }
     ]
   },
-  "Ø§Ù„Ø¹Ø§Ø¨": {
-    "ÙÙŠÙØ§": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙˆØ¶Ø§Ø¹ Ù„Ø¹Ø¨ Ù…ÙˆØ¬ÙˆØ¯Ø© ÙÙŠ Ù„Ø¹Ø¨Ø© ÙÙŠÙØ§.", answers: ["Ø£Ù„ØªÙŠÙ…ÙŠØª ØªÙŠÙ…", "Ø§Ù„Ù…Ù‡Ù†Ø©", "Ù…Ø¨Ø§Ø±ÙŠØ§Øª Ø³Ø±ÙŠØ¹Ø©", "Ø§Ù„Ø£Ù†Ø¯ÙŠØ© Ø§Ù„Ù…Ø­ØªØ±ÙØ©", "ÙÙˆÙ„ØªØ§"] }
+  "العاب": {
+    "فيفا": [
+      { question: "اذكر أوضاع لعب موجودة في لعبة فيفا.", answers: ["ألتيميت تيم", "المهنة", "مباريات سريعة", "الأندية المحترفة", "فولتا"] }
     ],
-    "Ù‚Ø±Ø§Ù†Ø¯": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ø±Ø¦ÙŠØ³ÙŠØ© Ù…Ù† GTA V.", answers: ["Ù…Ø§ÙŠÙƒÙ„", "ÙØ±Ø§Ù†ÙƒÙ„ÙŠÙ†", "ØªØ±ÙŠÙÙˆØ±", "Ù„Ø§Ù…Ø§Ø±", "Ø£Ù…Ø§Ù†Ø¯Ø§"] }
+    "قراند": [
+      { question: "اذكر شخصيات رئيسية من GTA V.", answers: ["مايكل", "فرانكلين", "تريفور", "لامار", "أماندا"] }
     ],
-    "Ù…Ø§ÙŠÙ†ÙƒØ±Ø§ÙØª": [
-      { question: "Ø§Ø°ÙƒØ± Ù…ÙˆØ§Ø¯ Ø£Ùˆ Ø¹Ù†Ø§ØµØ± Ù…Ù† Ù…Ø§ÙŠÙ†ÙƒØ±Ø§ÙØª.", answers: ["Ø¯Ø§ÙŠÙ…ÙˆÙ†Ø¯", "Ø±ÙŠØ¯Ø³ØªÙˆÙ†", "Ø­Ø¯ÙŠØ¯", "Ø®Ø´Ø¨", "Ø¥ÙŠÙ…Ø±Ø§Ù„Ø¯"] }
+    "ماينكرافت": [
+      { question: "اذكر مواد أو عناصر من ماينكرافت.", answers: ["دايموند", "ريدستون", "حديد", "خشب", "إيمرالد"] }
     ],
-    "ÙÙˆØ±ØªÙ†Ø§ÙŠØª": [
-      { question: "Ø§Ø®ØªØ± Ø£Ø´ÙŠØ§Ø¡ Ù…Ø±ØªØ¨Ø·Ø© Ø¨Ù„Ø¹Ø¨Ø© ÙÙˆØ±ØªÙ†Ø§ÙŠØª.", answers: ["Ø¨Ø§ØªÙ„ Ø±ÙˆÙŠØ§Ù„", "Ø§Ù„Ø±Ù‚ØµØ§Øª", "Ø§Ù„Ø³ÙƒÙŠÙ†Ø§Øª", "Ø§Ù„Ø¨Ø§Øµ Ø§Ù„Ø·Ø§Ø¦Ø±", "Ø§Ù„Ø¨Ù†Ø§Ø¡"] }
+    "فورتنايت": [
+      { question: "اختر أشياء مرتبطة بلعبة فورتنايت.", answers: ["باتل رويال", "الرقصات", "السكينات", "الباص الطائر", "البناء"] }
     ]
   },
-  "Ø§Ù†Ù…ÙŠ": {
-    "ÙˆÙ† Ø¨ÙŠØ³": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙØ±Ø§Ø¯ Ø·Ø§Ù‚Ù… Ù‚Ø¨Ø¹Ø© Ø§Ù„Ù‚Ø´.", answers: ["Ù„ÙˆÙÙŠ", "Ø²ÙˆØ±Ùˆ", "Ù†Ø§Ù…ÙŠ", "Ø³Ø§Ù†Ø¬ÙŠ", "Ø£ÙˆØ³ÙˆØ¨", "ØªØ´ÙˆØ¨Ø±"] }
+  "انمي": {
+    "ون بيس": [
+      { question: "اذكر أفراد طاقم قبعة القش.", answers: ["لوفي", "زورو", "نامي", "سانجي", "أوسوب", "تشوبر"] }
     ],
-    "Ù†Ø§Ø±ÙˆØªÙˆ": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù†Ø§Ø±ÙˆØªÙˆ.", answers: ["Ù†Ø§Ø±ÙˆØªÙˆ", "Ø³Ø§Ø³ÙƒÙŠ", "Ø³Ø§ÙƒÙˆØ±Ø§", "ÙƒØ§ÙƒØ§Ø´ÙŠ", "Ø¥ÙŠØªØ§ØªØ´ÙŠ"] }
+    "ناروتو": [
+      { question: "اذكر شخصيات من ناروتو.", answers: ["ناروتو", "ساسكي", "ساكورا", "كاكاشي", "إيتاتشي"] }
     ],
-    "Ù‡Ø¬ÙˆÙ… Ø§Ù„Ø¹Ù…Ø§Ù„Ù‚Ø©": [
-      { question: "Ø§Ø®ØªØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù‡Ø¬ÙˆÙ… Ø§Ù„Ø¹Ù…Ø§Ù„Ù‚Ø©.", answers: ["Ø¥ÙŠØ±ÙŠÙ†", "Ù…ÙŠÙƒØ§Ø³Ø§", "Ø£Ø±Ù…ÙŠÙ†", "Ù„ÙŠÙØ§ÙŠ", "Ù‡Ø§Ù†Ø¬ÙŠ"] }
+    "هجوم العمالقة": [
+      { question: "اختر شخصيات من هجوم العمالقة.", answers: ["إيرين", "ميكاسا", "أرمين", "ليفاي", "هانجي"] }
     ],
-    "Ø¯ÙŠØ« Ù†ÙˆØª": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ø¹Ø±ÙˆÙØ© Ù…Ù† Ø¯ÙŠØ« Ù†ÙˆØª.", answers: ["Ù„Ø§ÙŠØª", "Ø¥Ù„", "Ù…ÙŠØ³Ø§", "Ø±ÙŠÙˆÙƒ", "Ù†ÙŠØ±"] }
+    "ديث نوت": [
+      { question: "اذكر شخصيات معروفة من ديث نوت.", answers: ["لايت", "إل", "ميسا", "ريوك", "نير"] }
     ]
   },
-  "Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø¹Ø§Ù…Ø©": {
-    "Ø¹ÙˆØ§ØµÙ…": [
-      { question: "Ø§Ø®ØªØ± Ø¹ÙˆØ§ØµÙ… Ù„Ø¯ÙˆÙ„ Ø¹Ø±Ø¨ÙŠØ©.", answers: ["Ø¹Ù…Ù‘Ø§Ù†", "Ø§Ù„Ù‚Ø§Ù‡Ø±Ø©", "Ø§Ù„Ø±ÙŠØ§Ø¶", "Ø¨ØºØ¯Ø§Ø¯", "Ø§Ù„Ø±Ø¨Ø§Ø·"] }
+  "معلومات عامة": {
+    "عواصم": [
+      { question: "اختر عواصم لدول عربية.", answers: ["عمّان", "القاهرة", "الرياض", "بغداد", "الرباط"] }
     ],
-    "Ø§Ø®ØªØ±Ø§Ø¹Ø§Øª": [
-      { question: "Ø§Ø°ÙƒØ± Ø§Ø®ØªØ±Ø§Ø¹Ø§Øª ØºÙŠÙ‘Ø±Øª Ø§Ù„Ø¹Ø§Ù„Ù….", answers: ["Ø§Ù„Ø·Ø¨Ø§Ø¹Ø©", "Ø§Ù„Ù‡Ø§ØªÙ", "Ø§Ù„Ø¥Ù†ØªØ±Ù†Øª", "Ø§Ù„Ù…ØµØ¨Ø§Ø­", "Ø§Ù„Ø·Ø§Ø¦Ø±Ø©"] }
+    "اختراعات": [
+      { question: "اذكر اختراعات غيّرت العالم.", answers: ["الطباعة", "الهاتف", "الإنترنت", "المصباح", "الطائرة"] }
     ],
-    "ØªØ§Ø±ÙŠØ®": [
-      { question: "Ø§Ø®ØªØ± Ø­Ø¶Ø§Ø±Ø§Øª Ù‚Ø¯ÙŠÙ…Ø© Ù…Ø¹Ø±ÙˆÙØ©.", answers: ["Ø§Ù„Ø±ÙˆÙ…Ø§Ù†ÙŠØ©", "Ø§Ù„ÙØ±Ø¹ÙˆÙ†ÙŠØ©", "Ø§Ù„Ø¨Ø§Ø¨Ù„ÙŠØ©", "Ø§Ù„Ø¥ØºØ±ÙŠÙ‚ÙŠØ©", "Ø§Ù„ÙØ§Ø±Ø³ÙŠØ©"] }
+    "تاريخ": [
+      { question: "اختر حضارات قديمة معروفة.", answers: ["الرومانية", "الفرعونية", "البابلية", "الإغريقية", "الفارسية"] }
     ],
-    "Ø¹Ù„ÙˆÙ…": [
-      { question: "Ø§Ø°ÙƒØ± ÙƒÙˆØ§ÙƒØ¨ Ù…Ù† Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹Ø© Ø§Ù„Ø´Ù…Ø³ÙŠØ©.", answers: ["Ø§Ù„Ù…Ø±ÙŠØ®", "Ø§Ù„Ù…Ø´ØªØ±ÙŠ", "Ø²Ø­Ù„", "Ø¹Ø·Ø§Ø±Ø¯", "Ø§Ù„Ø²Ù‡Ø±Ø©"] }
+    "علوم": [
+      { question: "اذكر كواكب من المجموعة الشمسية.", answers: ["المريخ", "المشتري", "زحل", "عطارد", "الزهرة"] }
     ]
   },
   };
   
 
-// ===== QUESTION BANK: Ø§Ù„Ø³Ø±Ø¹Ø© =====
-// ÙŠÙ…ÙƒÙ†Ùƒ ØªØ¹Ø¯ÙŠÙ„ Ø£Ø³Ø¦Ù„Ø© Ø§Ù„Ø³Ø±Ø¹Ø© Ù‡Ù†Ø§ Ù…Ø¨Ø§Ø´Ø±Ø©
+// ===== QUESTION BANK: السرعة =====
+// يمكنك تعديل أسئلة السرعة هنا مباشرة
 const speedQuestionBank = {
-  "ÙƒØ±Ø© Ø§Ù„Ù‚Ø¯Ù…": {
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠ": [
-      { question: "ÙƒÙ… Ø¹Ø¯Ø¯ Ø§Ù„ÙØ±Ù‚ Ø§Ù„Ù…Ø´Ø§Ø±ÙƒØ© Ø¹Ø§Ø¯Ø© ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØŸ", answers: ["20 ÙØ±ÙŠÙ‚Ù‹Ø§", "Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©", "Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯", "Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯", "Ø¥Ø´Ø¨ÙŠÙ„ÙŠØ©"] },
-      { question: "Ø§Ø®ØªØ± ÙØ±Ù‚Ù‹Ø§ Ù„Ø¹Ø¨Øª ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠ.", answers: ["ÙØ§Ù„Ù†Ø³ÙŠØ§", "ÙÙŠØ§Ø±ÙŠØ§Ù„", "Ø±ÙŠØ§Ù„ Ø¨ÙŠØªÙŠØ³", "Ø£ØªÙ„ØªÙŠÙƒ Ø¨Ù„Ø¨Ø§Ùˆ", "Ø®ÙŠØªØ§ÙÙŠ"] }
+  "كرة القدم": {
+    "الدوري الإسباني": [
+      { question: "كم عدد الفرق المشاركة عادة في الدوري الإسباني؟", answers: ["20 فريقًا", "برشلونة", "ريال مدريد", "أتلتيكو مدريد", "إشبيلية"] },
+      { question: "اختر فرقًا لعبت في الدوري الإسباني.", answers: ["فالنسيا", "فياريال", "ريال بيتيس", "أتلتيك بلباو", "خيتافي"] }
     ],
-    "Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙØ§Ø²Øª Ø¨Ø¯ÙˆØ±ÙŠ Ø£Ø¨Ø·Ø§Ù„ Ø£ÙˆØ±ÙˆØ¨Ø§.", answers: ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯", "Ù…ÙŠÙ„Ø§Ù†", "Ù„ÙŠÙØ±Ø¨ÙˆÙ„", "Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©", "Ø¨Ø§ÙŠØ±Ù† Ù…ÙŠÙˆÙ†Ø®"] },
-      { question: "Ù…Ø§ Ø§Ù„ÙØ±Ù‚ Ø§Ù„ØªÙŠ ØªØ´Ø§Ø±Ùƒ ÙƒØ«ÙŠØ±Ù‹Ø§ ÙÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", answers: ["Ù…Ø§Ù†Ø´Ø³ØªØ± Ø³ÙŠØªÙŠ", "Ø¥Ù†ØªØ±", "Ø¨Ø§Ø±ÙŠØ³ Ø³Ø§Ù† Ø¬ÙŠØ±Ù…Ø§Ù†", "Ø£Ø±Ø³Ù†Ø§Ù„", "Ø¨ÙˆØ±ÙˆØ³ÙŠØ§ Ø¯ÙˆØ±ØªÙ…ÙˆÙ†Ø¯"] }
+    "دوري الأبطال": [
+      { question: "اذكر أندية فازت بدوري أبطال أوروبا.", answers: ["ريال مدريد", "ميلان", "ليفربول", "برشلونة", "بايرن ميونخ"] },
+      { question: "ما الفرق التي تشارك كثيرًا في دوري الأبطال؟", answers: ["مانشستر سيتي", "إنتر", "باريس سان جيرمان", "أرسنال", "بوروسيا دورتموند"] }
     ],
-    "ÙƒØ£Ø³ Ø§Ù„Ø¹Ø§Ù„Ù…": [
-      { question: "Ø§Ø®ØªØ± Ù…Ù†ØªØ®Ø¨Ø§Øª ÙØ§Ø²Øª Ø¨ÙƒØ£Ø³ Ø§Ù„Ø¹Ø§Ù„Ù….", answers: ["Ø§Ù„Ø¨Ø±Ø§Ø²ÙŠÙ„", "Ø£Ù„Ù…Ø§Ù†ÙŠØ§", "Ø§Ù„Ø£Ø±Ø¬Ù†ØªÙŠÙ†", "ÙØ±Ù†Ø³Ø§", "Ø¥ÙŠØ·Ø§Ù„ÙŠØ§"] }
+    "كأس العالم": [
+      { question: "اختر منتخبات فازت بكأس العالم.", answers: ["البرازيل", "ألمانيا", "الأرجنتين", "فرنسا", "إيطاليا"] }
     ],
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ": [
-      { question: "Ø§Ø°ÙƒØ± ÙØ±Ù‚Ù‹Ø§ Ù…Ù† Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ Ø§Ù„Ù…Ù…ØªØ§Ø².", answers: ["Ù„ÙŠÙØ±Ø¨ÙˆÙ„", "Ø£Ø±Ø³Ù†Ø§Ù„", "ØªØ´ÙŠÙ„Ø³ÙŠ", "ØªÙˆØªÙ†Ù‡Ø§Ù…", "Ù†ÙŠÙˆÙƒØ§Ø³Ù„"] }
+    "الدوري الإنجليزي": [
+      { question: "اذكر فرقًا من الدوري الإنجليزي الممتاز.", answers: ["ليفربول", "أرسنال", "تشيلسي", "توتنهام", "نيوكاسل"] }
     ],
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ù…Ù† Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ.", answers: ["ÙŠÙˆÙÙ†ØªÙˆØ³", "Ù…ÙŠÙ„Ø§Ù†", "Ø¥Ù†ØªØ±", "Ø±ÙˆÙ…Ø§", "Ù†Ø§Ø¨ÙˆÙ„ÙŠ"] },
-      { question: "Ø§Ø®ØªØ± Ù…Ø¯Ù†Ù‹Ø§ Ù„Ø£Ù†Ø¯ÙŠØ© Ù…Ø¹Ø±ÙˆÙØ© ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ.", answers: ["ØªÙˆØ±ÙŠÙ†Ùˆ", "Ù…ÙŠÙ„Ø§Ù†Ùˆ", "Ø±ÙˆÙ…Ø§", "Ù†Ø§Ø¨ÙˆÙ„ÙŠ", "Ø¨ÙŠØ±ØºØ§Ù…Ùˆ"] }
+    "الدوري الإيطالي": [
+      { question: "اذكر أندية من الدوري الإيطالي.", answers: ["يوفنتوس", "ميلان", "إنتر", "روما", "نابولي"] },
+      { question: "اختر مدنًا لأندية معروفة في الدوري الإيطالي.", answers: ["تورينو", "ميلانو", "روما", "نابولي", "بيرغامو"] }
     ]
   },
-  "Ù…Ø³Ù„Ø³Ù„Ø§Øª": {
-    "Ø¨Ø§Ø¨ Ø§Ù„Ø­Ø§Ø±Ø©": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ø´Ù‡ÙˆØ±Ø© Ù…Ù† Ø¨Ø§Ø¨ Ø§Ù„Ø­Ø§Ø±Ø©.", answers: ["Ø£Ø¨Ùˆ Ø´Ù‡Ø§Ø¨", "Ø£Ø¨Ùˆ Ø¹ØµØ§Ù…", "Ø£Ù… Ø¹ØµØ§Ù…", "Ø§Ù„Ø¹Ù‚ÙŠØ¯ Ø£Ø¨Ùˆ Ø§Ù„Ù†Ø§Ø±", "Ø§Ù„Ù†Ù…Ø³"] }
+  "مسلسلات": {
+    "باب الحارة": [
+      { question: "اذكر شخصيات مشهورة من باب الحارة.", answers: ["أبو شهاب", "أبو عصام", "أم عصام", "العقيد أبو النار", "النمس"] }
     ],
-    "ØµØ±Ø§Ø¹ Ø§Ù„Ø¹Ø±ÙˆØ´": [
-      { question: "Ø§Ø®ØªØ± Ø¨ÙŠÙˆØªÙ‹Ø§ ÙˆØ¹Ø§Ø¦Ù„Ø§Øª Ù…Ù† Ù…Ø³Ù„Ø³Ù„ ØµØ±Ø§Ø¹ Ø§Ù„Ø¹Ø±ÙˆØ´.", answers: ["Ø³ØªØ§Ø±Ùƒ", "Ù„Ø§Ù†ÙŠØ³ØªØ±", "ØªØ§Ø±ØºØ§Ø±ÙŠØ§Ù†", "Ø¨Ø§Ø±Ø§Ø«ÙŠÙˆÙ†", "ØºØ±ÙŠØ¬ÙˆÙŠ"] }
+    "صراع العروش": [
+      { question: "اختر بيوتًا وعائلات من مسلسل صراع العروش.", answers: ["ستارك", "لانيستر", "تارغاريان", "باراثيون", "غريجوي"] }
     ],
-    "Ù‚ÙŠØ§Ù…Ø© Ø£Ø±Ø·ØºØ±Ù„": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ø³Ù…Ø§Ø¡ Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù‚ÙŠØ§Ù…Ø© Ø£Ø±Ø·ØºØ±Ù„.", answers: ["Ø£Ø±Ø·ØºØ±Ù„", "Ø­Ù„ÙŠÙ…Ø©", "Ø³Ù„ÙŠÙ…Ø§Ù† Ø´Ø§Ù‡", "ØªÙˆØ±ØºÙˆØª", "Ø¨Ø§Ù…Ø³ÙŠ"] }
+    "قيامة أرطغرل": [
+      { question: "اذكر أسماء شخصيات من قيامة أرطغرل.", answers: ["أرطغرل", "حليمة", "سليمان شاه", "تورغوت", "بامسي"] }
     ],
-    "ÙØ±ÙŠÙ†Ø¯Ø²": [
-      { question: "Ù…Ù† Ù‡Ù… Ø§Ù„Ø£ØµØ¯Ù‚Ø§Ø¡ Ø§Ù„Ø³ØªØ© ÙÙŠ Ù…Ø³Ù„Ø³Ù„ ÙØ±ÙŠÙ†Ø¯Ø²ØŸ", answers: ["Ø±Ø§Ø´ÙŠÙ„", "Ø±ÙˆØ³", "Ù…ÙˆÙ†ÙŠÙƒØ§", "ØªØ´Ø§Ù†Ø¯Ù„Ø±", "Ø¬ÙˆÙŠ", "ÙÙŠØ¨ÙŠ"] }
+    "فريندز": [
+      { question: "من هم الأصدقاء الستة في مسلسل فريندز؟", answers: ["راشيل", "روس", "مونيكا", "تشاندلر", "جوي", "فيبي"] }
     ],
   },
-  "Ø§Ø³Ù„Ø§Ù…ÙŠ" : {
-    "Ù‚Ø±Ø§Ù†" : [] ,
-    "Ø§Ù„ØµØ­Ø§Ø¨Ø©" : [] ,
+  "اسلامي" : {
+    "قران" : [] ,
+    "الصحابة" : [] ,
 
   },
-  "Ø£ÙÙ„Ø§Ù…": {
-    "Ø£ÙÙ„Ø§Ù… Ø£ÙƒØ´Ù†": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙÙ„Ø§Ù… Ø£ÙƒØ´Ù† Ù…Ø´Ù‡ÙˆØ±Ø©.", answers: ["Ø¬ÙˆÙ† ÙˆÙŠÙƒ", "Ù…Ù‡Ù…Ø© Ù…Ø³ØªØ­ÙŠÙ„Ø©", "Ù…Ø§Ø¯ Ù…Ø§ÙƒØ³", "Ø¯ÙŠ Ù‡Ø§Ø±Ø¯", "Ø°Ø§ Ø¯Ø§Ø±Ùƒ Ù†Ø§ÙŠØª"] }
+  "أفلام": {
+    "أفلام أكشن": [
+      { question: "اذكر أفلام أكشن مشهورة.", answers: ["جون ويك", "مهمة مستحيلة", "ماد ماكس", "دي هارد", "ذا دارك نايت"] }
     ],
-    "Ø£ÙÙ„Ø§Ù… ÙƒÙˆÙ…ÙŠØ¯ÙŠØ§": [
-      { question: "Ø§Ø®ØªØ± Ø£ÙÙ„Ø§Ù…Ù‹Ø§ ÙƒÙˆÙ…ÙŠØ¯ÙŠØ© Ù…Ø¹Ø±ÙˆÙØ©.", answers: ["Ù‡ÙˆÙ… Ø£Ù„ÙˆÙ†", "Ø°Ø§ Ù…Ø§Ø³Ùƒ", "ÙˆØ§ÙŠØª ØªØ´ÙŠÙƒØ³", "Ù…Ø³ØªØ± Ø¨ÙŠÙ†", "Ù†Ø§ÙŠØª Ø£Øª Ø°Ø§ Ù…ÙŠÙˆØ²ÙŠÙˆÙ…"] }
+    "أفلام كوميديا": [
+      { question: "اختر أفلامًا كوميدية معروفة.", answers: ["هوم ألون", "ذا ماسك", "وايت تشيكس", "مستر بين", "نايت أت ذا ميوزيوم"] }
     ],
-    "Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ø³Ù„Ø³Ù„Ø© Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±.", answers: ["Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±", "Ù‡ÙŠØ±Ù…Ø§ÙŠÙ†ÙŠ", "Ø±ÙˆÙ†", "Ø¯Ù…Ø¨Ù„Ø¯ÙˆØ±", "Ø³Ù†Ø§Ø¨"] }
+    "هاري بوتر": [
+      { question: "اذكر شخصيات من سلسلة هاري بوتر.", answers: ["هاري بوتر", "هيرمايني", "رون", "دمبلدور", "سناب"] }
     ],
-    "Ù…Ø§Ø±ÙÙ„": [
-      { question: "Ø§Ø®ØªØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ø£ÙÙ„Ø§Ù… Ù…Ø§Ø±ÙÙ„.", answers: ["Ø¢ÙŠØ±ÙˆÙ† Ù…Ø§Ù†", "Ø«ÙˆØ±", "ÙƒØ§Ø¨ØªÙ† Ø£Ù…Ø±ÙŠÙƒØ§", "Ù‡Ø§Ù„Ùƒ", "Ø³Ø¨Ø§ÙŠØ¯Ø±Ù…Ø§Ù†"] }
+    "مارفل": [
+      { question: "اختر شخصيات من أفلام مارفل.", answers: ["آيرون مان", "ثور", "كابتن أمريكا", "هالك", "سبايدرمان"] }
     ]
   },
-  "Ø§Ù„Ø¹Ø§Ø¨": {
-    "ÙÙŠÙØ§": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙˆØ¶Ø§Ø¹ Ù„Ø¹Ø¨ Ù…ÙˆØ¬ÙˆØ¯Ø© ÙÙŠ Ù„Ø¹Ø¨Ø© ÙÙŠÙØ§.", answers: ["Ø£Ù„ØªÙŠÙ…ÙŠØª ØªÙŠÙ…", "Ø§Ù„Ù…Ù‡Ù†Ø©", "Ù…Ø¨Ø§Ø±ÙŠØ§Øª Ø³Ø±ÙŠØ¹Ø©", "Ø§Ù„Ø£Ù†Ø¯ÙŠØ© Ø§Ù„Ù…Ø­ØªØ±ÙØ©", "ÙÙˆÙ„ØªØ§"] }
+  "العاب": {
+    "فيفا": [
+      { question: "اذكر أوضاع لعب موجودة في لعبة فيفا.", answers: ["ألتيميت تيم", "المهنة", "مباريات سريعة", "الأندية المحترفة", "فولتا"] }
     ],
-    "Ù‚Ø±Ø§Ù†Ø¯": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ø±Ø¦ÙŠØ³ÙŠØ© Ù…Ù† GTA V.", answers: ["Ù…Ø§ÙŠÙƒÙ„", "ÙØ±Ø§Ù†ÙƒÙ„ÙŠÙ†", "ØªØ±ÙŠÙÙˆØ±", "Ù„Ø§Ù…Ø§Ø±", "Ø£Ù…Ø§Ù†Ø¯Ø§"] }
+    "قراند": [
+      { question: "اذكر شخصيات رئيسية من GTA V.", answers: ["مايكل", "فرانكلين", "تريفور", "لامار", "أماندا"] }
     ],
-    "Ù…Ø§ÙŠÙ†ÙƒØ±Ø§ÙØª": [
-      { question: "Ø§Ø°ÙƒØ± Ù…ÙˆØ§Ø¯ Ø£Ùˆ Ø¹Ù†Ø§ØµØ± Ù…Ù† Ù…Ø§ÙŠÙ†ÙƒØ±Ø§ÙØª.", answers: ["Ø¯Ø§ÙŠÙ…ÙˆÙ†Ø¯", "Ø±ÙŠØ¯Ø³ØªÙˆÙ†", "Ø­Ø¯ÙŠØ¯", "Ø®Ø´Ø¨", "Ø¥ÙŠÙ…Ø±Ø§Ù„Ø¯"] }
+    "ماينكرافت": [
+      { question: "اذكر مواد أو عناصر من ماينكرافت.", answers: ["دايموند", "ريدستون", "حديد", "خشب", "إيمرالد"] }
     ],
-    "ÙÙˆØ±ØªÙ†Ø§ÙŠØª": [
-      { question: "Ø§Ø®ØªØ± Ø£Ø´ÙŠØ§Ø¡ Ù…Ø±ØªØ¨Ø·Ø© Ø¨Ù„Ø¹Ø¨Ø© ÙÙˆØ±ØªÙ†Ø§ÙŠØª.", answers: ["Ø¨Ø§ØªÙ„ Ø±ÙˆÙŠØ§Ù„", "Ø§Ù„Ø±Ù‚ØµØ§Øª", "Ø§Ù„Ø³ÙƒÙŠÙ†Ø§Øª", "Ø§Ù„Ø¨Ø§Øµ Ø§Ù„Ø·Ø§Ø¦Ø±", "Ø§Ù„Ø¨Ù†Ø§Ø¡"] }
+    "فورتنايت": [
+      { question: "اختر أشياء مرتبطة بلعبة فورتنايت.", answers: ["باتل رويال", "الرقصات", "السكينات", "الباص الطائر", "البناء"] }
     ]
   },
-  "Ø§Ù†Ù…ÙŠ": {
-    "ÙˆÙ† Ø¨ÙŠØ³": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙØ±Ø§Ø¯ Ø·Ø§Ù‚Ù… Ù‚Ø¨Ø¹Ø© Ø§Ù„Ù‚Ø´.", answers: ["Ù„ÙˆÙÙŠ", "Ø²ÙˆØ±Ùˆ", "Ù†Ø§Ù…ÙŠ", "Ø³Ø§Ù†Ø¬ÙŠ", "Ø£ÙˆØ³ÙˆØ¨", "ØªØ´ÙˆØ¨Ø±"] }
+  "انمي": {
+    "ون بيس": [
+      { question: "اذكر أفراد طاقم قبعة القش.", answers: ["لوفي", "زورو", "نامي", "سانجي", "أوسوب", "تشوبر"] }
     ],
-    "Ù†Ø§Ø±ÙˆØªÙˆ": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù†Ø§Ø±ÙˆØªÙˆ.", answers: ["Ù†Ø§Ø±ÙˆØªÙˆ", "Ø³Ø§Ø³ÙƒÙŠ", "Ø³Ø§ÙƒÙˆØ±Ø§", "ÙƒØ§ÙƒØ§Ø´ÙŠ", "Ø¥ÙŠØªØ§ØªØ´ÙŠ"] }
+    "ناروتو": [
+      { question: "اذكر شخصيات من ناروتو.", answers: ["ناروتو", "ساسكي", "ساكورا", "كاكاشي", "إيتاتشي"] }
     ],
-    "Ù‡Ø¬ÙˆÙ… Ø§Ù„Ø¹Ù…Ø§Ù„Ù‚Ø©": [
-      { question: "Ø§Ø®ØªØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù‡Ø¬ÙˆÙ… Ø§Ù„Ø¹Ù…Ø§Ù„Ù‚Ø©.", answers: ["Ø¥ÙŠØ±ÙŠÙ†", "Ù…ÙŠÙƒØ§Ø³Ø§", "Ø£Ø±Ù…ÙŠÙ†", "Ù„ÙŠÙØ§ÙŠ", "Ù‡Ø§Ù†Ø¬ÙŠ"] }
+    "هجوم العمالقة": [
+      { question: "اختر شخصيات من هجوم العمالقة.", answers: ["إيرين", "ميكاسا", "أرمين", "ليفاي", "هانجي"] }
     ],
-    "Ø¯ÙŠØ« Ù†ÙˆØª": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ø¹Ø±ÙˆÙØ© Ù…Ù† Ø¯ÙŠØ« Ù†ÙˆØª.", answers: ["Ù„Ø§ÙŠØª", "Ø¥Ù„", "Ù…ÙŠØ³Ø§", "Ø±ÙŠÙˆÙƒ", "Ù†ÙŠØ±"] }
+    "ديث نوت": [
+      { question: "اذكر شخصيات معروفة من ديث نوت.", answers: ["لايت", "إل", "ميسا", "ريوك", "نير"] }
     ]
   },
-  "Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø¹Ø§Ù…Ø©": {
-    "Ø¹ÙˆØ§ØµÙ…": [
-      { question: "Ø§Ø®ØªØ± Ø¹ÙˆØ§ØµÙ… Ù„Ø¯ÙˆÙ„ Ø¹Ø±Ø¨ÙŠØ©.", answers: ["Ø¹Ù…Ù‘Ø§Ù†", "Ø§Ù„Ù‚Ø§Ù‡Ø±Ø©", "Ø§Ù„Ø±ÙŠØ§Ø¶", "Ø¨ØºØ¯Ø§Ø¯", "Ø§Ù„Ø±Ø¨Ø§Ø·"] }
+  "معلومات عامة": {
+    "عواصم": [
+      { question: "اختر عواصم لدول عربية.", answers: ["عمّان", "القاهرة", "الرياض", "بغداد", "الرباط"] }
     ],
-    "Ø§Ø®ØªØ±Ø§Ø¹Ø§Øª": [
-      { question: "Ø§Ø°ÙƒØ± Ø§Ø®ØªØ±Ø§Ø¹Ø§Øª ØºÙŠÙ‘Ø±Øª Ø§Ù„Ø¹Ø§Ù„Ù….", answers: ["Ø§Ù„Ø·Ø¨Ø§Ø¹Ø©", "Ø§Ù„Ù‡Ø§ØªÙ", "Ø§Ù„Ø¥Ù†ØªØ±Ù†Øª", "Ø§Ù„Ù…ØµØ¨Ø§Ø­", "Ø§Ù„Ø·Ø§Ø¦Ø±Ø©"] }
+    "اختراعات": [
+      { question: "اذكر اختراعات غيّرت العالم.", answers: ["الطباعة", "الهاتف", "الإنترنت", "المصباح", "الطائرة"] }
     ],
-    "ØªØ§Ø±ÙŠØ®": [
-      { question: "Ø§Ø®ØªØ± Ø­Ø¶Ø§Ø±Ø§Øª Ù‚Ø¯ÙŠÙ…Ø© Ù…Ø¹Ø±ÙˆÙØ©.", answers: ["Ø§Ù„Ø±ÙˆÙ…Ø§Ù†ÙŠØ©", "Ø§Ù„ÙØ±Ø¹ÙˆÙ†ÙŠØ©", "Ø§Ù„Ø¨Ø§Ø¨Ù„ÙŠØ©", "Ø§Ù„Ø¥ØºØ±ÙŠÙ‚ÙŠØ©", "Ø§Ù„ÙØ§Ø±Ø³ÙŠØ©"] }
+    "تاريخ": [
+      { question: "اختر حضارات قديمة معروفة.", answers: ["الرومانية", "الفرعونية", "البابلية", "الإغريقية", "الفارسية"] }
     ],
-    "Ø¹Ù„ÙˆÙ…": [
-      { question: "Ø§Ø°ÙƒØ± ÙƒÙˆØ§ÙƒØ¨ Ù…Ù† Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹Ø© Ø§Ù„Ø´Ù…Ø³ÙŠØ©.", answers: ["Ø§Ù„Ù…Ø±ÙŠØ®", "Ø§Ù„Ù…Ø´ØªØ±ÙŠ", "Ø²Ø­Ù„", "Ø¹Ø·Ø§Ø±Ø¯", "Ø§Ù„Ø²Ù‡Ø±Ø©"] }
+    "علوم": [
+      { question: "اذكر كواكب من المجموعة الشمسية.", answers: ["المريخ", "المشتري", "زحل", "عطارد", "الزهرة"] }
     ]
   },
 };
 
-// ===== QUESTION BANK: Ù…Ù† Ø£Ù†Ø§ =====
-// ÙŠÙ…ÙƒÙ†Ùƒ ØªØ¹Ø¯ÙŠÙ„ Ø£Ø³Ø¦Ù„Ø© Ù…Ù† Ø£Ù†Ø§ Ù‡Ù†Ø§ Ù…Ø¨Ø§Ø´Ø±Ø©
+// ===== QUESTION BANK: من أنا =====
+// يمكنك تعديل أسئلة من أنا هنا مباشرة
 const whoAmIQuestionBank = {
-  "ÙƒØ±Ø© Ø§Ù„Ù‚Ø¯Ù…": {
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠ": [
-      { question: "ÙƒÙ… Ø¹Ø¯Ø¯ Ø§Ù„ÙØ±Ù‚ Ø§Ù„Ù…Ø´Ø§Ø±ÙƒØ© Ø¹Ø§Ø¯Ø© ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØŸ", answers: ["20 ÙØ±ÙŠÙ‚Ù‹Ø§", "Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©", "Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯", "Ø£ØªÙ„ØªÙŠÙƒÙˆ Ù…Ø¯Ø±ÙŠØ¯", "Ø¥Ø´Ø¨ÙŠÙ„ÙŠØ©"] },
-      { question: "Ø§Ø®ØªØ± ÙØ±Ù‚Ù‹Ø§ Ù„Ø¹Ø¨Øª ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠ.", answers: ["ÙØ§Ù„Ù†Ø³ÙŠØ§", "ÙÙŠØ§Ø±ÙŠØ§Ù„", "Ø±ÙŠØ§Ù„ Ø¨ÙŠØªÙŠØ³", "Ø£ØªÙ„ØªÙŠÙƒ Ø¨Ù„Ø¨Ø§Ùˆ", "Ø®ÙŠØªØ§ÙÙŠ"] }
+  "كرة القدم": {
+    "الدوري الإسباني": [
+      { question: "كم عدد الفرق المشاركة عادة في الدوري الإسباني؟", answers: ["20 فريقًا", "برشلونة", "ريال مدريد", "أتلتيكو مدريد", "إشبيلية"] },
+      { question: "اختر فرقًا لعبت في الدوري الإسباني.", answers: ["فالنسيا", "فياريال", "ريال بيتيس", "أتلتيك بلباو", "خيتافي"] }
     ],
-    "Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© ÙØ§Ø²Øª Ø¨Ø¯ÙˆØ±ÙŠ Ø£Ø¨Ø·Ø§Ù„ Ø£ÙˆØ±ÙˆØ¨Ø§.", answers: ["Ø±ÙŠØ§Ù„ Ù…Ø¯Ø±ÙŠØ¯", "Ù…ÙŠÙ„Ø§Ù†", "Ù„ÙŠÙØ±Ø¨ÙˆÙ„", "Ø¨Ø±Ø´Ù„ÙˆÙ†Ø©", "Ø¨Ø§ÙŠØ±Ù† Ù…ÙŠÙˆÙ†Ø®"] },
-      { question: "Ù…Ø§ Ø§Ù„ÙØ±Ù‚ Ø§Ù„ØªÙŠ ØªØ´Ø§Ø±Ùƒ ÙƒØ«ÙŠØ±Ù‹Ø§ ÙÙŠ Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø£Ø¨Ø·Ø§Ù„ØŸ", answers: ["Ù…Ø§Ù†Ø´Ø³ØªØ± Ø³ÙŠØªÙŠ", "Ø¥Ù†ØªØ±", "Ø¨Ø§Ø±ÙŠØ³ Ø³Ø§Ù† Ø¬ÙŠØ±Ù…Ø§Ù†", "Ø£Ø±Ø³Ù†Ø§Ù„", "Ø¨ÙˆØ±ÙˆØ³ÙŠØ§ Ø¯ÙˆØ±ØªÙ…ÙˆÙ†Ø¯"] }
+    "دوري الأبطال": [
+      { question: "اذكر أندية فازت بدوري أبطال أوروبا.", answers: ["ريال مدريد", "ميلان", "ليفربول", "برشلونة", "بايرن ميونخ"] },
+      { question: "ما الفرق التي تشارك كثيرًا في دوري الأبطال؟", answers: ["مانشستر سيتي", "إنتر", "باريس سان جيرمان", "أرسنال", "بوروسيا دورتموند"] }
     ],
-    "ÙƒØ£Ø³ Ø§Ù„Ø¹Ø§Ù„Ù…": [
-      { question: "Ø§Ø®ØªØ± Ù…Ù†ØªØ®Ø¨Ø§Øª ÙØ§Ø²Øª Ø¨ÙƒØ£Ø³ Ø§Ù„Ø¹Ø§Ù„Ù….", answers: ["Ø§Ù„Ø¨Ø±Ø§Ø²ÙŠÙ„", "Ø£Ù„Ù…Ø§Ù†ÙŠØ§", "Ø§Ù„Ø£Ø±Ø¬Ù†ØªÙŠÙ†", "ÙØ±Ù†Ø³Ø§", "Ø¥ÙŠØ·Ø§Ù„ÙŠØ§"] }
+    "كأس العالم": [
+      { question: "اختر منتخبات فازت بكأس العالم.", answers: ["البرازيل", "ألمانيا", "الأرجنتين", "فرنسا", "إيطاليا"] }
     ],
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ": [
-      { question: "Ø§Ø°ÙƒØ± ÙØ±Ù‚Ù‹Ø§ Ù…Ù† Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠ Ø§Ù„Ù…Ù…ØªØ§Ø².", answers: ["Ù„ÙŠÙØ±Ø¨ÙˆÙ„", "Ø£Ø±Ø³Ù†Ø§Ù„", "ØªØ´ÙŠÙ„Ø³ÙŠ", "ØªÙˆØªÙ†Ù‡Ø§Ù…", "Ù†ÙŠÙˆÙƒØ§Ø³Ù„"] }
+    "الدوري الإنجليزي": [
+      { question: "اذكر فرقًا من الدوري الإنجليزي الممتاز.", answers: ["ليفربول", "أرسنال", "تشيلسي", "توتنهام", "نيوكاسل"] }
     ],
-    "Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ù†Ø¯ÙŠØ© Ù…Ù† Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ.", answers: ["ÙŠÙˆÙÙ†ØªÙˆØ³", "Ù…ÙŠÙ„Ø§Ù†", "Ø¥Ù†ØªØ±", "Ø±ÙˆÙ…Ø§", "Ù†Ø§Ø¨ÙˆÙ„ÙŠ"] },
-      { question: "Ø§Ø®ØªØ± Ù…Ø¯Ù†Ù‹Ø§ Ù„Ø£Ù†Ø¯ÙŠØ© Ù…Ø¹Ø±ÙˆÙØ© ÙÙŠ Ø§Ù„Ø¯ÙˆØ±ÙŠ Ø§Ù„Ø¥ÙŠØ·Ø§Ù„ÙŠ.", answers: ["ØªÙˆØ±ÙŠÙ†Ùˆ", "Ù…ÙŠÙ„Ø§Ù†Ùˆ", "Ø±ÙˆÙ…Ø§", "Ù†Ø§Ø¨ÙˆÙ„ÙŠ", "Ø¨ÙŠØ±ØºØ§Ù…Ùˆ"] }
+    "الدوري الإيطالي": [
+      { question: "اذكر أندية من الدوري الإيطالي.", answers: ["يوفنتوس", "ميلان", "إنتر", "روما", "نابولي"] },
+      { question: "اختر مدنًا لأندية معروفة في الدوري الإيطالي.", answers: ["تورينو", "ميلانو", "روما", "نابولي", "بيرغامو"] }
     ]
   },
-  "Ù…Ø³Ù„Ø³Ù„Ø§Øª": {
-    "Ø¨Ø§Ø¨ Ø§Ù„Ø­Ø§Ø±Ø©": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ø´Ù‡ÙˆØ±Ø© Ù…Ù† Ø¨Ø§Ø¨ Ø§Ù„Ø­Ø§Ø±Ø©.", answers: ["Ø£Ø¨Ùˆ Ø´Ù‡Ø§Ø¨", "Ø£Ø¨Ùˆ Ø¹ØµØ§Ù…", "Ø£Ù… Ø¹ØµØ§Ù…", "Ø§Ù„Ø¹Ù‚ÙŠØ¯ Ø£Ø¨Ùˆ Ø§Ù„Ù†Ø§Ø±", "Ø§Ù„Ù†Ù…Ø³"] }
+  "مسلسلات": {
+    "باب الحارة": [
+      { question: "اذكر شخصيات مشهورة من باب الحارة.", answers: ["أبو شهاب", "أبو عصام", "أم عصام", "العقيد أبو النار", "النمس"] }
     ],
-    "ØµØ±Ø§Ø¹ Ø§Ù„Ø¹Ø±ÙˆØ´": [
-      { question: "Ø§Ø®ØªØ± Ø¨ÙŠÙˆØªÙ‹Ø§ ÙˆØ¹Ø§Ø¦Ù„Ø§Øª Ù…Ù† Ù…Ø³Ù„Ø³Ù„ ØµØ±Ø§Ø¹ Ø§Ù„Ø¹Ø±ÙˆØ´.", answers: ["Ø³ØªØ§Ø±Ùƒ", "Ù„Ø§Ù†ÙŠØ³ØªØ±", "ØªØ§Ø±ØºØ§Ø±ÙŠØ§Ù†", "Ø¨Ø§Ø±Ø§Ø«ÙŠÙˆÙ†", "ØºØ±ÙŠØ¬ÙˆÙŠ"] }
+    "صراع العروش": [
+      { question: "اختر بيوتًا وعائلات من مسلسل صراع العروش.", answers: ["ستارك", "لانيستر", "تارغاريان", "باراثيون", "غريجوي"] }
     ],
-    "Ù‚ÙŠØ§Ù…Ø© Ø£Ø±Ø·ØºØ±Ù„": [
-      { question: "Ø§Ø°ÙƒØ± Ø£Ø³Ù…Ø§Ø¡ Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù‚ÙŠØ§Ù…Ø© Ø£Ø±Ø·ØºØ±Ù„.", answers: ["Ø£Ø±Ø·ØºØ±Ù„", "Ø­Ù„ÙŠÙ…Ø©", "Ø³Ù„ÙŠÙ…Ø§Ù† Ø´Ø§Ù‡", "ØªÙˆØ±ØºÙˆØª", "Ø¨Ø§Ù…Ø³ÙŠ"] }
+    "قيامة أرطغرل": [
+      { question: "اذكر أسماء شخصيات من قيامة أرطغرل.", answers: ["أرطغرل", "حليمة", "سليمان شاه", "تورغوت", "بامسي"] }
     ],
-    "ÙØ±ÙŠÙ†Ø¯Ø²": [
-      { question: "Ù…Ù† Ù‡Ù… Ø§Ù„Ø£ØµØ¯Ù‚Ø§Ø¡ Ø§Ù„Ø³ØªØ© ÙÙŠ Ù…Ø³Ù„Ø³Ù„ ÙØ±ÙŠÙ†Ø¯Ø²ØŸ", answers: ["Ø±Ø§Ø´ÙŠÙ„", "Ø±ÙˆØ³", "Ù…ÙˆÙ†ÙŠÙƒØ§", "ØªØ´Ø§Ù†Ø¯Ù„Ø±", "Ø¬ÙˆÙŠ", "ÙÙŠØ¨ÙŠ"] }
+    "فريندز": [
+      { question: "من هم الأصدقاء الستة في مسلسل فريندز؟", answers: ["راشيل", "روس", "مونيكا", "تشاندلر", "جوي", "فيبي"] }
     ],
   },
-  "Ø§Ø³Ù„Ø§Ù…ÙŠ" : {
-    "Ù‚Ø±Ø§Ù†" : [] ,
-    "Ø§Ù„ØµØ­Ø§Ø¨Ø©" : [] ,
+  "اسلامي" : {
+    "قران" : [] ,
+    "الصحابة" : [] ,
 
   },
-  "Ø£ÙÙ„Ø§Ù…": {
-    "Ø£ÙÙ„Ø§Ù… Ø£ÙƒØ´Ù†": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙÙ„Ø§Ù… Ø£ÙƒØ´Ù† Ù…Ø´Ù‡ÙˆØ±Ø©.", answers: ["Ø¬ÙˆÙ† ÙˆÙŠÙƒ", "Ù…Ù‡Ù…Ø© Ù…Ø³ØªØ­ÙŠÙ„Ø©", "Ù…Ø§Ø¯ Ù…Ø§ÙƒØ³", "Ø¯ÙŠ Ù‡Ø§Ø±Ø¯", "Ø°Ø§ Ø¯Ø§Ø±Ùƒ Ù†Ø§ÙŠØª"] }
+  "أفلام": {
+    "أفلام أكشن": [
+      { question: "اذكر أفلام أكشن مشهورة.", answers: ["جون ويك", "مهمة مستحيلة", "ماد ماكس", "دي هارد", "ذا دارك نايت"] }
     ],
-    "Ø£ÙÙ„Ø§Ù… ÙƒÙˆÙ…ÙŠØ¯ÙŠØ§": [
-      { question: "Ø§Ø®ØªØ± Ø£ÙÙ„Ø§Ù…Ù‹Ø§ ÙƒÙˆÙ…ÙŠØ¯ÙŠØ© Ù…Ø¹Ø±ÙˆÙØ©.", answers: ["Ù‡ÙˆÙ… Ø£Ù„ÙˆÙ†", "Ø°Ø§ Ù…Ø§Ø³Ùƒ", "ÙˆØ§ÙŠØª ØªØ´ÙŠÙƒØ³", "Ù…Ø³ØªØ± Ø¨ÙŠÙ†", "Ù†Ø§ÙŠØª Ø£Øª Ø°Ø§ Ù…ÙŠÙˆØ²ÙŠÙˆÙ…"] }
+    "أفلام كوميديا": [
+      { question: "اختر أفلامًا كوميدية معروفة.", answers: ["هوم ألون", "ذا ماسك", "وايت تشيكس", "مستر بين", "نايت أت ذا ميوزيوم"] }
     ],
-    "Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ø³Ù„Ø³Ù„Ø© Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±.", answers: ["Ù‡Ø§Ø±ÙŠ Ø¨ÙˆØªØ±", "Ù‡ÙŠØ±Ù…Ø§ÙŠÙ†ÙŠ", "Ø±ÙˆÙ†", "Ø¯Ù…Ø¨Ù„Ø¯ÙˆØ±", "Ø³Ù†Ø§Ø¨"] }
+    "هاري بوتر": [
+      { question: "اذكر شخصيات من سلسلة هاري بوتر.", answers: ["هاري بوتر", "هيرمايني", "رون", "دمبلدور", "سناب"] }
     ],
-    "Ù…Ø§Ø±ÙÙ„": [
-      { question: "Ø§Ø®ØªØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ø£ÙÙ„Ø§Ù… Ù…Ø§Ø±ÙÙ„.", answers: ["Ø¢ÙŠØ±ÙˆÙ† Ù…Ø§Ù†", "Ø«ÙˆØ±", "ÙƒØ§Ø¨ØªÙ† Ø£Ù…Ø±ÙŠÙƒØ§", "Ù‡Ø§Ù„Ùƒ", "Ø³Ø¨Ø§ÙŠØ¯Ø±Ù…Ø§Ù†"] }
+    "مارفل": [
+      { question: "اختر شخصيات من أفلام مارفل.", answers: ["آيرون مان", "ثور", "كابتن أمريكا", "هالك", "سبايدرمان"] }
     ]
   },
-  "Ø§Ù„Ø¹Ø§Ø¨": {
-    "ÙÙŠÙØ§": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙˆØ¶Ø§Ø¹ Ù„Ø¹Ø¨ Ù…ÙˆØ¬ÙˆØ¯Ø© ÙÙŠ Ù„Ø¹Ø¨Ø© ÙÙŠÙØ§.", answers: ["Ø£Ù„ØªÙŠÙ…ÙŠØª ØªÙŠÙ…", "Ø§Ù„Ù…Ù‡Ù†Ø©", "Ù…Ø¨Ø§Ø±ÙŠØ§Øª Ø³Ø±ÙŠØ¹Ø©", "Ø§Ù„Ø£Ù†Ø¯ÙŠØ© Ø§Ù„Ù…Ø­ØªØ±ÙØ©", "ÙÙˆÙ„ØªØ§"] }
+  "العاب": {
+    "فيفا": [
+      { question: "اذكر أوضاع لعب موجودة في لعبة فيفا.", answers: ["ألتيميت تيم", "المهنة", "مباريات سريعة", "الأندية المحترفة", "فولتا"] }
     ],
-    "Ù‚Ø±Ø§Ù†Ø¯": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ø±Ø¦ÙŠØ³ÙŠØ© Ù…Ù† GTA V.", answers: ["Ù…Ø§ÙŠÙƒÙ„", "ÙØ±Ø§Ù†ÙƒÙ„ÙŠÙ†", "ØªØ±ÙŠÙÙˆØ±", "Ù„Ø§Ù…Ø§Ø±", "Ø£Ù…Ø§Ù†Ø¯Ø§"] }
+    "قراند": [
+      { question: "اذكر شخصيات رئيسية من GTA V.", answers: ["مايكل", "فرانكلين", "تريفور", "لامار", "أماندا"] }
     ],
-    "Ù…Ø§ÙŠÙ†ÙƒØ±Ø§ÙØª": [
-      { question: "Ø§Ø°ÙƒØ± Ù…ÙˆØ§Ø¯ Ø£Ùˆ Ø¹Ù†Ø§ØµØ± Ù…Ù† Ù…Ø§ÙŠÙ†ÙƒØ±Ø§ÙØª.", answers: ["Ø¯Ø§ÙŠÙ…ÙˆÙ†Ø¯", "Ø±ÙŠØ¯Ø³ØªÙˆÙ†", "Ø­Ø¯ÙŠØ¯", "Ø®Ø´Ø¨", "Ø¥ÙŠÙ…Ø±Ø§Ù„Ø¯"] }
+    "ماينكرافت": [
+      { question: "اذكر مواد أو عناصر من ماينكرافت.", answers: ["دايموند", "ريدستون", "حديد", "خشب", "إيمرالد"] }
     ],
-    "ÙÙˆØ±ØªÙ†Ø§ÙŠØª": [
-      { question: "Ø§Ø®ØªØ± Ø£Ø´ÙŠØ§Ø¡ Ù…Ø±ØªØ¨Ø·Ø© Ø¨Ù„Ø¹Ø¨Ø© ÙÙˆØ±ØªÙ†Ø§ÙŠØª.", answers: ["Ø¨Ø§ØªÙ„ Ø±ÙˆÙŠØ§Ù„", "Ø§Ù„Ø±Ù‚ØµØ§Øª", "Ø§Ù„Ø³ÙƒÙŠÙ†Ø§Øª", "Ø§Ù„Ø¨Ø§Øµ Ø§Ù„Ø·Ø§Ø¦Ø±", "Ø§Ù„Ø¨Ù†Ø§Ø¡"] }
+    "فورتنايت": [
+      { question: "اختر أشياء مرتبطة بلعبة فورتنايت.", answers: ["باتل رويال", "الرقصات", "السكينات", "الباص الطائر", "البناء"] }
     ]
   },
-  "Ø§Ù†Ù…ÙŠ": {
-    "ÙˆÙ† Ø¨ÙŠØ³": [
-      { question: "Ø§Ø°ÙƒØ± Ø£ÙØ±Ø§Ø¯ Ø·Ø§Ù‚Ù… Ù‚Ø¨Ø¹Ø© Ø§Ù„Ù‚Ø´.", answers: ["Ù„ÙˆÙÙŠ", "Ø²ÙˆØ±Ùˆ", "Ù†Ø§Ù…ÙŠ", "Ø³Ø§Ù†Ø¬ÙŠ", "Ø£ÙˆØ³ÙˆØ¨", "ØªØ´ÙˆØ¨Ø±"] }
+  "انمي": {
+    "ون بيس": [
+      { question: "اذكر أفراد طاقم قبعة القش.", answers: ["لوفي", "زورو", "نامي", "سانجي", "أوسوب", "تشوبر"] }
     ],
-    "Ù†Ø§Ø±ÙˆØªÙˆ": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù†Ø§Ø±ÙˆØªÙˆ.", answers: ["Ù†Ø§Ø±ÙˆØªÙˆ", "Ø³Ø§Ø³ÙƒÙŠ", "Ø³Ø§ÙƒÙˆØ±Ø§", "ÙƒØ§ÙƒØ§Ø´ÙŠ", "Ø¥ÙŠØªØ§ØªØ´ÙŠ"] }
+    "ناروتو": [
+      { question: "اذكر شخصيات من ناروتو.", answers: ["ناروتو", "ساسكي", "ساكورا", "كاكاشي", "إيتاتشي"] }
     ],
-    "Ù‡Ø¬ÙˆÙ… Ø§Ù„Ø¹Ù…Ø§Ù„Ù‚Ø©": [
-      { question: "Ø§Ø®ØªØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ù† Ù‡Ø¬ÙˆÙ… Ø§Ù„Ø¹Ù…Ø§Ù„Ù‚Ø©.", answers: ["Ø¥ÙŠØ±ÙŠÙ†", "Ù…ÙŠÙƒØ§Ø³Ø§", "Ø£Ø±Ù…ÙŠÙ†", "Ù„ÙŠÙØ§ÙŠ", "Ù‡Ø§Ù†Ø¬ÙŠ"] }
+    "هجوم العمالقة": [
+      { question: "اختر شخصيات من هجوم العمالقة.", answers: ["إيرين", "ميكاسا", "أرمين", "ليفاي", "هانجي"] }
     ],
-    "Ø¯ÙŠØ« Ù†ÙˆØª": [
-      { question: "Ø§Ø°ÙƒØ± Ø´Ø®ØµÙŠØ§Øª Ù…Ø¹Ø±ÙˆÙØ© Ù…Ù† Ø¯ÙŠØ« Ù†ÙˆØª.", answers: ["Ù„Ø§ÙŠØª", "Ø¥Ù„", "Ù…ÙŠØ³Ø§", "Ø±ÙŠÙˆÙƒ", "Ù†ÙŠØ±"] }
+    "ديث نوت": [
+      { question: "اذكر شخصيات معروفة من ديث نوت.", answers: ["لايت", "إل", "ميسا", "ريوك", "نير"] }
     ]
   },
-  "Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø¹Ø§Ù…Ø©": {
-    "Ø¹ÙˆØ§ØµÙ…": [
-      { question: "Ø§Ø®ØªØ± Ø¹ÙˆØ§ØµÙ… Ù„Ø¯ÙˆÙ„ Ø¹Ø±Ø¨ÙŠØ©.", answers: ["Ø¹Ù…Ù‘Ø§Ù†", "Ø§Ù„Ù‚Ø§Ù‡Ø±Ø©", "Ø§Ù„Ø±ÙŠØ§Ø¶", "Ø¨ØºØ¯Ø§Ø¯", "Ø§Ù„Ø±Ø¨Ø§Ø·"] }
+  "معلومات عامة": {
+    "عواصم": [
+      { question: "اختر عواصم لدول عربية.", answers: ["عمّان", "القاهرة", "الرياض", "بغداد", "الرباط"] }
     ],
-    "Ø§Ø®ØªØ±Ø§Ø¹Ø§Øª": [
-      { question: "Ø§Ø°ÙƒØ± Ø§Ø®ØªØ±Ø§Ø¹Ø§Øª ØºÙŠÙ‘Ø±Øª Ø§Ù„Ø¹Ø§Ù„Ù….", answers: ["Ø§Ù„Ø·Ø¨Ø§Ø¹Ø©", "Ø§Ù„Ù‡Ø§ØªÙ", "Ø§Ù„Ø¥Ù†ØªØ±Ù†Øª", "Ø§Ù„Ù…ØµØ¨Ø§Ø­", "Ø§Ù„Ø·Ø§Ø¦Ø±Ø©"] }
+    "اختراعات": [
+      { question: "اذكر اختراعات غيّرت العالم.", answers: ["الطباعة", "الهاتف", "الإنترنت", "المصباح", "الطائرة"] }
     ],
-    "ØªØ§Ø±ÙŠØ®": [
-      { question: "Ø§Ø®ØªØ± Ø­Ø¶Ø§Ø±Ø§Øª Ù‚Ø¯ÙŠÙ…Ø© Ù…Ø¹Ø±ÙˆÙØ©.", answers: ["Ø§Ù„Ø±ÙˆÙ…Ø§Ù†ÙŠØ©", "Ø§Ù„ÙØ±Ø¹ÙˆÙ†ÙŠØ©", "Ø§Ù„Ø¨Ø§Ø¨Ù„ÙŠØ©", "Ø§Ù„Ø¥ØºØ±ÙŠÙ‚ÙŠØ©", "Ø§Ù„ÙØ§Ø±Ø³ÙŠØ©"] }
+    "تاريخ": [
+      { question: "اختر حضارات قديمة معروفة.", answers: ["الرومانية", "الفرعونية", "البابلية", "الإغريقية", "الفارسية"] }
     ],
-    "Ø¹Ù„ÙˆÙ…": [
-      { question: "Ø§Ø°ÙƒØ± ÙƒÙˆØ§ÙƒØ¨ Ù…Ù† Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹Ø© Ø§Ù„Ø´Ù…Ø³ÙŠØ©.", answers: ["Ø§Ù„Ù…Ø±ÙŠØ®", "Ø§Ù„Ù…Ø´ØªØ±ÙŠ", "Ø²Ø­Ù„", "Ø¹Ø·Ø§Ø±Ø¯", "Ø§Ù„Ø²Ù‡Ø±Ø©"] }
+    "علوم": [
+      { question: "اذكر كواكب من المجموعة الشمسية.", answers: ["المريخ", "المشتري", "زحل", "عطارد", "الزهرة"] }
     ]
   },
 };
 
 function getAllQuestionBanks() {
   return {
-    "Ù…Ø§Ø°Ø§ ØªØ¹Ø±Ù": knowQuestionBank,
-    "Ø§Ù„Ù…Ø²Ø§Ø¯": auctionQuestionBank,
-    "Ø§Ù„Ø³Ø±Ø¹Ø©": speedQuestionBank,
-    "Ù…Ù† Ø£Ù†Ø§": whoAmIQuestionBank
+    "ماذا تعرف": knowQuestionBank,
+    "المزاد": auctionQuestionBank,
+    "السرعة": speedQuestionBank,
+    "من أنا": whoAmIQuestionBank
   };
 }
 
@@ -1544,7 +1545,7 @@ async function navigateToExternalGame(gameKey) {
     window.location.href = targetUrl;
     return;
   }
-  showNotif('ØªØ¹Ø°Ø± Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ Ù…Ù„Ù Ø§Ù„Ù„Ø¹Ø¨Ø©. Ø§Ø±ÙØ¹ Ø§Ù„Ù…Ù„ÙÙŠÙ† Ø¯Ø§Ø®Ù„ Ù†ÙØ³ Ø§Ù„Ù…Ø³ØªÙˆØ¯Ø¹ Ù…Ø¹ Ø§Ù„Ø­ÙØ§Ø¸ Ø¹Ù„Ù‰ Ø§Ù„Ø£Ø³Ù…Ø§Ø¡.');
+  showNotif('تعذر العثور على ملف اللعبة. ارفع الملفين داخل نفس المستودع مع الحفاظ على الأسماء.');
 }
 
 // ===== FIREBASE AUTH =====
@@ -1629,7 +1630,7 @@ function isSubCategoryUnlocked(subCat) {
 
 function updatePointsUI() {
   document.getElementById('pointsVal').textContent = userPoints;
-  document.getElementById('fabPointsBar').textContent = `âš¡ ${userPoints} Ù†Ù‚Ø·Ø©`;
+  document.getElementById('fabPointsBar').textContent = `⚡ ${userPoints} نقطة`;
 }
 
 // ===== AUTH FUNCTIONS =====
@@ -1637,14 +1638,14 @@ async function doLogin() {
   const email = document.getElementById('authEmail').value.trim();
   const pass = document.getElementById('authPass').value;
   const msg = document.getElementById('authMsg');
-  if (!email || !pass) { msg.textContent = 'âš ï¸ Ø£Ø¯Ø®Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ ÙˆÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±'; return; }
-  msg.textContent = 'â³ Ø¬Ø§Ø±ÙŠ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„...';
+  if (!email || !pass) { msg.textContent = '⚠️ أدخل البريد وكلمة المرور'; return; }
+  msg.textContent = '⏳ جاري تسجيل الدخول...';
   try {
     await auth.signInWithEmailAndPassword(email, pass);
     msg.textContent = '';
   } catch(e) {
-    const errs = { 'auth/user-not-found': 'Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø­Ø³Ø§Ø¨ Ø¨Ù‡Ø°Ø§ Ø§Ù„Ø¨Ø±ÙŠØ¯', 'auth/wrong-password': 'ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± ØºÙŠØ± ØµØ­ÙŠØ­Ø©', 'auth/invalid-email': 'Ø¨Ø±ÙŠØ¯ ØºÙŠØ± ØµØ§Ù„Ø­' };
-    msg.textContent = 'âŒ ' + (errs[e.code] || e.message);
+    const errs = { 'auth/user-not-found': 'لا يوجد حساب بهذا البريد', 'auth/wrong-password': 'كلمة المرور غير صحيحة', 'auth/invalid-email': 'بريد غير صالح' };
+    msg.textContent = '❌ ' + (errs[e.code] || e.message);
   }
 }
 
@@ -1652,22 +1653,22 @@ async function doRegister() {
   const email = document.getElementById('authEmail').value.trim();
   const pass = document.getElementById('authPass').value;
   const msg = document.getElementById('authMsg');
-  if (!email || !pass) { msg.textContent = 'âš ï¸ Ø£Ø¯Ø®Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ ÙˆÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±'; return; }
-  if (pass.length < 6) { msg.textContent = 'âš ï¸ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± 6 Ø£Ø­Ø±Ù Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„'; return; }
-  msg.textContent = 'â³ Ø¬Ø§Ø±ÙŠ Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø­Ø³Ø§Ø¨...';
+  if (!email || !pass) { msg.textContent = '⚠️ أدخل البريد وكلمة المرور'; return; }
+  if (pass.length < 6) { msg.textContent = '⚠️ كلمة المرور 6 أحرف على الأقل'; return; }
+  msg.textContent = '⏳ جاري إنشاء الحساب...';
   try {
     await auth.createUserWithEmailAndPassword(email, pass);
     msg.textContent = '';
-    showNotif('âœ… ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­!');
+    showNotif('✅ تم إنشاء حسابك بنجاح!');
   } catch(e) {
-    const errs = { 'auth/email-already-in-use': 'Ø§Ù„Ø¨Ø±ÙŠØ¯ Ù…Ø³ØªØ®Ø¯Ù… Ø¨Ø§Ù„ÙØ¹Ù„', 'auth/invalid-email': 'Ø¨Ø±ÙŠØ¯ ØºÙŠØ± ØµØ§Ù„Ø­', 'auth/weak-password': 'ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø¶Ø¹ÙŠÙØ© Ø¬Ø¯Ø§Ù‹' };
-    msg.textContent = 'âŒ ' + (errs[e.code] || e.message);
+    const errs = { 'auth/email-already-in-use': 'البريد مستخدم بالفعل', 'auth/invalid-email': 'بريد غير صالح', 'auth/weak-password': 'كلمة المرور ضعيفة جداً' };
+    msg.textContent = '❌ ' + (errs[e.code] || e.message);
   }
 }
 
 async function doLogout() {
   await auth.signOut();
-  showNotif('ØªÙ… ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬');
+  showNotif('تم تسجيل الخروج');
 }
 
 // ===== FAB MENU =====
@@ -1691,14 +1692,14 @@ async function openProfile() {
   const name = currentUser.displayName || currentUser.email.split('@')[0];
   document.getElementById('profileName').textContent = name;
   document.getElementById('profileAvatar').textContent = name.charAt(0).toUpperCase();
-  document.getElementById('profilePoints').textContent = userPoints + ' Ù†Ù‚Ø·Ø© âš¡';
+  document.getElementById('profilePoints').textContent = userPoints + ' نقطة ⚡';
   await loadSubscription();
   if (isSubscribed()) {
     const exp = subscriptionData.expiresAt.toDate ? subscriptionData.expiresAt.toDate() : new Date(subscriptionData.expiresAt);
-    document.getElementById('profileSub').textContent = 'âœ… Ù…Ø´ØªØ±Ùƒ';
-    document.getElementById('profileSubBadge').innerHTML = `<div class="sub-active-badge">âœ… Ø§Ø´ØªØ±Ø§ÙƒÙƒ ÙØ¹Ù‘Ø§Ù„ Ø­ØªÙ‰ ${exp.toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'})}</div>`;
+    document.getElementById('profileSub').textContent = '✅ مشترك';
+    document.getElementById('profileSubBadge').innerHTML = `<div class="sub-active-badge">✅ اشتراكك فعّال حتى ${exp.toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'})}</div>`;
   } else {
-    document.getElementById('profileSub').textContent = 'ØºÙŠØ± Ù…Ø´ØªØ±Ùƒ';
+    document.getElementById('profileSub').textContent = 'غير مشترك';
     document.getElementById('profileSubBadge').innerHTML = '';
   }
   document.getElementById('profileOverlay').style.display = 'flex';
@@ -1707,7 +1708,7 @@ function closeProfile() { document.getElementById('profileOverlay').style.displa
 
 // ===== WATCH AD =====
 function watchAdForPoints() {
-  if (!currentUser) { showNotif('âš ï¸ Ø§Ù„Ø±Ø¬Ø§Ø¡ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø£ÙˆÙ„Ø§Ù‹'); return; }
+  if (!currentUser) { showNotif('⚠️ الرجاء تسجيل الدخول أولاً'); return; }
   window.open("https://www.profitablecpmratenetwork.com/uga1cwcs6v?key=6225595ce736280f773bf52fdce64d80", '_blank');
   document.getElementById("adConfirmPopup").style.display = "block";
 }
@@ -1715,7 +1716,7 @@ async function confirmAdWatched() {
   userPoints += 1;
   updatePointsUI();
   await saveUserData();
-  showNotif('âœ… ØªÙ… Ø¥Ø¶Ø§ÙØ© Ù†Ù‚Ø·Ø© ÙˆØ§Ø­Ø¯Ø©!');
+  showNotif('✅ تم إضافة نقطة واحدة!');
   closeAdConfirm();
 }
 function closeAdConfirm() { document.getElementById("adConfirmPopup").style.display = "none"; }
@@ -1733,14 +1734,14 @@ function showLockedPopup(subCat) {
   overlay.id = 'lockedModal';
   overlay.innerHTML = `
     <div class="modal-box">
-      <div class="modal-icon">ðŸ”’</div>
+      <div class="modal-icon">🔒</div>
       <div class="modal-title">${subCat}</div>
-      <div class="modal-msg">Ù‡Ø°Ù‡ Ø§Ù„ÙØ¦Ø© Ù…Ù‚ÙÙ„Ø©.<br>ÙŠÙ…ÙƒÙ†Ùƒ ÙØªØ­Ù‡Ø§ Ø¨Ù€ <strong style="color:var(--gold)">${CATEGORY_COST} Ù†Ù‚Ø·Ø©</strong> Ø£Ùˆ Ø¨Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ Ø§Ù„Ø´Ù‡Ø±ÙŠ Ù„ÙØªØ­ Ø¬Ù…ÙŠØ¹ Ø§Ù„ÙØ¦Ø§Øª.</div>
-      <div style="color:var(--muted);font-size:13px;margin-bottom:4px;">Ù†Ù‚Ø§Ø·Ùƒ Ø§Ù„Ø­Ø§Ù„ÙŠØ©: <strong style="color:var(--accent)">${userPoints} Ù†Ù‚Ø·Ø© âš¡</strong></div>
+      <div class="modal-msg">هذه الفئة مقفلة.<br>يمكنك فتحها بـ <strong style="color:var(--gold)">${CATEGORY_COST} نقطة</strong> أو بالاشتراك الشهري لفتح جميع الفئات.</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:4px;">نقاطك الحالية: <strong style="color:var(--accent)">${userPoints} نقطة ⚡</strong></div>
       <div class="modal-btns">
-        <button class="modal-btn modal-btn-primary" onclick="purchaseCategory('${subCat.replace(/'/g,"\\'")}')">ðŸ”“ Ø´Ø±Ø§Ø¡ Ø¨Ù€ ${CATEGORY_COST} Ù†Ù‚Ø·Ø©</button>
-        <button class="modal-btn modal-btn-sub" onclick="closeLockedModal();openSubInfo()">ðŸ’Ž Ø§Ø´ØªØ±Ø§Ùƒ Ø´Ù‡Ø±ÙŠ</button>
-        <button class="modal-btn modal-btn-close" onclick="closeLockedModal()">Ø¥ØºÙ„Ø§Ù‚</button>
+        <button class="modal-btn modal-btn-primary" onclick="purchaseCategory('${subCat.replace(/'/g,"\\'")}')">🔓 شراء بـ ${CATEGORY_COST} نقطة</button>
+        <button class="modal-btn modal-btn-sub" onclick="closeLockedModal();openSubInfo()">💎 اشتراك شهري</button>
+        <button class="modal-btn modal-btn-close" onclick="closeLockedModal()">إغلاق</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -1752,10 +1753,10 @@ function closeLockedModal() {
 }
 
 async function purchaseCategory(subCat) {
-  if (!currentUser) { showNotif('âš ï¸ Ø§Ù„Ø±Ø¬Ø§Ø¡ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„'); return; }
+  if (!currentUser) { showNotif('⚠️ الرجاء تسجيل الدخول'); return; }
   if (purchasedCategories.includes(subCat)) { closeLockedModal(); return; }
   if (userPoints < CATEGORY_COST) {
-    showNotif(`âŒ Ù†Ù‚Ø§Ø·Ùƒ ØºÙŠØ± ÙƒØ§ÙÙŠØ©! Ù„Ø¯ÙŠÙƒ ${userPoints} Ù†Ù‚Ø·Ø© ÙÙ‚Ø·`);
+    showNotif(`❌ نقاطك غير كافية! لديك ${userPoints} نقطة فقط`);
     return;
   }
   userPoints -= CATEGORY_COST;
@@ -1763,7 +1764,7 @@ async function purchaseCategory(subCat) {
   updatePointsUI();
   await saveUserData();
   closeLockedModal();
-  showNotif(`âœ… ØªÙ… ÙØªØ­ ÙØ¦Ø© "${subCat}" Ø¨Ù†Ø¬Ø§Ø­!`);
+  showNotif(`✅ تم فتح فئة "${subCat}" بنجاح!`);
   // Refresh categories view if open
   if (document.getElementById('view-categories').classList.contains('active')) {
     setupCategoriesView();
@@ -1775,7 +1776,7 @@ function openSubInfo() {
   const badge = document.getElementById('subActiveBadgeInfo');
   if (badge && isSubscribed()) {
     const exp = subscriptionData.expiresAt.toDate ? subscriptionData.expiresAt.toDate() : new Date(subscriptionData.expiresAt);
-    badge.innerHTML = `<div class="sub-active-badge">âœ… Ø§Ø´ØªØ±Ø§ÙƒÙƒ ÙØ¹Ù‘Ø§Ù„ Ø­ØªÙ‰ ${exp.toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})}</div>`;
+    badge.innerHTML = `<div class="sub-active-badge">✅ اشتراكك فعّال حتى ${exp.toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})}</div>`;
   } else if (badge) { badge.innerHTML = ''; }
   document.getElementById('subInfoOverlay').style.display = 'flex';
 }
@@ -1794,14 +1795,14 @@ function selectPlan(months) {
   [1, 6, 12].forEach(p => { const el = document.getElementById('plan-' + p); if (el) el.classList.toggle('selected', p === months); });
   document.getElementById('subConfirmBtn').disabled = false;
   const prices = { 1: '1$', 6: '5$', 12: '9$' };
-  document.getElementById('subPlanMsg').textContent = `âœ… Ø§Ø®ØªØ±Øª Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ Ù„Ù…Ø¯Ø© ${months} Ø´Ù‡Ø± Ø¨Ø³Ø¹Ø± ${prices[months]}`;
+  document.getElementById('subPlanMsg').textContent = `✅ اخترت الاشتراك لمدة ${months} شهر بسعر ${prices[months]}`;
 }
 async function confirmSubscription() {
   if (!selectedPlan || !currentUser) return;
   const btn = document.getElementById('subConfirmBtn');
   const msgDiv = document.getElementById('subPlanMsg');
   btn.disabled = true;
-  btn.textContent = 'â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªÙØ¹ÙŠÙ„...';
+  btn.textContent = '⏳ جاري التفعيل...';
   try {
     const prices = { 1: '1$', 6: '5$', 12: '9$' };
     const now = new Date();
@@ -1815,13 +1816,13 @@ async function confirmSubscription() {
     });
     closeSubPlans();
     document.getElementById('subInfoOverlay').style.display = 'none';
-    showNotif(`âœ… ØªÙ… ØªÙØ¹ÙŠÙ„ Ø§Ø´ØªØ±Ø§ÙƒÙƒ Ù„Ù…Ø¯Ø© ${selectedPlan} Ø´Ù‡Ø±!`);
+    showNotif(`✅ تم تفعيل اشتراكك لمدة ${selectedPlan} شهر!`);
     await loadSubscription();
     if (document.getElementById('view-categories').classList.contains('active')) setupCategoriesView();
   } catch(e) {
     btn.disabled = false;
-    btn.textContent = 'âœ… Ø§Ø´ØªØ±Ùƒ Ø§Ù„Ø¢Ù†';
-    msgDiv.textContent = 'âŒ Ø®Ø·Ø£: ' + e.message;
+    btn.textContent = '✅ اشترك الآن';
+    msgDiv.textContent = '❌ خطأ: ' + e.message;
   }
   btn.onclick = () => confirmSubscription();
 }
@@ -1829,7 +1830,7 @@ async function confirmSubscription() {
 // ===== SUBSCRIBERS LIST (ADMIN) =====
 function openSubRequestsPopup() {
   if (!currentUser || !isAdminEmail(currentUser.email)) {
-    showNotif('Ù‡Ø°Ù‡ Ø§Ù„Ù‚Ø§Ø¦Ù…Ø© Ù…ØªØ§Ø­Ø© Ù„Ù„Ø£Ø¯Ù…Ù† ÙÙ‚Ø·');
+    showNotif('هذه القائمة متاحة للأدمن فقط');
     return;
   }
   updateSubscribersCount();
@@ -1841,7 +1842,7 @@ function closeSubRequestsPopup() { document.getElementById('subRequestsPopup').s
 async function loadSubsList() {
   const list = document.getElementById('subRequestsList');
   if (!currentUser || !isAdminEmail(currentUser.email)) {
-    list.innerHTML = '<div style="color:var(--red);text-align:center;padding:20px;">âŒ Ù‡Ø°Ù‡ Ø§Ù„Ù‚Ø§Ø¦Ù…Ø© Ù„Ù„Ø£Ø¯Ù…Ù† ÙÙ‚Ø·</div>';
+    list.innerHTML = '<div style="color:var(--red);text-align:center;padding:20px;">❌ هذه القائمة للأدمن فقط</div>';
     return;
   }
   try {
@@ -1854,25 +1855,25 @@ async function loadSubsList() {
     }).length;
     const label = document.getElementById('subscribersCountLabel');
     if (label) label.textContent = `(${activeCount})`;
-    if (snap.empty) { list.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">ðŸ“­ Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ù…Ø´ØªØ±ÙƒÙˆÙ† Ø­ØªÙ‰ Ø§Ù„Ø¢Ù†</div>'; return; }
+    if (snap.empty) { list.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">📭 لا يوجد مشتركون حتى الآن</div>'; return; }
     list.innerHTML = '';
     snap.forEach(doc => {
       const d = doc.data();
-      const startDate = d.startedAt ? new Date(d.startedAt.toDate()).toLocaleDateString('ar-EG') : 'â€”';
-      const endDate = d.expiresAt ? new Date(d.expiresAt.toDate ? d.expiresAt.toDate() : d.expiresAt).toLocaleDateString('ar-EG') : 'â€”';
+      const startDate = d.startedAt ? new Date(d.startedAt.toDate()).toLocaleDateString('ar-EG') : '—';
+      const endDate = d.expiresAt ? new Date(d.expiresAt.toDate ? d.expiresAt.toDate() : d.expiresAt).toLocaleDateString('ar-EG') : '—';
       const now = new Date();
       const isActive = d.expiresAt && new Date(d.expiresAt.toDate ? d.expiresAt.toDate() : d.expiresAt) > now;
       const div = document.createElement('div');
       div.style.cssText = 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin:10px 0;';
       div.innerHTML = `
-        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">ðŸ“§ ${d.email||'â€”'}</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">ðŸ“¦ Ø§Ù„Ø®Ø·Ø©: ${d.plan} Ø´Ù‡Ø± | ðŸ’° ${d.price||'â€”'}</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">ðŸ“… Ø§Ù„Ø¨Ø¯Ø§ÙŠØ©: ${startDate}</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">ðŸ”š Ø§Ù„Ù†Ù‡Ø§ÙŠØ©: ${endDate}</div>
-        <div style="font-size:13px;font-weight:700;color:${isActive?'var(--green)':'var(--red)'};">${isActive?'âœ… ÙØ¹Ù‘Ø§Ù„':'âŒ Ù…Ù†ØªÙ‡ÙŠ'}</div>`;
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">📧 ${d.email||'—'}</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">📦 الخطة: ${d.plan} شهر | 💰 ${d.price||'—'}</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">📅 البداية: ${startDate}</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">🔚 النهاية: ${endDate}</div>
+        <div style="font-size:13px;font-weight:700;color:${isActive?'var(--green)':'var(--red)'};">${isActive?'✅ فعّال':'❌ منتهي'}</div>`;
       list.appendChild(div);
     });
-  } catch(e) { list.innerHTML = '<div style="color:var(--red);text-align:center;">âŒ Ø®Ø·Ø£: ' + e.message + '</div>'; }
+  } catch(e) { list.innerHTML = '<div style="color:var(--red);text-align:center;">❌ خطأ: ' + e.message + '</div>'; }
 }
 
 function openReportPopup() {
@@ -1896,8 +1897,8 @@ async function submitQuestionIssue() {
   }
   if (!currentQuestionIssueData) return;
   try {
-    const countSnap = await db.collection('questionIssues').get();
-    await db.collection('questionIssues').add({
+    const countSnap = await db.collection(THALATHIN_ISSUES_COLLECTION).get();
+    await db.collection(THALATHIN_ISSUES_COLLECTION).add({
       ...currentQuestionIssueData,
       issueNumber: countSnap.size + 1,
       gameSource: 'thalathin',
@@ -1926,7 +1927,7 @@ async function openIssuesPopup() {
   popup.style.display = 'flex';
   list.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">⏳ جاري التحميل...</div>';
   try {
-    const snap = await db.collection('questionIssues').where('status', '==', 'open').limit(50).get();
+    const snap = await db.collection(THALATHIN_ISSUES_COLLECTION).where('status', '==', 'open').limit(50).get();
     const docs = [];
     snap.forEach((doc) => docs.push({ id: doc.id, ...doc.data() }));
     docs.sort((a, b) => (a.issueNumber || 0) - (b.issueNumber || 0));
@@ -1954,7 +1955,7 @@ async function openIssuesPopup() {
 
 async function resolveIssue(id) {
   try {
-    await db.collection('questionIssues').doc(id).update({ status: 'resolved' });
+    await db.collection(THALATHIN_ISSUES_COLLECTION).doc(id).update({ status: 'resolved' });
     openIssuesPopup();
   } catch (error) {
     showNotif('تعذر تحديث المشكلة: ' + error.message);
@@ -2046,7 +2047,7 @@ function getQuestionKey(round) {
 }
 function collectGameQuestions(state, game) {
   const gameCategories = state.gameCategories[game] || state.selectedCategories;
-  const mode = game === "Ù…Ø§Ø°Ø§ ØªØ¹Ø±Ù" ? "know" : game === "Ø§Ù„Ù…Ø²Ø§Ø¯" ? "auction" : game === "Ø§Ù„Ø³Ø±Ø¹Ø©" ? "speed" : "whoami";
+  const mode = game === "ماذا تعرف" ? "know" : game === "المزاد" ? "auction" : game === "السرعة" ? "speed" : "whoami";
   const questionBank = getGameQuestionBank(game);
   const allQuestions = [];
 
@@ -2124,13 +2125,13 @@ function showWinnerOverlay(state) {
   const scoreBox = document.getElementById("winnerScoreBox");
 
   if (s1 === s2) {
-    trophy.textContent = "ðŸ¤";
-    eyebrow.textContent = "ØªØ¹Ø§Ø¯Ù„ Ù…Ø«ÙŠØ±!";
-    name.textContent = "Ø§Ù„Ù„Ø§Ø¹Ø¨Ø§Ù† Ù…ØªØ¹Ø§Ø¯Ù„Ø§Ù†";
+    trophy.textContent = "🤝";
+    eyebrow.textContent = "تعادل مثير!";
+    name.textContent = "اللاعبان متعادلان";
   } else {
     const winner = s1 > s2 ? p1 : p2;
-    trophy.textContent = "ðŸ†";
-    eyebrow.textContent = "Ø§Ù„ÙØ§Ø¦Ø² Ø¨Ø§Ù„ØªØ­Ø¯ÙŠ";
+    trophy.textContent = "🏆";
+    eyebrow.textContent = "الفائز بالتحدي";
     name.textContent = winner;
   }
   scoreBox.innerHTML = `<span class="score-a">${p1}: ${s1}</span><span class="score-divider">vs</span><span class="score-b">${p2}: ${s2}</span>`;
@@ -2150,8 +2151,8 @@ function setupWelcomeView() {
 
   startBtn.onclick = () => {
     const n1 = p1.value.trim(), n2 = p2.value.trim();
-    if (!n1 || !n2) { showNotice("Ø£Ø¯Ø®Ù„ Ø§Ø³Ù…ÙŽÙŠ Ø§Ù„Ù„Ø§Ø¹Ø¨ÙŠÙ† Ø£ÙˆÙ„Ø§Ù‹."); return; }
-    if (n1 === n2) { showNotice("Ø£Ø³Ù…Ø§Ø¡ Ø§Ù„Ù„Ø§Ø¹Ø¨ÙŠÙ† ÙŠØ¬Ø¨ Ø£Ù† ØªÙƒÙˆÙ† Ù…Ø®ØªÙ„ÙØ©."); return; }
+    if (!n1 || !n2) { showNotice("أدخل اسمَي اللاعبين أولاً."); return; }
+    if (n1 === n2) { showNotice("أسماء اللاعبين يجب أن تكون مختلفة."); return; }
     state.players = [n1, n2];
     resetScores(state);
     state.selectedGames = [];
@@ -2171,7 +2172,7 @@ function setupWelcomeView() {
 function setupGamesView() {
   const state = loadState();
   if (!ensurePlayersExist(state)) return;
-  document.getElementById("playersSummary").textContent = `Ø§Ù„Ù„Ø§Ø¹Ø¨Ø§Ù†: ${state.players[0]} Ùˆ ${state.players[1]}`;
+  document.getElementById("playersSummary").textContent = `اللاعبان: ${state.players[0]} و ${state.players[1]}`;
   document.getElementById("backToWelcomeBtn").onclick = () => goTo("welcome");
 
   const gameChoices = document.getElementById("gameChoices");
@@ -2181,7 +2182,7 @@ function setupGamesView() {
   function renderSelectedGames() {
     selectedGamesEl.innerHTML = "";
     if (state.selectedGames.length === 0) {
-      selectedGamesEl.innerHTML = `<p style="color:var(--muted);font-size:0.95rem;text-align:center;padding-top:24px;">Ù„Ù… ØªØ®ØªØ± Ø£ÙŠ Ù„Ø¹Ø¨Ø© Ø¨Ø¹Ø¯.</p>`;
+      selectedGamesEl.innerHTML = `<p style="color:var(--muted);font-size:0.95rem;text-align:center;padding-top:24px;">لم تختر أي لعبة بعد.</p>`;
       return;
     }
     state.selectedGames.forEach((game, idx) => {
@@ -2193,13 +2194,13 @@ function setupGamesView() {
           <div>
             <p style="font-weight:900;color:var(--text);margin:0 0 6px;">${game}</p>
             <div class="counter-wrap">
-              <button class="counter-btn" data-game="${game}" data-dir="-1">âˆ’</button>
+              <button class="counter-btn" data-game="${game}" data-dir="-1">−</button>
               <span class="counter-value" id="count-${game}">${state.questionCounts[game]}</span>
               <button class="counter-btn" data-game="${game}" data-dir="1">+</button>
             </div>
           </div>
         </div>
-        <button class="remove-btn" data-game="${game}">âœ•</button>`;
+        <button class="remove-btn" data-game="${game}">✕</button>`;
       selectedGamesEl.appendChild(item);
     });
     selectedGamesEl.querySelectorAll(".remove-btn").forEach((btn) => {
@@ -2253,7 +2254,7 @@ function setupGamesView() {
   };
 
   document.getElementById("toCategoriesBtn").onclick = () => {
-    if (state.selectedGames.length === 0) { showNotice("Ø§Ø®ØªØ± Ù„Ø¹Ø¨Ø© ÙˆØ§Ø­Ø¯Ø© Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„."); return; }
+    if (state.selectedGames.length === 0) { showNotice("اختر لعبة واحدة على الأقل."); return; }
     state.categoryEditGame = state.selectedGames[0];
     saveState(state);
     goTo("categories");
@@ -2268,11 +2269,11 @@ function setupCategoriesView() {
   const targetGame = state.categoryEditGame || state.selectedGames[0];
 
   if (isEditMode) {
-    document.getElementById("selectionSummary").textContent = `ØªØ­Ø¯ÙŠØ¯ ÙØ¦Ø§Øª Ù„Ø¹Ø¨Ø©: ${targetGame}`;
+    document.getElementById("selectionSummary").textContent = `تحديد فئات لعبة: ${targetGame}`;
     document.getElementById("categoriesModeNotice").textContent = "";
   } else {
-    document.getElementById("selectionSummary").textContent = "Ø§Ù„ÙØ¦Ø§Øª Ù…Ø­Ø¯Ø¯Ø© Ù„Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø£Ù„Ø¹Ø§Ø¨";
-    document.getElementById("categoriesModeNotice").textContent = "Ø§Ù„ÙØ¦Ø§Øª Ø§Ù„Ù…Ø®ØªØ§Ø±Ø© Ù‡Ù†Ø§ Ø³ØªÙØ·Ø¨ÙŽÙ‘Ù‚ Ø¹Ù„Ù‰ Ø§Ù„Ù„Ø¹Ø¨Ø© Ø§Ù„Ù‚Ø§Ø¯Ù…Ø© ÙÙ‚Ø·.";
+    document.getElementById("selectionSummary").textContent = "الفئات محددة لجميع الألعاب";
+    document.getElementById("categoriesModeNotice").textContent = "الفئات المختارة هنا ستُطبَّق على اللعبة القادمة فقط.";
   }
 
   document.getElementById("backFromCategoriesBtn").onclick = () => goTo("games");
@@ -2303,7 +2304,7 @@ function setupCategoriesView() {
       btn.textContent = sub;
 
       if (!isUnlocked) {
-        btn.title = `Ù…Ù‚ÙÙ„ - ÙŠØ­ØªØ§Ø¬ ${CATEGORY_COST} Ù†Ù‚Ø·Ø© Ø£Ùˆ Ø§Ø´ØªØ±Ø§Ùƒ`;
+        btn.title = `مقفل - يحتاج ${CATEGORY_COST} نقطة أو اشتراك`;
         btn.onclick = () => showLockedPopup(sub);
       } else {
         btn.onclick = () => {
@@ -2327,7 +2328,7 @@ function setupCategoriesView() {
 
   document.getElementById("launchGameBtn").onclick = () => {
     const totalSelected = Object.values(selection).flat().length;
-    if (totalSelected === 0) { showNotice("Ø§Ø®ØªØ± ÙØ¦Ø© ÙˆØ§Ø­Ø¯Ø© Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„."); return; }
+    if (totalSelected === 0) { showNotice("اختر فئة واحدة على الأقل."); return; }
     state.selectedCategories = selection;
     if (isEditMode) {
       state.gameCategories[targetGame] = cloneCategorySelection(selection);
@@ -2347,7 +2348,7 @@ function buildCurrentGameQueue(state) {
   if (!game) return;
   const gameCategories = state.gameCategories[game] || state.selectedCategories;
   const count = state.questionCounts[game] || 3;
-  const mode = game === "Ù…Ø§Ø°Ø§ ØªØ¹Ø±Ù" ? "know" : game === "Ø§Ù„Ù…Ø²Ø§Ø¯" ? "auction" : game === "Ø§Ù„Ø³Ø±Ø¹Ø©" ? "speed" : "whoami";
+  const mode = game === "ماذا تعرف" ? "know" : game === "المزاد" ? "auction" : game === "السرعة" ? "speed" : "whoami";
   const questionBank = getGameQuestionBank(game);
   const queue = [];
   const allQuestions = [];
@@ -2401,8 +2402,8 @@ function setupQuizView() {
       if (mode === "know") {
         // 3 red miss dots + 1 blue dot per player
         controlsHtml = `<div class="life-row" style="gap:10px;flex-wrap:wrap;margin-top:6px;">
-          ${ls.misses.map((used, i) => `<button class="life-dot miss${used ? " used" : ""}" data-player="${player}" data-type="miss" data-idx="${i}" style="width:52px;height:52px;font-size:.82rem;">Ø®Ø·Ø£</button>`).join("")}
-          <button class="life-dot bonus${ls.bonuses[0] ? " used" : ""}" data-player="${player}" data-type="bonus" data-idx="0" style="width:52px;height:52px;font-size:.82rem;">Ø¨Ø§Ø³</button>
+          ${ls.misses.map((used, i) => `<button class="life-dot miss${used ? " used" : ""}" data-player="${player}" data-type="miss" data-idx="${i}" style="width:52px;height:52px;font-size:.82rem;">خطأ</button>`).join("")}
+          <button class="life-dot bonus${ls.bonuses[0] ? " used" : ""}" data-player="${player}" data-type="bonus" data-idx="0" style="width:52px;height:52px;font-size:.82rem;">باس</button>
         </div>`;
       } else if (mode === "auction") {
         const aState = state.auctionState;
@@ -2414,24 +2415,24 @@ function setupQuizView() {
               <span class="counter-value auction-counter-value" id="bid-${player}">${bidValue}</span>
               <button class="counter-btn" data-action="auction-bid" data-player="${player}" data-dir="1">+</button>
             </div>
-            <button class="primary-btn" style="padding:10px 20px;font-size:0.92rem;" data-action="auction-select" data-player="${player}">Ø§Ø®ØªØ±</button>
+            <button class="primary-btn" style="padding:10px 20px;font-size:0.92rem;" data-action="auction-select" data-player="${player}">اختر</button>
           </div>`;
         } else if (aState.owner === player) {
           controlsHtml = `<div style="margin-top:12px;display:flex;gap:14px;justify-content:center;">
-            <button style="width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:rgba(46,204,140,0.2);color:var(--green);font-size:1.5rem;cursor:pointer;font-weight:900;transition:all .2s;" data-action="auction-correct" data-player="${player}">âœ“</button>
-            <button style="width:54px;height:54px;border-radius:50%;border:2px solid var(--red);background:rgba(255,63,95,0.2);color:var(--red);font-size:1.5rem;cursor:pointer;font-weight:900;transition:all .2s;" data-action="auction-wrong" data-player="${player}">âœ•</button>
+            <button style="width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:rgba(46,204,140,0.2);color:var(--green);font-size:1.5rem;cursor:pointer;font-weight:900;transition:all .2s;" data-action="auction-correct" data-player="${player}">✓</button>
+            <button style="width:54px;height:54px;border-radius:50%;border:2px solid var(--red);background:rgba(255,63,95,0.2);color:var(--red);font-size:1.5rem;cursor:pointer;font-weight:900;transition:all .2s;" data-action="auction-wrong" data-player="${player}">✕</button>
           </div>`;
         }
       } else if (mode === "speed" || mode === "whoami") {
         controlsHtml = `<div style="margin-top:12px;display:flex;justify-content:center;">
-          <button style="width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:rgba(46,204,140,0.2);color:var(--green);font-size:1.5rem;cursor:pointer;font-weight:900;transition:all .2s;" data-action="winner" data-player="${player}">âœ“</button>
+          <button style="width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:rgba(46,204,140,0.2);color:var(--green);font-size:1.5rem;cursor:pointer;font-weight:900;transition:all .2s;" data-action="winner" data-player="${player}">✓</button>
         </div>`;
       }
 
       card.innerHTML = `
         <div class="player-top">
           <span class="player-name">${player}</span>
-          <span class="score-chip">Ø§Ù„Ù†Ù‚Ø·Ø©: ${state.scores[player] || 0}</span>
+          <span class="score-chip">النقطة: ${state.scores[player] || 0}</span>
         </div>
         ${controlsHtml}`;
 
@@ -2448,7 +2449,7 @@ function setupQuizView() {
               const other = state.players.find(p => p !== player);
               state.scores[other] = (state.scores[other] || 0) + 1;
               saveState(state);
-              moveToNextPhase(`${player} Ø£Ø®Ø·Ø£ 3 Ù…Ø±Ø§Øª! Ø§Ù„Ù†Ù‚Ø·Ø© ØªØ°Ù‡Ø¨ ØªÙ„Ù‚Ø§Ø¦ÙŠÙ‹Ø§ Ø¥Ù„Ù‰ <span class="highlight">${other}</span>.`);
+              moveToNextPhase(`${player} أخطأ 3 مرات! النقطة تذهب تلقائيًا إلى <span class="highlight">${other}</span>.`);
             } else {
               renderPlayersBoard();
             }
@@ -2482,7 +2483,7 @@ function setupQuizView() {
             state.auctionState.owner = "";
             state.auctionState.selectionLocked = false;
             saveState(state);
-            moveToNextPhase(`âœ“ Ø£Ø¬Ø§Ø¨ <span class="highlight">${player}</span> ØµØ­ÙŠØ­Ù‹Ø§ØŒ ÙˆØ­ØµÙ„ Ø¹Ù„Ù‰ <span class="highlight">${gained}</span> Ù†Ù‚Ø·Ø©.`);
+            moveToNextPhase(`✓ أجاب <span class="highlight">${player}</span> صحيحًا، وحصل على <span class="highlight">${gained}</span> نقطة.`);
           };
         }
         const wrongBtn = card.querySelector("[data-action='auction-wrong']");
@@ -2495,7 +2496,7 @@ function setupQuizView() {
             state.auctionState.owner = "";
             state.auctionState.selectionLocked = false;
             saveState(state);
-            moveToNextPhase(`âœ• Ø£Ø®Ø·Ø£ <span class="highlight">${player}</span>ØŒ ÙˆØ§Ù„Ù†Ù‚Ø·Ø© Ø°Ù‡Ø¨Øª Ø¥Ù„Ù‰ <span class="highlight">${other}</span>.`);
+            moveToNextPhase(`✕ أخطأ <span class="highlight">${player}</span>، والنقطة ذهبت إلى <span class="highlight">${other}</span>.`);
           };
         }
       } else if (mode === "speed" || mode === "whoami") {
@@ -2504,7 +2505,7 @@ function setupQuizView() {
           winBtn.onclick = () => {
             state.scores[player] = (state.scores[player] || 0) + 1;
             saveState(state);
-            moveToNextPhase(`Ø§Ù„Ù†Ù‚Ø·Ø© Ø°Ù‡Ø¨Øª Ø¥Ù„Ù‰ <span class="highlight">${player}</span>!`);
+            moveToNextPhase(`النقطة ذهبت إلى <span class="highlight">${player}</span>!`);
           };
         }
       }
@@ -2544,7 +2545,7 @@ function setupQuizView() {
       winnerScreen.classList.remove("hidden");
       const [p1, p2] = state.players;
       const s1 = state.scores[p1] || 0, s2 = state.scores[p2] || 0;
-      document.getElementById("winnerName").textContent = s1 > s2 ? `ðŸ† ${p1} ÙØ§Ø²!` : s2 > s1 ? `ðŸ† ${p2} ÙØ§Ø²!` : "ðŸ¤ ØªØ¹Ø§Ø¯Ù„!";
+      document.getElementById("winnerName").textContent = s1 > s2 ? `🏆 ${p1} فاز!` : s2 > s1 ? `🏆 ${p2} فاز!` : "🤝 تعادل!";
       document.getElementById("winnerSummary").textContent = `${p1}: ${s1} | ${p2}: ${s2}`;
       showWinnerOverlay(state);
       return;
@@ -2563,11 +2564,11 @@ function setupQuizView() {
     const highestBid = Math.max(...state.players.map((name) => state.auctionState.bids[name] || 0));
     const highestOwners = state.players.filter((name) => (state.auctionState.bids[name] || 0) === highestBid);
     if (highestOwners.length > 1) {
-      showNotice("Ù„Ø§Ø²Ù… ÙƒÙ„ Ù„Ø§Ø¹Ø¨ ÙŠÙƒÙˆÙ† Ù„Ù‡ Ø±Ù‚Ù… Ù…Ø®ØªÙ„ÙØŒ ÙˆØ§Ø®ØªÙŽØ± Ø§Ù„Ù„Ø§Ø¹Ø¨ ØµØ§Ø­Ø¨ Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ø£Ø¹Ù„Ù‰ ÙÙ‚Ø·.");
+      showNotice("لازم كل لاعب يكون له رقم مختلف، واختَر اللاعب صاحب الرقم الأعلى فقط.");
       return;
     }
     if (selectedBid < highestBid) {
-      showNotice("Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø§Ø®ØªÙŠØ§Ø± Ù‡Ø°Ø§ Ø§Ù„Ù„Ø§Ø¹Ø¨ Ù„Ø£Ù† Ù‡Ù†Ø§Ùƒ Ù„Ø§Ø¹Ø¨Ù‹Ø§ Ø¢Ø®Ø± ÙŠÙ…Ù„Ùƒ Ø¹Ø¯Ø¯Ù‹Ø§ Ø£Ø¹Ù„Ù‰.");
+      showNotice("لا يمكن اختيار هذا اللاعب لأن هناك لاعبًا آخر يملك عددًا أعلى.");
       return;
     }
     state.auctionState.started = true;
@@ -2598,7 +2599,7 @@ function setupQuizView() {
         state.auctionState.owner = "";
         state.auctionState.selectionLocked = false;
         saveState(state);
-        moveToNextPhase(`Ø§Ù†ØªÙ‡Ù‰ ÙˆÙ‚Øª Ø§Ù„Ù…Ø²Ø§Ø¯! Ø¨Ø¯ÙˆÙ† Ù†Ù‚Ø·Ø©.`);
+        moveToNextPhase(`انتهى وقت المزاد! بدون نقطة.`);
       }
     }, 1000);
   }
@@ -2615,38 +2616,38 @@ function setupQuizView() {
     };
     currentGameTitle.textContent = getCurrentGame(state);
     currentCategoryPill.textContent = `${round.category} - ${round.group}`;
-    currentRoundPill.textContent = `Ø§Ù„Ø³Ø¤Ø§Ù„ ${state.currentQuestionIndex + 1} Ù…Ù† ${state.currentGameQueue.length}`;
+    currentRoundPill.textContent = `السؤال ${state.currentQuestionIndex + 1} من ${state.currentGameQueue.length}`;
     winnerScreen.classList.add("hidden");
     finishAnswersBtn.style.display = "inline-flex";
     changeQuestionBtn.style.display = "inline-flex";
 
     if (round.mode === "know") {
       questionText.textContent = round.question;
-      finishAnswersBtn.textContent = "Ø§Ù†ØªÙ‡Øª Ø§Ù„Ø£Ø¬ÙˆØ¨Ø©";
-      changeQuestionBtn.textContent = "ØªØºÙŠÙŠØ± Ø§Ù„Ø³Ø¤Ø§Ù„";
+      finishAnswersBtn.textContent = "انتهت الأجوبة";
+      changeQuestionBtn.textContent = "تغيير السؤال";
       renderScrollableAnswers(round.answers);
-      resultBanner.textContent = "Ø§Ù„Ø£Ø¬ÙˆØ¨Ø© Ø¯Ø§Ø®Ù„ Ø§Ù„ØµÙ†Ø¯ÙˆÙ‚ Ù†ÙØ³Ù‡ ÙˆÙŠÙ…ÙƒÙ†Ùƒ Ø§Ù„Ù†Ø²ÙˆÙ„ Ù„Ø±Ø¤ÙŠØ© Ø§Ù„Ø¹Ø¯Ø¯ Ø§Ù„ÙƒØ¨ÙŠØ± Ù…Ù†Ù‡Ø§.";
+      resultBanner.textContent = "الأجوبة داخل الصندوق نفسه ويمكنك النزول لرؤية العدد الكبير منها.";
       return;
     }
     if (round.mode === "speed") {
       questionText.textContent = round.question;
       finishAnswersBtn.style.display = "none";
-      changeQuestionBtn.textContent = "ØªØºÙŠÙŠØ± Ø§Ù„Ø³Ø¤Ø§Ù„";
+      changeQuestionBtn.textContent = "تغيير السؤال";
       answersGrid.className = "answers-grid";
-      answersGrid.innerHTML = `<div class="answer-reveal-card"><span class="mini-pill">Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©</span><strong>${round.answers[0]}</strong></div>`;
-      resultBanner.textContent = "Ø§Ø¶ØºØ· âœ“ ØªØ­Øª Ø§Ø³Ù… Ø§Ù„Ù„Ø§Ø¹Ø¨ Ø§Ù„Ø£Ø³Ø±Ø¹ Ù„Ø¥Ø¹Ø·Ø§Ø¦Ù‡ Ø§Ù„Ù†Ù‚Ø·Ø© ÙˆØ§Ù„Ø§Ù†ØªÙ‚Ø§Ù„ Ù„Ù„Ø³Ø¤Ø§Ù„ Ø§Ù„ØªØ§Ù„ÙŠ.";
+      answersGrid.innerHTML = `<div class="answer-reveal-card"><span class="mini-pill">الإجابة</span><strong>${round.answers[0]}</strong></div>`;
+      resultBanner.textContent = "اضغط ✓ تحت اسم اللاعب الأسرع لإعطائه النقطة والانتقال للسؤال التالي.";
       return;
     }
     if (round.mode === "auction") {
       questionText.textContent = round.question;
       finishAnswersBtn.style.display = "none";
-      changeQuestionBtn.textContent = "ØªØºÙŠÙŠØ± Ø§Ù„Ø³Ø¤Ø§Ù„";
+      changeQuestionBtn.textContent = "تغيير السؤال";
       changeQuestionBtn.style.display = "inline-flex";
       if (state.auctionState.started) {
         renderScrollableAnswers(round.answers);
       } else {
         answersGrid.className = "answers-grid";
-        answersGrid.innerHTML = `<div class="auction-start-box">Ø§Ø®ØªØ± Ø§Ù„Ù„Ø§Ø¹Ø¨ ØµØ§Ø­Ø¨ Ø£Ø¹Ù„Ù‰ Ø¹Ø¯Ø¯ Ø£ÙˆÙ„Ø§Ù‹ Ù„Ø¥Ø¸Ù‡Ø§Ø± Ø§Ù„Ø£Ø¬ÙˆØ¨Ø© ÙˆØ¨Ø¯Ø¡ Ø§Ù„Ø¹Ø¯Ø§Ø¯.</div>`;
+        answersGrid.innerHTML = `<div class="auction-start-box">اختر اللاعب صاحب أعلى عدد أولاً لإظهار الأجوبة وبدء العداد.</div>`;
       }
       if (state.auctionState.started) {
         const t = state.auctionState.timer;
@@ -2662,18 +2663,18 @@ function setupQuizView() {
               </svg>
               <div class="timer-inner">
                 <span class="${numCls}" id="auctionTimer">${t}</span>
-                <span class="timer-label-small">Ø«Ø§Ù†ÙŠØ©</span>
+                <span class="timer-label-small">ثانية</span>
               </div>
             </div>
             <div class="auction-owner-badge">
               <span class="owner-dot"></span>
-              ØµØ§Ø­Ø¨ Ø§Ù„Ù…Ø²Ø§Ø¯: <span class="highlight">${state.auctionState.owner}</span>
+              صاحب المزاد: <span class="highlight">${state.auctionState.owner}</span>
             </div>
           </div>`);
         const bidValue = state.auctionState.bids[state.auctionState.owner] || 0;
-        resultBanner.innerHTML = `Ø§Ø³ØªØ®Ø¯Ù… âœ“ Ø£Ùˆ âœ• ÙÙŠ Ø¨Ø·Ø§Ù‚Ø© <span class="highlight">${state.auctionState.owner}</span> Ù„ØªØ­Ø¯ÙŠØ¯ Ø§Ù„Ù†ØªÙŠØ¬Ø©. Ø§Ù„Ø¹Ø¯Ø¯ Ø§Ù„Ø­Ø§Ù„ÙŠ: <span class="highlight">${bidValue}</span>.`;
+        resultBanner.innerHTML = `استخدم ✓ أو ✕ في بطاقة <span class="highlight">${state.auctionState.owner}</span> لتحديد النتيجة. العدد الحالي: <span class="highlight">${bidValue}</span>.`;
       } else {
-        resultBanner.textContent = "Ø§Ø¶ØºØ· Ø¹Ù„Ù‰ 'Ø§Ø®ØªØ±' ØªØ­Øª Ø§Ø³Ù… Ø§Ù„Ù„Ø§Ø¹Ø¨ ØµØ§Ø­Ø¨ Ø£Ø¹Ù„Ù‰ Ø¹Ø¯Ø¯ Ù„Ø¨Ø¯Ø¡ Ø§Ù„ÙˆÙ‚Øª.";
+        resultBanner.textContent = "اضغط على 'اختر' تحت اسم اللاعب صاحب أعلى عدد لبدء الوقت.";
       }
       return;
     }
@@ -2681,8 +2682,8 @@ function setupQuizView() {
     questionText.textContent = round.question;
     finishAnswersBtn.style.display = "none";
     answersGrid.className = "answers-grid";
-    answersGrid.innerHTML = `<div class="answer-reveal-card"><span class="mini-pill">Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©</span><strong>${round.answers[0]}</strong></div>`;
-    resultBanner.textContent = "Ø§Ø¶ØºØ· âœ“ ØªØ­Øª Ø§Ø³Ù… Ø§Ù„Ù„Ø§Ø¹Ø¨ Ø§Ù„Ø°ÙŠ Ø¹Ø±Ù Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø© Ù„Ø¥Ø¹Ø·Ø§Ø¦Ù‡ Ø§Ù„Ù†Ù‚Ø·Ø©.";
+    answersGrid.innerHTML = `<div class="answer-reveal-card"><span class="mini-pill">الإجابة</span><strong>${round.answers[0]}</strong></div>`;
+    resultBanner.textContent = "اضغط ✓ تحت اسم اللاعب الذي عرف الإجابة لإعطائه النقطة.";
   }
 
   const adjustBid = (player, dir) => {
@@ -2701,10 +2702,10 @@ function setupQuizView() {
       const first = state.players[0], second = state.players[1];
       const fm = state.lifeStatus[first] ? state.lifeStatus[first].misses.filter(Boolean).length : 0;
       const sm = state.lifeStatus[second] ? state.lifeStatus[second].misses.filter(Boolean).length : 0;
-      if (fm < sm) { state.scores[first] = (state.scores[first]||0)+1; moveToNextPhase(`Ø§Ù†ØªÙ‡Øª Ø§Ù„Ø£Ø¬ÙˆØ¨Ø©ØŒ ÙˆØ§Ù„Ù†Ù‚Ø·Ø© Ø°Ù‡Ø¨Øª Ø¥Ù„Ù‰ <span class="highlight">${first}</span>.`); return; }
-      if (sm < fm) { state.scores[second] = (state.scores[second]||0)+1; moveToNextPhase(`Ø§Ù†ØªÙ‡Øª Ø§Ù„Ø£Ø¬ÙˆØ¨Ø©ØŒ ÙˆØ§Ù„Ù†Ù‚Ø·Ø© Ø°Ù‡Ø¨Øª Ø¥Ù„Ù‰ <span class="highlight">${second}</span>.`); return; }
+      if (fm < sm) { state.scores[first] = (state.scores[first]||0)+1; moveToNextPhase(`انتهت الأجوبة، والنقطة ذهبت إلى <span class="highlight">${first}</span>.`); return; }
+      if (sm < fm) { state.scores[second] = (state.scores[second]||0)+1; moveToNextPhase(`انتهت الأجوبة، والنقطة ذهبت إلى <span class="highlight">${second}</span>.`); return; }
       state.scores[first] = (state.scores[first]||0)+1; state.scores[second] = (state.scores[second]||0)+1;
-      moveToNextPhase(`ØªØ¹Ø§Ø¯Ù„ Ø§Ù„Ù„Ø§Ø¹Ø¨Ø§Ù†ØŒ Ø­ØµÙ„ ÙƒÙ„ Ù…Ù†Ù‡Ù…Ø§ Ø¹Ù„Ù‰ Ù†Ù‚Ø·Ø©.`);
+      moveToNextPhase(`تعادل اللاعبان، حصل كل منهما على نقطة.`);
       return;
     }
   };
@@ -2713,10 +2714,10 @@ function setupQuizView() {
     clearInterval(auctionTimer);
     auctionTimer = null;
     if (!replaceCurrentQuestion(state)) {
-      showNotice("Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø³Ø¤Ø§Ù„ Ø¨Ø¯ÙŠÙ„ Ù…ØªØ§Ø­ Ù„Ù‡Ø°Ù‡ Ø§Ù„Ù„Ø¹Ø¨Ø©.");
+      showNotice("لا يوجد سؤال بديل متاح لهذه اللعبة.");
       return;
     }
-    resultBanner.innerHTML = "ØªÙ… ØªØºÙŠÙŠØ± Ø§Ù„Ø³Ø¤Ø§Ù„ Ø¨Ø¯ÙˆÙ† Ø§Ø­ØªØ³Ø§Ø¨Ù‡ Ù…Ù† Ø¹Ø¯Ø§Ø¯ Ø§Ù„Ø£Ø³Ø¦Ù„Ø©.";
+    resultBanner.innerHTML = "تم تغيير السؤال بدون احتسابه من عداد الأسئلة.";
     renderPlayersBoard();
     renderQuestion();
   };
@@ -2753,12 +2754,12 @@ function setupIntermissionView() {
   const countsEditorBox = document.getElementById("countsEditorBox");
   const countsEditor = document.getElementById("countsEditor");
 
-  title.textContent = `Ø§Ù†ØªÙ‡Øª ${state.lastFinishedGame || "Ø§Ù„Ù„Ø¹Ø¨Ø© Ø§Ù„Ø³Ø§Ø¨Ù‚Ø©"}ØŒ ÙˆØ§Ù„Ø¢Ù† Ø§Ù„Ø¯ÙˆØ± Ø¹Ù„Ù‰ ${nextGame}`;
-  copy.textContent = "ÙŠÙ…ÙƒÙ†Ùƒ ØªØ¹Ø¯ÙŠÙ„ Ø¹Ø¯Ø¯ Ø§Ù„Ø£Ø³Ø¦Ù„Ø© Ø£Ùˆ ØªØºÙŠÙŠØ± ÙØ¦Ø§Øª Ø§Ù„Ù„Ø¹Ø¨Ø© Ø§Ù„Ù‚Ø§Ø¯Ù…Ø© ÙÙ‚Ø·ØŒ Ø£Ùˆ Ø§Ù„Ø¥ÙƒÙ…Ø§Ù„ Ù…Ø¨Ø§Ø´Ø±Ø© Ø¨Ù†ÙØ³ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø­Ø§Ù„ÙŠØ©.";
+  title.textContent = `انتهت ${state.lastFinishedGame || "اللعبة السابقة"}، والآن الدور على ${nextGame}`;
+  copy.textContent = "يمكنك تعديل عدد الأسئلة أو تغيير فئات اللعبة القادمة فقط، أو الإكمال مباشرة بنفس الإعدادات الحالية.";
   scores.innerHTML = `
     <span class="score-slice">${state.players[0]}: ${state.scores[state.players[0]]}</span>
     <span class="score-slice">${state.players[1]}: ${state.scores[state.players[1]]}</span>
-    <span class="score-slice">Ø£Ø³Ø¦Ù„Ø© ${nextGame}: ${state.questionCounts[nextGame]}</span>`;
+    <span class="score-slice">أسئلة ${nextGame}: ${state.questionCounts[nextGame]}</span>`;
 
   countsEditorBox.classList.add("hidden");
   countsEditor.innerHTML = "";
