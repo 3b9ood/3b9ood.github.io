@@ -925,6 +925,7 @@ const CROSS_GAME_CANDIDATES = {
 
 // ===== GAME CONSTANTS =====
 const STORAGE_KEY = "thalain-game-state";
+const GAME_SELECTOR_RETURN_KEY = "game_selector_return";
 const MAX_QUESTIONS = 10;
 const MAX_SUGGESTED_ANSWERS = 50;
 const gameOptions = ["ماذا تعرف", "المزاد", "السرعة", "من أنا"];
@@ -1684,6 +1685,14 @@ document.addEventListener('click', (e) => {
 
 function openGameHub() { document.getElementById('gameHubOverlay').style.display = 'flex'; }
 function closeGameHub() { document.getElementById('gameHubOverlay').style.display = 'none'; }
+
+function returnToSharedGameSelector() {
+  try {
+    sessionStorage.setItem(GAME_SELECTOR_RETURN_KEY, "1");
+  } catch (e) { }
+  goTo("welcome");
+  openGameHub();
+}
 
 // ===== PROFILE =====
 async function openProfile() {
@@ -2734,7 +2743,7 @@ function setupQuizView() {
     state.currentQuestionIndex = 0;
     state.auctionState = { started: false, owner: "", timer: 30, bids: {}, selectionLocked: false };
     saveState(state);
-    goTo("categories");
+    returnToSharedGameSelector();
   };
 
   renderPlayersBoard();
@@ -2813,12 +2822,3 @@ const openedFromSelector = new URLSearchParams(window.location.search).get("from
 
 if (challengeIntro) {
   if (openedFromSelector) {
-    challengeIntro.classList.add("skip-intro");
-  }
-}
-
-goTo(initialView);
-  </script>
-</body>
-</html>
-
